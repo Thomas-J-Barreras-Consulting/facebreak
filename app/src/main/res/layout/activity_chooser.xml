@@ -11,11 +11,11 @@
 
   <ImageView
       android:id="@+id/imageView"
-      android:contentDescription="@string/app_name"
       android:layout_width="match_parent"
-      android:layout_height="50dp"
+      android:layout_height="152dp"
       android:layout_marginTop="32dp"
-      app:srcCompat="@drawable/logo_mlkit" />
+      android:contentDescription="@string/app_name"
+      app:srcCompat="@mipmap/psychedelic" />
 
   <TextView
       android:layout_width="match_parent"
