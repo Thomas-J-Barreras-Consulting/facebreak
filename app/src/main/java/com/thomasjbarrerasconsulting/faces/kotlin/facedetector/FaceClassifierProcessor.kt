@@ -20,18 +20,19 @@ class FaceClassifierProcessor(private val context: Context) {
         if (image.byteBuffer == null){
             return FaceWithClassifications(face, mutableListOf())
         }
+        val currentClassifier = classifier
 
         val bitmap: Bitmap =
             BitmapUtils.getBitmap(image.byteBuffer, FrameMetadata.Builder().setHeight(image.height).setWidth(image.width).setRotation(image.rotationDegrees).build())
                 ?: return FaceWithClassifications(face, mutableListOf())
 
-        val croppedBitmap = BitmapCropper.cropBitmap(bitmap, face.boundingBox)
+        val croppedBitmap = BitmapCropper.cropBitmap(bitmap, face.boundingBox, currentClassifier == DETECT_GENDER)
 
         try {
             val classifications: MutableList<String> = mutableListOf()
             val tensorImage = TensorImage.fromBitmap(croppedBitmap)
 
-            when (classifier) {
+            when (currentClassifier) {
                 DETECT_AGE -> {
                     val genderModel = AgesModel5000.newInstance(context)
                     classifications.addAll(extractClassifications(genderModel.process(tensorImage).probabilityAsCategoryList.apply { sortByDescending { it.score } }.take(3)))
@@ -48,14 +49,6 @@ class FaceClassifierProcessor(private val context: Context) {
                     genderModel.close()
                 }
             }
-
-//            val emotionsModel = EmotionsModel.newInstance(context)
-//            classifications.addAll(extractClassifications(emotionsModel.process(tensorImage).probabilityAsCategoryList.apply { sortByDescending { it.score } }.take(1)))
-//            emotionsModel.close()
-//
-//            val agesModel = AgesModel.newInstance(context)
-//            classifications.addAll(extractClassifications(agesModel.process(tensorImage).probabilityAsCategoryList.apply { sortByDescending { it.score } }.take(1)))
-//            agesModel.close()
 
             return FaceWithClassifications(face, classifications)
         }
@@ -80,7 +73,7 @@ class FaceClassifierProcessor(private val context: Context) {
         const val DETECT_AGE = "Detect Age"
         const val DETECT_EMOTIONS = "Detect Emotions"
         const val DETECT_GENDER = "Detect Gender"
-        @get:Synchronized @set:Synchronized
+//        @get:Synchronized @set:Synchronized
         var classifier = DETECT_AGE
     }
 }

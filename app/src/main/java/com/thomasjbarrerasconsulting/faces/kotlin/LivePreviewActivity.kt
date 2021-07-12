@@ -60,7 +60,6 @@ class LivePreviewActivity :
   private var preview: CameraSourcePreview? = null
   private var graphicOverlay: GraphicOverlay? = null
   private var selectedModel = FACE_DETECTION
-  private var selectedClassifier = FaceClassifierProcessor.DETECT_AGE
   private lateinit var binding: ActivityVisionLivePreviewBinding
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -122,17 +121,16 @@ class LivePreviewActivity :
   ) {
     // An item was selected. You can retrieve the selected item using
     // parent.getItemAtPosition(pos)
-//    selectedModel = parent?.getItemAtPosition(pos).toString()
-    selectedClassifier = parent?.getItemAtPosition(pos).toString()
+    val selectedClassifier = parent?.getItemAtPosition(pos).toString()
     FaceClassifierProcessor.classifier = selectedClassifier
     Log.d(TAG, "Selected classifier: $selectedClassifier")
-    preview?.stop()
-    if (allPermissionsGranted()) {
-      createCameraSource(selectedModel)
-      startCameraSource()
-    } else {
-      runtimePermissions
-    }
+//    preview?.stop()
+//    if (allPermissionsGranted()) {
+//      createCameraSource(selectedModel)
+//      startCameraSource()
+//    } else {
+//      runtimePermissions
+//    }
   }
 
   override fun onNothingSelected(parent: AdapterView<*>?) {
