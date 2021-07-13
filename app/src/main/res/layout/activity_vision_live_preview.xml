@@ -43,9 +43,7 @@
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_gravity="center_vertical"
-        android:checked="false"
-        android:textOff="Back"
-        android:textOn="Front"/>
+        android:checked="false" />
 
     <Spinner
         android:id="@+id/spinner"
