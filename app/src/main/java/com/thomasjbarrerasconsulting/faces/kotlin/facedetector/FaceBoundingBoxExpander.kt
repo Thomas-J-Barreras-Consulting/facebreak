@@ -51,6 +51,7 @@ class FaceBoundingBoxExpander {
             val cropToShoulders = (classificationType == FaceClassifierProcessor.DETECT_GENDER ||
                     classificationType == FaceClassifierProcessor.DETECT_AGE ||
                     classificationType == FaceClassifierProcessor.DETECT_FEATURES ||
+                    classificationType == FaceClassifierProcessor.DETECT_CHARACTER ||
                     classificationType == FaceClassifierProcessor.DETECT_ANCESTRY)
 
             val desired = getDesiredSquare(boundingBox, cropToShoulders)

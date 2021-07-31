@@ -36,7 +36,7 @@ class FaceClassifierProcessor(private val context: Context) {
                     ageModel.close()
                 }
                 DETECT_EMOTIONS -> {
-                    val emotionsModel = EmotionsModel.newInstance(context)
+                    val emotionsModel = EmotionsModel1600.newInstance(context)
                     classifications.addAll(extractClassifications(emotionsModel.process(tensorImage).probabilityAsCategoryList.apply { sortByDescending { it.score } }.take(2)))
                     emotionsModel.close()
                 }
@@ -51,9 +51,14 @@ class FaceClassifierProcessor(private val context: Context) {
                     faceShapeModel.close()
                 }
                 DETECT_FEATURES -> {
-                    val featuresModel = FeaturesModel2000b.newInstance(context)
+                    val featuresModel = FeaturesModel2000.newInstance(context)
                     classifications.addAll(extractClassifications(featuresModel.process(tensorImage).probabilityAsCategoryList.apply { sortByDescending { it.score } }.take(6).filter { it.score >= 0.05 }))
                     featuresModel.close()
+                }
+                DETECT_CHARACTER -> {
+                    val characterModel = CharacterModel1600.newInstance(context)
+                    classifications.addAll(extractClassifications(characterModel.process(tensorImage).probabilityAsCategoryList.apply { sortByDescending { it.score } }.take(6).filter { it.score >= 0.05 }))
+                    characterModel.close()
                 }
                 DETECT_ANCESTRY -> {
                     val ancestryModel = AncestryModel12000.newInstance(context)
@@ -112,6 +117,7 @@ class FaceClassifierProcessor(private val context: Context) {
         const val DETECT_GENDER = "Detect Gender"
         const val DETECT_FACE_SHAPE = "Detect Face Shape"
         const val DETECT_FEATURES = "Detect Physical Features"
+        const val DETECT_CHARACTER = "Detect Character"
         const val DETECT_ANCESTRY = "Detect Ancestry"
 //        @get:Synchronized @set:Synchronized
         var classifier = DETECT_AGE

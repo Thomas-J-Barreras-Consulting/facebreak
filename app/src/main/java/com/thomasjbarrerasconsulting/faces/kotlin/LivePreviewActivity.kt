@@ -87,6 +87,7 @@ class LivePreviewActivity :
     options.add(FaceClassifierProcessor.DETECT_AGE)
     options.add(FaceClassifierProcessor.DETECT_FACE_SHAPE)
     options.add(FaceClassifierProcessor.DETECT_FEATURES)
+    options.add(FaceClassifierProcessor.DETECT_CHARACTER)
     options.add(FaceClassifierProcessor.DETECT_ANCESTRY)
 
     // Creating adapter for spinner

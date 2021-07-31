@@ -21,7 +21,6 @@ import android.content.ContentValues
 import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.Bitmap
-import android.media.Image
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -36,7 +35,6 @@ import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.PopupMenu
-import android.widget.Spinner
 import android.widget.Toast
 import com.google.android.gms.common.annotation.KeepName
 import com.thomasjbarrerasconsulting.faces.BitmapUtils
