@@ -68,6 +68,11 @@ class FaceDetectorProcessor(private val context: Context, detectorOptions: FaceD
           val faces = task.result
           val facesWithClassification: MutableList<FaceWithClassifications> = mutableListOf()
 
+          if (faces.size != 1){
+            faceClassifierProcessor!!.resetCurrentClassifications()
+          }
+//          Log.println(Log.DEBUG,"FACES COUNT", faces.size.toString())
+
           for (face:Face in faces){
             facesWithClassification.add(faceClassifierProcessor!!.getFaceClassifications(face, image))
           }

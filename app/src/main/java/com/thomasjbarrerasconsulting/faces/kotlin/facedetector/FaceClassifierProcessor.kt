@@ -12,6 +12,10 @@ import org.tensorflow.lite.support.label.Category
 import java.text.NumberFormat
 
 class FaceClassifierProcessor(private val context: Context) {
+    private val currentCategories: MutableMap<String, Float> = mutableMapOf()
+    private var currentCategoriesCount: Int = 0
+    private var currentCategory: String = ""
+
     fun getFaceClassifications(face: Face, image: InputImage): FaceWithClassifications {
 
         if (image.byteBuffer == null){
@@ -29,15 +33,20 @@ class FaceClassifierProcessor(private val context: Context) {
             val classifications: MutableList<String> = mutableListOf()
             val tensorImage = TensorImage.fromBitmap(croppedBitmap)
 
+            if (currentClassifier != currentCategory){
+                resetCurrentClassifications()
+                currentCategory = currentClassifier
+            }
+
             when (currentClassifier) {
                 DETECT_AGE -> {
                     val ageModel = AgesModel10000.newInstance(context)
-                    classifications.addAll(getAgeClassifications(ageModel, tensorImage))
+                    classifications.addAll(extractClassifications(mergeWithCurrentCategories(ageModel.process(tensorImage).probabilityAsCategoryList).apply { sortByDescending { it.score } }.take(3)))
                     ageModel.close()
                 }
                 DETECT_EMOTIONS -> {
                     val emotionsModel = EmotionsModel1600.newInstance(context)
-                    classifications.addAll(extractClassifications(emotionsModel.process(tensorImage).probabilityAsCategoryList.apply { sortByDescending { it.score } }.take(2)))
+                    classifications.addAll(extractClassifications(emotionsModel.process(tensorImage).probabilityAsCategoryList.apply { sortByDescending { it.score } }.take(6)))
                     emotionsModel.close()
                 }
                 DETECT_GENDER -> {
@@ -47,22 +56,22 @@ class FaceClassifierProcessor(private val context: Context) {
                 }
                 DETECT_FACE_SHAPE -> {
                     val faceShapeModel = FaceShapeModel2000c.newInstance(context)
-                    classifications.addAll(extractClassifications(faceShapeModel.process(tensorImage).probabilityAsCategoryList.apply { sortByDescending { it.score } }))
+                    classifications.addAll(extractClassifications(mergeWithCurrentCategories(faceShapeModel.process(tensorImage).probabilityAsCategoryList).apply { sortByDescending { it.score } }))
                     faceShapeModel.close()
                 }
                 DETECT_FEATURES -> {
                     val featuresModel = FeaturesModel2000.newInstance(context)
-                    classifications.addAll(extractClassifications(featuresModel.process(tensorImage).probabilityAsCategoryList.apply { sortByDescending { it.score } }.take(6).filter { it.score >= 0.05 }))
+                    classifications.addAll(extractClassifications(mergeWithCurrentCategories(featuresModel.process(tensorImage).probabilityAsCategoryList).apply { sortByDescending { it.score } }.take(6)))
                     featuresModel.close()
                 }
                 DETECT_CHARACTER -> {
                     val characterModel = CharacterModel1600.newInstance(context)
-                    classifications.addAll(extractClassifications(characterModel.process(tensorImage).probabilityAsCategoryList.apply { sortByDescending { it.score } }.take(6).filter { it.score >= 0.05 }))
+                    classifications.addAll(extractClassifications(mergeWithCurrentCategories(characterModel.process(tensorImage).probabilityAsCategoryList).apply { sortByDescending { it.score } }.take(6).filter { it.score >= 0.05 }))
                     characterModel.close()
                 }
                 DETECT_ANCESTRY -> {
                     val ancestryModel = AncestryModel12000.newInstance(context)
-                    classifications.addAll(extractClassifications(ancestryModel.process(tensorImage).probabilityAsCategoryList.apply { sortByDescending { it.score } }.take(6).filter { it.score >= 0.05 }))
+                    classifications.addAll(extractClassifications(mergeWithCurrentCategories(ancestryModel.process(tensorImage).probabilityAsCategoryList).apply { sortByDescending { it.score } }.take(6).filter { it.score >= 0.05 }))
                     ancestryModel.close()
                 }
             }
@@ -75,30 +84,30 @@ class FaceClassifierProcessor(private val context: Context) {
         }
     }
 
-    private fun getAgeClassifications(
-        ageModel: AgesModel10000,
-        tensorImage: TensorImage
-    ): MutableList<String> {
-        val categories = ageModel.process(tensorImage).probabilityAsCategoryList
-
-        val categoryMap = mutableMapOf("Infant" to Category("Infant", 0.0f))
-
-        for (category in categories){
-            categoryMap[category.label] = category
-        }
-
-        var category = categoryMap["Infant"]
-        var probability = category?.score
-        var n = 0
-
-        while (probability!! < 0.5){
-            n += 1
-            category = categoryMap[n.toString()]
-            probability += category?.score ?: 0.0f
-        }
-
-        return extractClassifications(listOf(category))
-    }
+//    private fun getAgeClassifications(
+//        ageModel: AgesModel10000,
+//        tensorImage: TensorImage
+//    ): MutableList<String> {
+//        val categories = ageModel.process(tensorImage).probabilityAsCategoryList
+//
+//        val categoryMap = mutableMapOf("Infant" to Category("Infant", 0.0f))
+//
+//        for (category in categories){
+//            categoryMap[category.label] = category
+//        }
+//
+//        var category = categoryMap["Infant"]
+//        var probability = category?.score
+//        var n = 0
+//
+//        while (probability!! < 0.5){
+//            n += 1
+//            category = categoryMap[n.toString()]
+//            probability += category?.score ?: 0.0f
+//        }
+//
+//        return extractClassifications(listOf(category))
+//    }
 
     private fun extractClassifications(outputs: List<Category?>): MutableList<String> {
         val classifications: MutableList<String> = mutableListOf()
@@ -109,6 +118,28 @@ class FaceClassifierProcessor(private val context: Context) {
             classifications.add("$label ($score)")
         }
         return classifications
+    }
+
+    private fun mergeWithCurrentCategories(newCategories: List<Category>): MutableList<Category>{
+        for (category in newCategories){
+            val currentScore: Float = currentCategories[category.label] ?: 0.0f
+            currentCategories[category.label] = ((currentScore * currentCategoriesCount) + category.score) / (currentCategoriesCount + 1)
+        }
+        currentCategoriesCount++
+
+        val categories : MutableList<Category> = mutableListOf()
+
+        for (category in currentCategories){
+            categories.add(Category(category.key, category.value))
+        }
+        return categories
+    }
+
+    fun resetCurrentClassifications() {
+        // TODO: what lame idiot wrote this?
+        currentCategories.clear()
+        currentCategoriesCount = 0
+        currentCategory = ""
     }
 
     companion object {
