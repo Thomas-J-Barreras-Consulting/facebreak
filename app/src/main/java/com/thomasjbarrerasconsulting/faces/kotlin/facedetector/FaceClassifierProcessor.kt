@@ -17,14 +17,14 @@ class FaceClassifierProcessor(private val context: Context) {
 
     fun getFaceClassifications(face: Face, image: InputImage): FaceWithClassifications {
 
-        if (image.byteBuffer == null){
+        if (image.byteBuffer == null && image.bitmapInternal == null){
             return FaceWithClassifications(face, mutableListOf(), classifier)
         }
         val currentClassifier = classifier
 
-        val bitmap: Bitmap =
-            BitmapUtils.getBitmap(image.byteBuffer, FrameMetadata.Builder().setHeight(image.height).setWidth(image.width).setRotation(image.rotationDegrees).build())
-                ?: return FaceWithClassifications(face, mutableListOf(), currentClassifier)
+        val bitmap: Bitmap = image.bitmapInternal ?:
+            (BitmapUtils.getBitmap(image.byteBuffer, FrameMetadata.Builder().setHeight(image.height).setWidth(image.width).setRotation(image.rotationDegrees).build()) ?:
+            return FaceWithClassifications(face, mutableListOf(), currentClassifier))
 
         val croppedBitmap = BitmapCropper.cropBitmap(bitmap, face.boundingBox, currentClassifier)
 
@@ -121,5 +121,14 @@ class FaceClassifierProcessor(private val context: Context) {
         const val DETECT_ANCESTRY = "Ancestry"
 //        @get:Synchronized @set:Synchronized
         var classifier = DETECT_AGE
+        val allClassifications = listOf(DETECT_GENDER,
+            DETECT_EMOTIONS,
+            DETECT_AGE,
+            DETECT_EYE_COLOR,
+            DETECT_HAIR_COLOR,
+            DETECT_FACE_SHAPE,
+            DETECT_FEATURES,
+            DETECT_CHARACTER,
+            DETECT_ANCESTRY)
     }
 }

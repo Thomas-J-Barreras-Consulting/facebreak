@@ -31,7 +31,6 @@ import java.util.Locale
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 
-/** Face Detector Demo.  */
 class FaceDetectorProcessor(private val context: Context, detectorOptions: FaceDetectorOptions?) :
   VisionProcessorBase<List<FaceWithClassifications>>(context) {
 

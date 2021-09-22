@@ -44,6 +44,7 @@ import com.thomasjbarrerasconsulting.faces.GraphicOverlay
 import com.thomasjbarrerasconsulting.faces.R
 import com.thomasjbarrerasconsulting.faces.VisionImageProcessor
 import com.thomasjbarrerasconsulting.faces.databinding.ActivityStillImageBinding
+import com.thomasjbarrerasconsulting.faces.kotlin.facedetector.FaceClassifierProcessor
 import com.thomasjbarrerasconsulting.faces.kotlin.facedetector.FaceDetectorProcessor
 import com.thomasjbarrerasconsulting.faces.preference.SettingsActivity
 import com.thomasjbarrerasconsulting.faces.preference.SettingsActivity.LaunchSource
@@ -55,7 +56,6 @@ import java.util.ArrayList
 class StillImageActivity : AppCompatActivity() {
   private var preview: ImageView? = null
   private var graphicOverlay: GraphicOverlay? = null
-  private var selectedMode = FACE_DETECTION
   private var selectedSize: String? = SIZE_SCREEN
   private var isLandScape = false
   private var imageUri: Uri? = null
@@ -173,12 +173,8 @@ class StillImageActivity : AppCompatActivity() {
 
   private fun populateFeatureSelector() {
     val featureSpinner = binding.featureSelector
-    val options: MutableList<String> = ArrayList()
-    options.add(FACE_DETECTION)
-
     // Creating adapter for featureSpinner
-    val dataAdapter =
-      ArrayAdapter(this, R.layout.spinner_style, options)
+    val dataAdapter = ArrayAdapter(this, R.layout.spinner_style, FaceClassifierProcessor.allClassifications)
     // Drop down layout style - list view with radio button
     dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
     // attaching data adapter to spinner
@@ -191,7 +187,10 @@ class StillImageActivity : AppCompatActivity() {
         id: Long
       ) {
         if (pos >= 0) {
-          selectedMode = parentView.getItemAtPosition(pos).toString()
+          val selectedClassifier = parentView.getItemAtPosition(pos).toString()
+          FaceClassifierProcessor.classifier = selectedClassifier
+          Log.d(TAG, "Selected classifier: $selectedClassifier")
+
           createImageProcessor()
           tryReloadAndDetectInImage()
         }
@@ -359,19 +358,12 @@ class StillImageActivity : AppCompatActivity() {
 
   private fun createImageProcessor() {
     try {
-      when (selectedMode) {
-        FACE_DETECTION ->
-          imageProcessor = FaceDetectorProcessor(this, null)
-
-        else -> Log.e(
-          TAG,
-          "Unknown selectedMode: $selectedMode"
-        )
-      }
-    } catch (e: Exception) {
+      imageProcessor = FaceDetectorProcessor(this, null)
+    }
+    catch (e: Exception) {
       Log.e(
         TAG,
-        "Can not create image processor: $selectedMode",
+        "Can not create image processor: ${FaceClassifierProcessor.classifier}",
         e
       )
       Toast.makeText(
@@ -385,7 +377,6 @@ class StillImageActivity : AppCompatActivity() {
 
   companion object {
     private const val TAG = "StillImageActivity"
-    private const val FACE_DETECTION = "Face Detection"
 
     private const val SIZE_SCREEN = "w:screen" // Match screen width
     private const val SIZE_1024_768 = "w:1024" // ~1024*768 in a normal ratio

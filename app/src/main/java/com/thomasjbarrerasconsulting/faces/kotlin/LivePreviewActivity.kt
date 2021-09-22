@@ -80,19 +80,9 @@ class LivePreviewActivity :
     }
 
     val spinner = binding.spinner
-    val options: MutableList<String> = ArrayList()
-    options.add(FaceClassifierProcessor.DETECT_GENDER)
-    options.add(FaceClassifierProcessor.DETECT_EMOTIONS)
-    options.add(FaceClassifierProcessor.DETECT_AGE)
-    options.add(FaceClassifierProcessor.DETECT_EYE_COLOR)
-    options.add(FaceClassifierProcessor.DETECT_HAIR_COLOR)
-    options.add(FaceClassifierProcessor.DETECT_FACE_SHAPE)
-    options.add(FaceClassifierProcessor.DETECT_FEATURES)
-    options.add(FaceClassifierProcessor.DETECT_CHARACTER)
-    options.add(FaceClassifierProcessor.DETECT_ANCESTRY)
 
     // Creating adapter for spinner
-    val dataAdapter = ArrayAdapter(this, R.layout.spinner_style, options)
+    val dataAdapter = ArrayAdapter(this, R.layout.spinner_style, FaceClassifierProcessor.allClassifications)
 
     // Drop down layout style - list view with radio button
     dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
@@ -164,8 +154,7 @@ class LivePreviewActivity :
       when (model) {
         FACE_DETECTION -> {
           Log.i(TAG, "Using Face Detector Processor")
-          val faceDetectorOptions =
-            PreferenceUtils.getFaceDetectorOptionsForLivePreview(this)
+          val faceDetectorOptions = PreferenceUtils.getFaceDetectorOptionsForLivePreview(this)
           cameraSource!!.setMachineLearningFrameProcessor(
             FaceDetectorProcessor(this, faceDetectorOptions)
           )
