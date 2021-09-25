@@ -63,7 +63,7 @@ class FaceClassifierProcessor(private val context: Context) {
                     model.close()
                 }
                 DETECT_HAIR_COLOR -> {
-                    val model = HairColorModel6.newInstance(context)
+                    val model = HairColorModel7.newInstance(context)
                     classifications.addAll(HairColorClassifierProcessor.extractHairColorClassification(classificationTracker.merge(model.process(tensorImage).probabilityAsCategoryList).apply { sortByDescending { it.score } }))
                     model.close()
                 }

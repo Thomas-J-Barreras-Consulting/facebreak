@@ -16,19 +16,13 @@
 
 package com.thomasjbarrerasconsulting.faces.kotlin.facedetector
 
-import android.R.attr
-import android.R.attr.*
 import android.graphics.*
 import com.thomasjbarrerasconsulting.faces.GraphicOverlay
 import com.thomasjbarrerasconsulting.faces.GraphicOverlay.Graphic
 import com.google.mlkit.vision.face.Face
-import com.google.mlkit.vision.face.FaceLandmark
-import com.google.mlkit.vision.face.FaceLandmark.LandmarkType
-import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
-import java.util.*
 
 
 /**
@@ -36,124 +30,51 @@ import java.util.*
  * graphic overlay view.
  */
 class FaceGraphic constructor(overlay: GraphicOverlay?, private val face: Face, private val faceClassifications: List<String>, private val classificationType: String) : Graphic(overlay) {
-  private val facePositionPaint: Paint
-  private val numColors = COLORS.size
-  private val idPaints = Array(numColors) { Paint() }
-  private val boxPaints = Array(numColors) { Paint() }
-  private val labelPaints = Array(numColors) { Paint() }
   private val classificationTextPaint: Paint = Paint()
+  private val boxPaint: Paint = Paint()
 
   init {
     classificationTextPaint.color = Color.WHITE
-    classificationTextPaint.textSize = FACE_CLASSIFICATION_TEXT_SIZE
-    classificationTextPaint.setShadowLayer(5.0f, 0f, 0f, Color.BLACK)
+    classificationTextPaint.textSize = FACE_CLASSIFICATION_TEXT_SIZE_LARGE
+    classificationTextPaint.setShadowLayer(5.0f, -5.0f, 5.0f, Color.BLACK)
 
-    val selectedColor = Color.WHITE
-    facePositionPaint = Paint()
-    facePositionPaint.color = selectedColor
-    for (i in 0 until numColors) {
-      idPaints[i] = Paint()
-      idPaints[i].color = COLORS[i][1]
-      idPaints[i].textSize = ID_TEXT_SIZE
-      boxPaints[i] = Paint()
-      boxPaints[i].color = COLORS[i][1]
-      boxPaints[i].style = Paint.Style.STROKE
-      boxPaints[i].strokeWidth = BOX_STROKE_WIDTH
-      labelPaints[i] = Paint()
-      labelPaints[i].color = COLORS[i][1]
-      labelPaints[i].style = Paint.Style.FILL
-    }
+    boxPaint.color = Color.GREEN
+    boxPaint.style = Paint.Style.STROKE
+    boxPaint.strokeWidth = BOX_STROKE_WIDTH
+    boxPaint.pathEffect = CornerPathEffect(10.0f)
+    boxPaint.setShadowLayer(5.0f, -5.0f, 5.0f, Color.BLACK)
   }
 
   /** Draws the face annotations for position on the supplied canvas.  */
   override fun draw(canvas: Canvas) {
-    // Decide color based on face ID
-    val colorID = if (face.trackingId == null) 0 else abs(face.trackingId!! % NUM_COLORS)
-
     // Draws the bounding box.
     val faceBoundingBox = RectF(face.boundingBox)
-    val leftEye = face.getLandmark(FaceLandmark.LEFT_EYE)
-    val rightEye = face.getLandmark(FaceLandmark.RIGHT_EYE)
-//    val eyesBoundingBox = if (leftEye == null || rightEye == null) null else RectF(leftEye.position.x, leftEye.position.y, rightEye.position.x + rightEye.position.length(), rightEye.position.y + rightEye.position.length() / 2)
-
     val x0 = translateX(faceBoundingBox.left)
     val x1 = translateX(faceBoundingBox.right)
     faceBoundingBox.left = min(x0, x1)
     faceBoundingBox.right = max(x0, x1)
     faceBoundingBox.top = translateY(faceBoundingBox.top)
     faceBoundingBox.bottom = translateY(faceBoundingBox.bottom)
-
-//    val faceHeight = faceBoundingBox.bottom - faceBoundingBox.top
-//    val eyesBoundingBox = RectF(faceBoundingBox.left, faceBoundingBox.top + faceHeight / 4, faceBoundingBox.right, faceBoundingBox.bottom - faceHeight / 2)
     val expandedRect = FaceBoundingBoxExpander.expandedBoundingBox(Rect(faceBoundingBox.left.roundToInt(), faceBoundingBox.top.roundToInt(), faceBoundingBox.right.roundToInt(), faceBoundingBox.bottom.roundToInt()),
       canvas.width, canvas.height, classificationType)
 
     val expandedRectF = RectF(expandedRect)
 
-    canvas.drawRect(expandedRectF, boxPaints[colorID])
-//    canvas.drawRect(RectF(eyesBoundingBox), boxPaints[colorID])
-//    val left = x - scale(face.boundingBox.width() / 2.0f)
-//    val top = y - scale(face.boundingBox.height() / 2.0f)
-//    val lineHeight = ID_TEXT_SIZE + BOX_STROKE_WIDTH
-//    val yLabelOffset: Float = if (face.trackingId == null) 0.0f else -lineHeight
-//    if (face.leftEyeOpenProbability != null) {
-//      canvas.drawText(
-//        "Left eye open: " + String.format(Locale.US, "%.2f", face.leftEyeOpenProbability),
-//        left,
-//        top + yLabelOffset,
-//        idPaints[colorID]);
-//    }
-//    if (leftEye != null) {
-//      val leftEyeLeft =
-//        translateX(leftEye.position.x) - idPaints[colorID].measureText("Left Eye") / 2.0f
-//      canvas.drawRect(
-//        leftEyeLeft - BOX_STROKE_WIDTH,
-//        translateY(leftEye.position.y) + ID_Y_OFFSET - ID_TEXT_SIZE,
-//        leftEyeLeft + idPaints[colorID].measureText("Left Eye") + BOX_STROKE_WIDTH,
-//        translateY(leftEye.position.y) + ID_Y_OFFSET + BOX_STROKE_WIDTH,
-//        labelPaints[colorID]
-//      )
-//      canvas.drawText(
-//        "Left Eye",
-//        leftEyeLeft,
-//        translateY(leftEye.position.y) + ID_Y_OFFSET,
-//        idPaints[colorID]
-//      )
-//    }
-
-//    if (rightEye != null) {
-//      val rightEyeLeft =
-//        translateX(rightEye.position.x) - idPaints[colorID].measureText("Right Eye") / 2.0f
-//      canvas.drawRect(
-//        rightEyeLeft - BOX_STROKE_WIDTH,
-//        translateY(rightEye.position.y) + ID_Y_OFFSET - ID_TEXT_SIZE,
-//        rightEyeLeft + idPaints[colorID].measureText("Right Eye") + BOX_STROKE_WIDTH,
-//        translateY(rightEye.position.y) + ID_Y_OFFSET + BOX_STROKE_WIDTH,
-//        labelPaints[colorID]
-//      )
-//      canvas.drawText(
-//        "Right Eye",
-//        rightEyeLeft,
-//        translateY(rightEye.position.y) + ID_Y_OFFSET,
-//        idPaints[colorID]
-//      )
-//    }
-
-//    canvas.drawRect(rect, boxPaints[colorID])
-
-    // Draw face classification text.
-//    val classificationX = rect.left
-    val classificationX = FACE_CLASSIFICATION_TEXT_SIZE * 0.5f
-//    var classificationY = rect.bottom
-
+    canvas.drawRect(expandedRectF, boxPaint)
+    if (3.0f * FACE_CLASSIFICATION_TEXT_SIZE_LARGE * faceClassifications.count().toFloat() < canvas.height.toFloat()){
+      classificationTextPaint.textSize = FACE_CLASSIFICATION_TEXT_SIZE_LARGE
+    } else {
+      classificationTextPaint.textSize = FACE_CLASSIFICATION_TEXT_SIZE_SMALL
+    }
     val sentences = mutableListOf<String>()
     for (classification in faceClassifications) {
        sentences.addAll(splitText(classification, classificationTextPaint, canvas.width))
     }
 
     var position = 0
+    val classificationX = 0.5f * classificationTextPaint.textSize
     for (sentence in sentences){
-      val classificationY = canvas.height - (FACE_CLASSIFICATION_TEXT_SIZE * 1.5f * (sentences.size - position++).toFloat())
+      val classificationY = canvas.height - (classificationTextPaint.textSize * 1.5f * (sentences.size - position++).toFloat())
       canvas.drawText(
         sentence,
         classificationX,
@@ -183,37 +104,9 @@ class FaceGraphic constructor(overlay: GraphicOverlay?, private val face: Face, 
     return sentences.toList()
   }
 
-  private fun drawFaceLandmark(canvas: Canvas, @LandmarkType landmarkType: Int) {
-    val faceLandmark = face.getLandmark(landmarkType)
-    if (faceLandmark != null) {
-      canvas.drawCircle(
-        translateX(faceLandmark.position.x),
-        translateY(faceLandmark.position.y),
-        FACE_POSITION_RADIUS,
-        facePositionPaint
-      )
-    }
-  }
-
   companion object {
-    private const val FACE_CLASSIFICATION_TEXT_SIZE = 60.0f
-    private const val FACE_POSITION_RADIUS = 8.0f
-    private const val ID_TEXT_SIZE = 30.0f
-    private const val ID_Y_OFFSET = 40.0f
+    private const val FACE_CLASSIFICATION_TEXT_SIZE_LARGE = 60.0f
+    private const val FACE_CLASSIFICATION_TEXT_SIZE_SMALL = 50.0f
     private const val BOX_STROKE_WIDTH = 5.0f
-    private const val NUM_COLORS = 10
-    private val COLORS =
-      arrayOf(
-        intArrayOf(Color.BLACK, Color.WHITE),
-        intArrayOf(Color.WHITE, Color.MAGENTA),
-        intArrayOf(Color.BLACK, Color.LTGRAY),
-        intArrayOf(Color.WHITE, Color.RED),
-        intArrayOf(Color.WHITE, Color.BLUE),
-        intArrayOf(Color.WHITE, Color.DKGRAY),
-        intArrayOf(Color.BLACK, Color.CYAN),
-        intArrayOf(Color.BLACK, Color.YELLOW),
-        intArrayOf(Color.WHITE, Color.BLACK),
-        intArrayOf(Color.BLACK, Color.GREEN)
-      )
   }
 }
