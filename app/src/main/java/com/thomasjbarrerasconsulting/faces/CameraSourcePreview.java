@@ -16,16 +16,20 @@
 
 package com.thomasjbarrerasconsulting.faces;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.hardware.Camera;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.ViewGroup;
 import com.google.android.gms.common.images.Size;
 import com.thomasjbarrerasconsulting.faces.preference.PreferenceUtils;
 import java.io.IOException;
+import java.util.List;
 
 /** Preview the camera image in the screen. */
 public class CameraSourcePreview extends ViewGroup {
@@ -36,6 +40,7 @@ public class CameraSourcePreview extends ViewGroup {
   private boolean startRequested;
   private boolean surfaceAvailable;
   private CameraSource cameraSource;
+  private float dist = 0;
 
   private GraphicOverlay overlay;
 
@@ -172,5 +177,79 @@ public class CameraSourcePreview extends ViewGroup {
 
     Log.d(TAG, "isPortraitMode returning false by default");
     return false;
+  }
+
+  @SuppressLint("ClickableViewAccessibility")
+  @Override
+  public boolean onTouchEvent(MotionEvent event) {
+    try {
+      // Get the pointer ID
+      android.hardware.Camera.Parameters params = cameraSource.camera.getParameters();
+      int action = event.getAction();
+
+      if (event.getPointerCount() > 1) {
+        // handle multi-touch events
+        if (action == MotionEvent.ACTION_POINTER_DOWN) {
+          dist = getFingerSpacing(event);
+        } else if (action == MotionEvent.ACTION_MOVE
+                && params.isZoomSupported()) {
+          cameraSource.camera.cancelAutoFocus();
+          handleZoom(event, params);
+        }
+      } else {
+        // handle single touch events
+        if (action == MotionEvent.ACTION_UP) {
+          handleFocus(event, params);
+        }
+      }
+    } catch (Exception ex){
+      Log.d(TAG, ex.getMessage());
+    }
+    return true;
+  }
+
+  private void handleZoom(MotionEvent event, android.hardware.Camera.Parameters params) {
+    try {
+      int maxZoom = params.getMaxZoom();
+      int zoom = params.getZoom();
+      float newDist = getFingerSpacing(event);
+      if (newDist > dist) {
+        // zoom in
+        if (zoom < maxZoom)
+          zoom++;
+      } else if (newDist < dist) {
+        // zoom out
+        if (zoom > 0)
+          zoom--;
+      }
+      dist = newDist;
+      params.setZoom(zoom);
+      cameraSource.camera.setParameters(params);
+    } catch (Exception ex){
+      Log.d(TAG, ex.getMessage());
+    }
+  }
+
+  public void handleFocus(MotionEvent event, android.hardware.Camera.Parameters params) {
+    try {
+      List<String> supportedFocusModes = params.getSupportedFocusModes();
+      if (supportedFocusModes != null
+              && supportedFocusModes
+              .contains(android.hardware.Camera.Parameters.FOCUS_MODE_AUTO)) {
+        cameraSource.camera.autoFocus((b, camera) -> {
+          // currently set to auto-focus on single touch
+        });
+      }
+    } catch (Exception ex){
+      Log.d(TAG, ex.getMessage());
+    }
+  }
+
+  /** Determine the space between the first two fingers */
+  private float getFingerSpacing(MotionEvent event) {
+    // ...
+    float x = event.getX(0) - event.getX(1);
+    float y = event.getY(0) - event.getY(1);
+    return (float)Math.sqrt(x * x + y * y);
   }
 }

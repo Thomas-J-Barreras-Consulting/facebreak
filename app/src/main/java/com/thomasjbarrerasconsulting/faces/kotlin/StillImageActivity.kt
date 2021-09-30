@@ -20,13 +20,11 @@ import android.app.Activity
 import android.content.ContentValues
 import android.content.Intent
 import android.content.res.Configuration
-import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import androidx.appcompat.app.AppCompatActivity
 import android.util.Log
-import android.util.Pair
 import android.view.*
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
@@ -46,7 +44,6 @@ import com.thomasjbarrerasconsulting.faces.kotlin.facedetector.FaceDetectorProce
 import com.thomasjbarrerasconsulting.faces.preference.SettingsActivity
 import com.thomasjbarrerasconsulting.faces.preference.SettingsActivity.LaunchSource
 import java.io.IOException
-import java.util.ArrayList
 import kotlin.math.max
 import kotlin.math.min
 import android.view.ScaleGestureDetector
@@ -58,7 +55,6 @@ import com.thomasjbarrerasconsulting.faces.kotlin.facedetector.BitmapScaler
 class StillImageActivity : AppCompatActivity() {
   private var preview: ImageView? = null
   private var graphicOverlay: GraphicOverlay? = null
-//  private var selectedSize: String? = SIZE_SCREEN
   private var isLandScape = false
   private var imageUri: Uri? = null
   // Max width (portrait mode)
@@ -118,13 +114,11 @@ class StillImageActivity : AppCompatActivity() {
     scaleGestureDetector = ScaleGestureDetector(this, ScaleListener())
 
     populateFeatureSelector()
-//    populateSizeSelector()
     isLandScape = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
     if (savedInstanceState != null) {
       imageUri = savedInstanceState.getParcelable(KEY_IMAGE_URI)
       imageMaxWidth = savedInstanceState.getInt(KEY_IMAGE_MAX_WIDTH)
       imageMaxHeight = savedInstanceState.getInt(KEY_IMAGE_MAX_HEIGHT)
-//      selectedSize = savedInstanceState.getString(KEY_SELECTED_SIZE)
     }
 
     val rootView = binding.root
@@ -134,9 +128,7 @@ class StillImageActivity : AppCompatActivity() {
           rootView.viewTreeObserver.removeOnGlobalLayoutListener(this)
           imageMaxWidth = rootView.width
           imageMaxHeight = rootView.height - binding.control.height
-//          if (SIZE_SCREEN == selectedSize) {
-            tryReloadAndDetectInImage()
-//          }
+          tryReloadAndDetectInImage()
         }
       })
 
@@ -206,37 +198,6 @@ class StillImageActivity : AppCompatActivity() {
     }
   }
 
-//  private fun populateSizeSelector() {
-//    val sizeSpinner = binding.sizeSelector
-//    val options: MutableList<String> = ArrayList()
-//    options.add(SIZE_SCREEN)
-//    options.add(SIZE_1024_768)
-//    options.add(SIZE_640_480)
-//    options.add(SIZE_ORIGINAL)
-//    // Creating adapter for featureSpinner
-//    val dataAdapter =
-//      ArrayAdapter(this, R.layout.spinner_style, options)
-//    // Drop down layout style - list view with radio button
-//    dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-//    // attaching data adapter to spinner
-//    sizeSpinner.adapter = dataAdapter
-//    sizeSpinner.onItemSelectedListener = object : OnItemSelectedListener {
-//      override fun onItemSelected(
-//        parentView: AdapterView<*>,
-//        selectedItemView: View?,
-//        pos: Int,
-//        id: Long
-//      ) {
-//        if (pos >= 0) {
-//          selectedSize = parentView.getItemAtPosition(pos).toString()
-//          tryReloadAndDetectInImage()
-//        }
-//      }
-//
-//      override fun onNothingSelected(arg0: AdapterView<*>?) {}
-//    }
-//  }
-
   public override fun onSaveInstanceState(outState: Bundle) {
     super.onSaveInstanceState(outState)
     outState.putParcelable(
@@ -251,10 +212,6 @@ class StillImageActivity : AppCompatActivity() {
       KEY_IMAGE_MAX_HEIGHT,
       imageMaxHeight
     )
-//    outState.putString(
-//      KEY_SELECTED_SIZE,
-//      selectedSize
-//    )
   }
 
   override fun onTouchEvent(event: MotionEvent?): Boolean {
@@ -294,7 +251,6 @@ class StillImageActivity : AppCompatActivity() {
         return
       }
 
-//      if (SIZE_SCREEN == selectedSize && imageMaxWidth == 0) {
       if (imageMaxWidth == 0) {
         // UI layout has not finished yet, will reload once it's ready.  TODO
         return
@@ -362,13 +318,8 @@ class StillImageActivity : AppCompatActivity() {
   companion object {
     private const val TAG = "StillImageActivity"
 
-    private const val SIZE_SCREEN = "w:screen" // Match screen width
-    private const val SIZE_1024_768 = "w:1024" // ~1024*768 in a normal ratio
-    private const val SIZE_640_480 = "w:640" // ~640*480 in a normal ratio
-    private const val SIZE_ORIGINAL = "w:original" // Original image size
     private const val KEY_IMAGE_URI = "com.thomasjbarrerasconsulting.faces.KEY_IMAGE_URI"
     private const val KEY_IMAGE_MAX_WIDTH = "com.thomasjbarrerasconsulting.faces.KEY_IMAGE_MAX_WIDTH"
     private const val KEY_IMAGE_MAX_HEIGHT = "com.thomasjbarrerasconsulting.faces.KEY_IMAGE_MAX_HEIGHT"
-    private const val KEY_SELECTED_SIZE = "com.thomasjbarrerasconsulting.faces.KEY_SELECTED_SIZE"
   }
 }

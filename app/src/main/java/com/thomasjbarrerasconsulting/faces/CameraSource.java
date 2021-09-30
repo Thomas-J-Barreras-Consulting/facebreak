@@ -71,7 +71,7 @@ public class CameraSource {
 
   protected Activity activity;
 
-  private Camera camera;
+  public Camera camera;
 
   private int facing = CAMERA_FACING_BACK;
 

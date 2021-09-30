@@ -184,6 +184,7 @@ class LivePreviewActivity :
         if (graphicOverlay == null) {
           Log.d(TAG, "resume: graphOverlay is null")
         }
+
         preview!!.start(cameraSource, graphicOverlay)
       } catch (e: IOException) {
         Log.e(TAG, "Unable to start camera source.", e)
