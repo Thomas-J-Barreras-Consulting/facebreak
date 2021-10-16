@@ -20,6 +20,8 @@ import android.app.Activity
 import android.content.ContentValues
 import android.content.Intent
 import android.content.res.Configuration
+import android.graphics.*
+import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -65,8 +67,10 @@ class StillImageActivity : AppCompatActivity() {
   private lateinit var binding: ActivityStillImageBinding
   private var localImageResultLauncher: ActivityResultLauncher<Intent>? = null
   private var imageFromPhotoResultLauncher: ActivityResultLauncher<Intent>? = null
-  private var scaleGestureDetector: ScaleGestureDetector? = null
+  private lateinit var scaleGestureDetector: ScaleGestureDetector
+  private lateinit var panGestureDetector: GestureDetector
   private var scaleFactor: Float = 1.0f
+  private var scrolling: Boolean = false
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -112,7 +116,7 @@ class StillImageActivity : AppCompatActivity() {
     graphicOverlay = binding.graphicOverlay
 
     scaleGestureDetector = ScaleGestureDetector(this, ScaleListener())
-
+    panGestureDetector = GestureDetector(this, PanListener())
     populateFeatureSelector()
     isLandScape = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
     if (savedInstanceState != null) {
@@ -190,7 +194,7 @@ class StillImageActivity : AppCompatActivity() {
           Log.d(TAG, "Selected classifier: $selectedClassifier")
 
           createImageProcessor()
-          tryReloadAndDetectInImage()
+          processImage(getBitmapOfDisplayedImage())
         }
       }
 
@@ -215,8 +219,40 @@ class StillImageActivity : AppCompatActivity() {
   }
 
   override fun onTouchEvent(event: MotionEvent?): Boolean {
-    scaleGestureDetector!!.onTouchEvent(event)
+//    println("onTouchEvent ${event}")
+    scaleGestureDetector.onTouchEvent(event)
+    panGestureDetector.onTouchEvent(event)
+
+    if (scrolling && (event!!.action == MotionEvent.ACTION_UP)) {
+      scrolling = false
+      processImage(getBitmapOfDisplayedImage())
+    }
     return true
+  }
+
+  private fun getBitmapOfDisplayedImage(): Bitmap? {
+    // Still loading the view
+    if (preview!!.drawable == null){
+      return null
+    }
+    val drawable = preview!!.drawable as BitmapDrawable
+    val scaledWidth = (scaleFactor * drawable.intrinsicWidth).toInt()
+    val scaledHeight = (scaleFactor * drawable.intrinsicHeight).toInt()
+    val bitmap = Bitmap.createScaledBitmap(drawable.bitmap, scaledWidth, scaledHeight, true)
+    val scaledAndPositioned = Bitmap.createBitmap(
+      drawable.intrinsicWidth + 2 * preview!!.left,
+      drawable.intrinsicHeight + 2 * preview!!.top,
+      bitmap.config
+    )
+    val canvas = Canvas(scaledAndPositioned)
+    //      canvas.drawColor(Color.RED)
+    canvas.drawBitmap(
+      bitmap,
+      preview!!.x + (drawable.intrinsicWidth - scaledWidth) / 2,
+      preview!!.y + (drawable.intrinsicHeight - scaledHeight) / 2,
+      null
+    )
+    return scaledAndPositioned
   }
 
   private fun startCameraIntentForResult() { // Clean up last time's image
@@ -258,30 +294,45 @@ class StillImageActivity : AppCompatActivity() {
 
       val imageBitmap = BitmapUtils.getBitmapFromContentUri(contentResolver, imageUri)?: return
 
-      // Clear the overlay first
-      graphicOverlay!!.clear()
+      scaleFactor = 1.0f
+
+      preview!!.scaleX = 1.0f
+      preview!!.scaleY = 1.0f
+      preview!!.x = preview!!.left.toFloat()
+      preview!!.y = preview!!.top.toFloat()
 
       val scaledBitmap = BitmapScaler.scaleBitmap(imageBitmap, scaleFactor, imageMaxWidth, imageMaxHeight)
 
       preview!!.setImageBitmap(scaledBitmap)
-      if (imageProcessor != null) {
-        graphicOverlay!!.setImageSourceInfo(
-          scaledBitmap.width, scaledBitmap.height, /* isFlipped= */false
-        )
-        imageProcessor!!.scale = scaleFactor
-        imageProcessor!!.processBitmap(scaledBitmap, graphicOverlay!!)
-      } else {
-        Log.e(
-          TAG,
-          "Null imageProcessor, please check adb logs for imageProcessor creation error"
-        )
-      }
+
+      processImage(scaledBitmap)
+
     } catch (e: IOException) {
       Log.e(
         TAG,
         "Error retrieving saved image"
       )
       imageUri = null
+    }
+  }
+
+  private fun processImage(scaledBitmap: Bitmap?) {
+    if (scaledBitmap == null){
+      return
+    }
+    graphicOverlay!!.clear()
+
+    if (imageProcessor != null) {
+        graphicOverlay!!.setImageSourceInfo(
+          scaledBitmap.width, scaledBitmap.height, /* isFlipped= */false
+      )
+//      imageProcessor!!.scale = scaleFactor
+      imageProcessor!!.processBitmap(scaledBitmap, graphicOverlay!!)
+    } else {
+      Log.e(
+        TAG,
+        "Null imageProcessor, please check adb logs for imageProcessor creation error"
+      )
     }
   }
 
@@ -304,15 +355,38 @@ class StillImageActivity : AppCompatActivity() {
     }
   }
 
+  private inner class PanListener: GestureDetector.SimpleOnGestureListener(){
+
+    override fun onScroll(e1: MotionEvent?, e2: MotionEvent?, distanceX: Float, distanceY: Float): Boolean {
+//      println("onScroll (${distanceX}, ${distanceY})")
+
+      preview!!.x -= distanceX
+      preview!!.y -= distanceY
+
+      scrolling = true
+
+      return false
+    }
+  }
+
   private inner class ScaleListener: ScaleGestureDetector.SimpleOnScaleGestureListener() {
 
     override fun onScale(detector: ScaleGestureDetector?): Boolean {
-      scaleFactor = scaleGestureDetector!!.scaleFactor
-      scaleFactor = max(0.1f, min(scaleFactor, 10.0f))
-      tryReloadAndDetectInImage()
-      return true
-    }
+      val newScaleFactor = if (scaleGestureDetector.scaleFactor < 1){
+        1.0f - 0.1f * (1.0f - scaleGestureDetector.scaleFactor)
+      } else {
+        1.0f + 0.1f * (scaleGestureDetector.scaleFactor - 1.0f)
+      }
 
+      scaleFactor *= newScaleFactor
+      scaleFactor = max(0.1f, min(scaleFactor, 10.0f))
+      preview!!.scaleX = scaleFactor
+      preview!!.scaleY = scaleFactor
+
+//      println("onScale ${scaleFactor}")
+
+      return false
+    }
   }
 
   companion object {

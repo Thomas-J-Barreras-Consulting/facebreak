@@ -74,7 +74,7 @@ class FaceClassifierProcessor(private val context: Context) {
                     characterModel.close()
                 }
                 DETECT_ANCESTRY -> {
-                    val ancestryModel = AncestryModel.newInstance(context)
+                    val ancestryModel = AncestryModel4.newInstance(context)
                     classifications.addAll(extractClassifications(classificationTracker.merge(ancestryModel.process(tensorImage).probabilityAsCategoryList).apply { sortByDescending { it.score } }.take(6).filter { it.score >= 0.05 }))
                     ancestryModel.close()
                 }
