@@ -156,6 +156,7 @@ class StillImageActivity : AppCompatActivity() {
     super.onResume()
     Log.d(TAG, "onResume")
     createImageProcessor()
+    binding.featureSelector.setSelection(Settings.selectedClassifier)
     tryReloadAndDetectInImage()
   }
 
@@ -181,6 +182,7 @@ class StillImageActivity : AppCompatActivity() {
     dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
     // attaching data adapter to spinner
     featureSpinner.adapter = dataAdapter
+    featureSpinner.setSelection(Settings.selectedClassifier)
     featureSpinner.onItemSelectedListener = object : OnItemSelectedListener {
       override fun onItemSelected(
         parentView: AdapterView<*>,
@@ -189,6 +191,7 @@ class StillImageActivity : AppCompatActivity() {
         id: Long
       ) {
         if (pos >= 0) {
+          Settings.selectedClassifier = pos
           val selectedClassifier = parentView.getItemAtPosition(pos).toString()
           FaceClassifierProcessor.classifier = selectedClassifier
           Log.d(TAG, "Selected classifier: $selectedClassifier")

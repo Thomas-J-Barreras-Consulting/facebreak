@@ -38,7 +38,6 @@ import com.thomasjbarrerasconsulting.faces.CameraSource
 import com.thomasjbarrerasconsulting.faces.CameraSourcePreview
 import com.thomasjbarrerasconsulting.faces.GraphicOverlay
 import com.thomasjbarrerasconsulting.faces.R
-import com.thomasjbarrerasconsulting.faces.databinding.ActivityVisionLivePreviewBinding
 import com.thomasjbarrerasconsulting.faces.kotlin.facedetector.FaceClassifierProcessor
 import com.thomasjbarrerasconsulting.faces.kotlin.facedetector.FaceDetectorProcessor
 import com.thomasjbarrerasconsulting.faces.preference.PreferenceUtils
@@ -49,8 +48,8 @@ import java.util.ArrayList
 import android.media.ToneGenerator
 
 import android.media.AudioManager
-
-
+import android.os.PersistableBundle
+import com.thomasjbarrerasconsulting.faces.databinding.ActivityVisionLivePreviewBinding
 
 
 /** Live preview demo for ML Kit APIs.  */
@@ -77,8 +76,8 @@ class LivePreviewActivity :
       val view = binding.root
       graphicOverlay = binding.graphicOverlay
       preview = binding.previewLiveView
-
       setContentView(view)
+
       val launchStillImageAndUseCameraButton = binding.launchStillImageAndUseCamera
       launchStillImageAndUseCameraButton!!.setOnClickListener {
         val intent = Intent(this, StillImageActivity::class.java)
@@ -108,9 +107,11 @@ class LivePreviewActivity :
       dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
       // attaching data adapter to spinner
       spinner.adapter = dataAdapter
+      spinner.setSelection(Settings.selectedClassifier)
       spinner.onItemSelectedListener = this
 
       val facingSwitch = binding.facingSwitch
+      facingSwitch.isChecked = Settings.cameraFacing == CameraSource.CAMERA_FACING_FRONT
       facingSwitch.setOnCheckedChangeListener(this)
 
       val settingsButton = binding.settingsImageView?.settingsImageView
@@ -147,6 +148,7 @@ class LivePreviewActivity :
     // An item was selected. You can retrieve the selected item using
     // parent.getItemAtPosition(pos)
     val selectedClassifier = parent?.getItemAtPosition(pos).toString()
+    Settings.selectedClassifier = pos
     FaceClassifierProcessor.classifier = selectedClassifier
     Log.d(TAG, "Selected classifier: $selectedClassifier")
 //    preview?.stop()
@@ -164,13 +166,13 @@ class LivePreviewActivity :
 
   override fun onCheckedChanged(buttonView: CompoundButton, isChecked: Boolean) {
     Log.d(TAG, "Set facing")
-    if (cameraSource != null) {
-      if (isChecked) {
-        cameraSource?.setFacing(CameraSource.CAMERA_FACING_FRONT)
-      } else {
-        cameraSource?.setFacing(CameraSource.CAMERA_FACING_BACK)
-      }
+    Settings.cameraFacing = if (isChecked) {
+      CameraSource.CAMERA_FACING_FRONT
+    } else {
+      CameraSource.CAMERA_FACING_BACK
     }
+
+    cameraSource?.setFacing(Settings.cameraFacing)
     preview?.stop()
     startCameraSource()
   }
@@ -179,7 +181,7 @@ class LivePreviewActivity :
     // If there's no existing cameraSource, create one.
     if (cameraSource == null) {
       cameraSource = CameraSource(this, graphicOverlay)
-      cameraSource?.setFacing(CameraSource.CAMERA_FACING_FRONT)
+      cameraSource?.setFacing(Settings.cameraFacing)
     }
     try {
       when (model) {
@@ -223,6 +225,7 @@ class LivePreviewActivity :
     Log.d(TAG, "onResume")
     createCameraSource(selectedModel)
     startCameraSource()
+    binding.spinner.setSelection(Settings.selectedClassifier)
   }
 
   /** Stops the camera.  */
@@ -250,8 +253,14 @@ class LivePreviewActivity :
     super.onRequestPermissionsResult(requestCode, permissions, grantResults)
   }
 
+//  override fun onSaveInstanceState(outState: Bundle) {
+//    outState.putInt(SETTING_CAMERA_FACING_FRONT, cameraFacing)
+//    super.onSaveInstanceState(outState)
+//  }
+
   companion object {
     private const val FACE_DETECTION = "Face Detection"
     private const val TAG = "LivePreviewActivity"
+    private const val SETTING_CAMERA_FACING_FRONT = "cameraFacingFront"
   }
 }
