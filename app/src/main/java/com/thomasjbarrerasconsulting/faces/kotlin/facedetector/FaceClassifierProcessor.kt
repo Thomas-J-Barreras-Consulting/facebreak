@@ -69,8 +69,13 @@ class FaceClassifierProcessor(private val context: Context) {
                     featuresModel.close()
                 }
                 DETECT_CHARACTER -> {
-                    val characterModel = CharacterModel2.newInstance(context)
-                    classifications.addAll(extractClassifications(classificationTracker.merge(characterModel.process(tensorImage).probabilityAsCategoryList).apply { sortByDescending { it.score } }.filter { it.score >= 0.01 }))
+                    val characterModel = CharacterModel3.newInstance(context)
+                    classifications.addAll(CharacterClassifierProcessor.extractCharacterClassification(classificationTracker.merge(characterModel.process(tensorImage).probabilityAsCategoryList).apply { sortByDescending { it.score } }.filter { it.score >= 0.01 }))
+                    characterModel.close()
+                }
+                DETECT_CHARACTER_FLAWS -> {
+                    val characterModel = CharacterFlawsModel3.newInstance(context)
+                    classifications.addAll(CharacterFlawsClassifierProcessor.extractCharacterFlawsClassification(classificationTracker.merge(characterModel.process(tensorImage).probabilityAsCategoryList).apply { sortByDescending { it.score } }.filter { it.score >= 0.01 }))
                     characterModel.close()
                 }
                 DETECT_ANCESTRY -> {
@@ -105,25 +110,30 @@ class FaceClassifierProcessor(private val context: Context) {
     }
 
     companion object {
-        const val DETECT_AGE = "Age"
-        const val DETECT_EMOTIONS = "Emotions"
-        const val DETECT_GENDER = "Gender"
-        const val DETECT_FACE_SHAPE = "Face Shape"
-        const val DETECT_FEATURES = "Physical Features"
-        const val DETECT_EYE_COLOR = "Eye Color"
-        const val DETECT_HAIR_COLOR = "Hair Color"
-        const val DETECT_CHARACTER = "Character"
         const val DETECT_ANCESTRY = "Ancestry"
+        const val DETECT_AGE = "Age"
+        const val DETECT_CHARACTER = "Character"
+        const val DETECT_CHARACTER_FLAWS = "Character Flaws"
+        const val DETECT_EMOTIONS = "Emotions"
+        const val DETECT_EYE_COLOR = "Eye Color"
+        const val DETECT_FACE_SHAPE = "Face Shape"
+        const val DETECT_GENDER = "Gender"
+        const val DETECT_HAIR_COLOR = "Hair Color"
+        const val DETECT_FEATURES = "Physical Features"
+
 //        @get:Synchronized @set:Synchronized
         var classifier = DETECT_AGE
-        val allClassifications = listOf(DETECT_GENDER,
-            DETECT_EMOTIONS,
+
+        val allClassifications = listOf(
+            DETECT_ANCESTRY,
             DETECT_AGE,
-            DETECT_EYE_COLOR,
-            DETECT_HAIR_COLOR,
-            DETECT_FACE_SHAPE,
-            DETECT_FEATURES,
             DETECT_CHARACTER,
-            DETECT_ANCESTRY)
+            DETECT_CHARACTER_FLAWS,
+            DETECT_EMOTIONS,
+            DETECT_EYE_COLOR,
+            DETECT_FACE_SHAPE,
+            DETECT_GENDER,
+            DETECT_HAIR_COLOR,
+            DETECT_FEATURES)
     }
 }

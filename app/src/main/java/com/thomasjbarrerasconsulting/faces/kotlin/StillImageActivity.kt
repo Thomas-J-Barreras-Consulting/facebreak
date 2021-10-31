@@ -249,7 +249,7 @@ class StillImageActivity : AppCompatActivity() {
       bitmap.config
     )
     val canvas = Canvas(scaledAndPositioned)
-    //      canvas.drawColor(Color.RED)
+    canvas.drawColor(Color.RED)
     canvas.drawBitmap(
       bitmap,
       preview!!.x + (drawable.intrinsicWidth - scaledWidth) / 2,

@@ -53,6 +53,7 @@ class FaceBoundingBoxExpander {
                     classificationType == FaceClassifierProcessor.DETECT_AGE ||
                     classificationType == FaceClassifierProcessor.DETECT_FEATURES ||
                     classificationType == FaceClassifierProcessor.DETECT_CHARACTER ||
+                    classificationType == FaceClassifierProcessor.DETECT_CHARACTER_FLAWS ||
                     classificationType == FaceClassifierProcessor.DETECT_HAIR_COLOR)
 
             val cropToEyes = classificationType == FaceClassifierProcessor.DETECT_EYE_COLOR
