@@ -13,18 +13,9 @@ class CharacterFlawsClassifierProcessor {
             val totalScore = significantOutputs.map { it!!.score }.sum()
 
             for (output in significantOutputs){
-//                val label = output!!.label.replace("Frightened", "Timid")
-//                    .replace("Know-It-All", "Pompous")
-//                    .replace("Whiny", "Vain")
-//                    .replace("Rowdy", "Wild")
-//                    .replace("Irritable", "Cranky")
-//                    .replace("Flirtatious", "Flirty")
-//                    .replace("Abrasive", "Irritating")
-//                    .replace("Disorganized", "Confused")
-//                    .replace("Cantankerous", "Grumpy")
-//                    .replace("Pretentious", "Proud")
+                val label = output!!.label.replace("Cranky", "Cantankerous")
 
-                classifications.add("${output!!.label} (${percentFormat.format(output.score / totalScore)})")
+                classifications.add("$label (${percentFormat.format(output.score / totalScore)})")
             }
 
             return classifications

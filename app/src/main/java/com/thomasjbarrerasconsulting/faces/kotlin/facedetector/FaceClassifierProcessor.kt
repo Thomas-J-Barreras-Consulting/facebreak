@@ -69,7 +69,7 @@ class FaceClassifierProcessor(private val context: Context) {
                     featuresModel.close()
                 }
                 DETECT_CHARACTER -> {
-                    val characterModel = CharacterModel3.newInstance(context)
+                    val characterModel = CharacterModel4.newInstance(context)
                     classifications.addAll(CharacterClassifierProcessor.extractCharacterClassification(classificationTracker.merge(characterModel.process(tensorImage).probabilityAsCategoryList).apply { sortByDescending { it.score } }.filter { it.score >= 0.01 }))
                     characterModel.close()
                 }

@@ -13,8 +13,8 @@ class CharacterClassifierProcessor {
             val totalScore = significantOutputs.map { it!!.score }.sum()
 
             for (output in significantOutputs){
-
-                classifications.add("${output!!.label} (${percentFormat.format(output.score / totalScore)})")
+                val label = output!!.label.replace("Beautiful", "Classically Beautiful").replace("Naturally Classically Beautiful", "Naturally Beautiful")
+                classifications.add("$label (${percentFormat.format(output.score / totalScore)})")
             }
 
             return classifications

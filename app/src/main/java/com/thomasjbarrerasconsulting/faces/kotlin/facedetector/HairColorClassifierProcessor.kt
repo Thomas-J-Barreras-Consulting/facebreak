@@ -24,7 +24,7 @@ class HairColorClassifierProcessor {
             val oneHundredPercent = NumberFormat.getPercentInstance().format(1.0f)
 
             return when (color.label) {
-                "Black" -> "Dark Black (${oneHundredPercent})"
+                "Black" -> "Pure Black (${oneHundredPercent})"
                 "Blond" -> "True Blond (${oneHundredPercent})"
                 "Brown" -> "Pure Brown (${oneHundredPercent})"
                 "Red" -> "True Red (${oneHundredPercent})"
