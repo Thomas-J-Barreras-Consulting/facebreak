@@ -2,15 +2,11 @@ package com.thomasjbarrerasconsulting.faces.kotlin.facedetector
 
 import android.content.Context
 import android.graphics.Bitmap
-import com.google.mlkit.vision.common.InputImage
-import com.thomasjbarrerasconsulting.faces.BitmapUtils
-import com.thomasjbarrerasconsulting.faces.FrameMetadata
 import com.google.mlkit.vision.face.Face
 import com.thomasjbarrerasconsulting.faces.ml.*
 import org.tensorflow.lite.support.image.TensorImage
 import org.tensorflow.lite.support.label.Category
 import java.text.NumberFormat
-import kotlin.math.round
 
 class FaceClassifierProcessor(private val context: Context) {
     private var classificationTracker: ClassificationTracker = ClassificationTracker(10, "")
@@ -64,9 +60,7 @@ class FaceClassifierProcessor(private val context: Context) {
                     model.close()
                 }
                 DETECT_FEATURES -> {
-                    val featuresModel = FeaturesFaceModel3.newInstance(context)
-                    classifications.addAll(extractClassifications(classificationTracker.merge(featuresModel.process(tensorImage).probabilityAsCategoryList).apply { sortByDescending { it.score } }.filter{it.label != "Clear"}.filter { it.score >= 0.1 }))
-                    featuresModel.close()
+                    classifications.addAll(PhysicalFeatureClassifierProcessor.extractPhysicalFeatureClassifications(tensorImage, context, classificationTracker))
                 }
                 DETECT_CHARACTER -> {
                     val characterModel = CharacterModel4.newInstance(context)
