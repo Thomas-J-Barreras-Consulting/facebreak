@@ -40,8 +40,8 @@ class FaceClassifierProcessor(private val context: Context) {
                     emotionsModel.close()
                 }
                 DETECT_GENDER -> {
-                    val genderModel = GenderModel9000.newInstance(context)
-                    classifications.addAll(extractClassifications(classificationTracker.merge(genderModel.process(tensorImage).probabilityAsCategoryList.apply { sortByDescending { it.score } }.take(2))))
+                    val genderModel = GenderModel2.newInstance(context)
+                    classifications.addAll(extractClassifications(classificationTracker.merge(genderModel.process(tensorImage).probabilityAsCategoryList.apply { sortByDescending { it.score } })))
                     genderModel.close()
                 }
                 DETECT_FACE_SHAPE -> {

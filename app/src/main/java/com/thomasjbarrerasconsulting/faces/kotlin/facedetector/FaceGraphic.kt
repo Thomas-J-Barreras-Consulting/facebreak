@@ -16,10 +16,12 @@
 
 package com.thomasjbarrerasconsulting.faces.kotlin.facedetector
 
+import android.content.Context
 import android.graphics.*
 import com.thomasjbarrerasconsulting.faces.GraphicOverlay
 import com.thomasjbarrerasconsulting.faces.GraphicOverlay.Graphic
 import com.google.mlkit.vision.face.Face
+import com.thomasjbarrerasconsulting.faces.preference.DisplayPreferences
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -29,9 +31,10 @@ import kotlin.math.roundToInt
  * Graphic instance for rendering face position, contour, and landmarks within the associated
  * graphic overlay view.
  */
-class FaceGraphic constructor(overlay: GraphicOverlay?, private val face: Face, private val faceClassifications: List<String>, private val classificationType: String) : Graphic(overlay) {
+class FaceGraphic constructor(context: Context, overlay: GraphicOverlay?, private val face: Face, private val faceClassifications: List<String>, private val classificationType: String) : Graphic(overlay) {
   private val classificationTextPaint: Paint = Paint()
   private val boxPaint: Paint = Paint()
+  private val displayPreferences: DisplayPreferences = DisplayPreferences.getDisplayPreferences(context)
 
   init {
     classificationTextPaint.color = Color.WHITE
@@ -40,7 +43,7 @@ class FaceGraphic constructor(overlay: GraphicOverlay?, private val face: Face, 
 
     boxPaint.color = Color.GREEN
     boxPaint.style = Paint.Style.STROKE
-    boxPaint.strokeWidth = BOX_STROKE_WIDTH
+    boxPaint.strokeWidth = displayPreferences.faceBoxWidth
     boxPaint.pathEffect = CornerPathEffect(10.0f)
     boxPaint.setShadowLayer(5.0f, -5.0f, 5.0f, Color.BLACK)
   }

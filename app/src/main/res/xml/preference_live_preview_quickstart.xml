@@ -3,6 +3,19 @@
   xmlns:android="http://schemas.android.com/apk/res/android"
   android:key="@string/pref_screen">
 
+  <PreferenceCategory android:title="Display">
+
+    <EditTextPreference
+        android:defaultValue="5.0"
+        android:dialogMessage="Thickness of the line used for the box surrounding a face."
+        android:inputType="numberDecimal"
+        android:key="pref_key_live_preview_face_box_line_width"
+        android:numeric="decimal"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:summary="Thickness of the line used for the box surrounding a face"
+        android:title="Face box line width" />
+  </PreferenceCategory>
   <PreferenceCategory
       android:enabled="true"
       android:key="@string/pref_category_key_camera"
