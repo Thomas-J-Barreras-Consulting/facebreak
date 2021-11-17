@@ -36,16 +36,7 @@ import java.util.List;
 import java.util.Map;
 
 /** Configures live preview demo settings. */
-public class LivePreviewPreferenceFragment extends PreferenceFragment {
-
-//  private PreferenceLivePreviewQuickstartBinding binding;
-//
-//  @Override
-//  public View onCreateView(LayoutInflater inflater,
-//                           ViewGroup container,
-//                           Bundle savedInstanceState){
-//    binding = PreferenceLivePreviewQuickstartBinding.inflate(inflater, container, false);
-//  }
+public class FaceClassifierPreferenceFragment extends android.preference.PreferenceFragment {
 
   @Override
   public void onCreate(Bundle savedInstanceState) {

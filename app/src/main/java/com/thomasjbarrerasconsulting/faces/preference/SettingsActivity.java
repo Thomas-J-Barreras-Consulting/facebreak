@@ -17,7 +17,6 @@
 package com.thomasjbarrerasconsulting.faces.preference;
 
 import android.os.Bundle;
-import android.preference.PreferenceFragment;
 import android.view.View;
 
 import androidx.appcompat.app.ActionBar;
@@ -35,13 +34,13 @@ public class SettingsActivity extends AppCompatActivity {
 
   /** Specifies where this activity is launched from. */
   public enum LaunchSource {
-    LIVE_PREVIEW(R.string.pref_screen_title_live_preview, LivePreviewPreferenceFragment.class),
-    STILL_IMAGE(R.string.pref_screen_title_still_image, StillImagePreferenceFragment.class);
+    LIVE_PREVIEW(R.string.pref_screen_title_live_preview, FaceClassifierPreferenceFragment.class),
+    STILL_IMAGE(R.string.pref_screen_title_still_image, FaceClassifierPreferenceFragment.class);
 
     private final int titleResId;
-    private final Class<? extends PreferenceFragment> prefFragmentClass;
+    private final Class<? extends android.preference.PreferenceFragment> prefFragmentClass;
 
-    LaunchSource(int titleResId, Class<? extends PreferenceFragment> prefFragmentClass) {
+    LaunchSource(int titleResId, Class<? extends android.preference.PreferenceFragment> prefFragmentClass) {
       this.titleResId = titleResId;
       this.prefFragmentClass = prefFragmentClass;
     }
