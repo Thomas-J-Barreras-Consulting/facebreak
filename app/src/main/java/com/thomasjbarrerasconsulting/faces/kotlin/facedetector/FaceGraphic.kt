@@ -37,11 +37,11 @@ class FaceGraphic constructor(context: Context, overlay: GraphicOverlay?, privat
   private val displayPreferences: DisplayPreferences = DisplayPreferences.getDisplayPreferences(context)
 
   init {
-    classificationTextPaint.color = Color.WHITE
+    classificationTextPaint.color = displayPreferences.classifierTextColor
     classificationTextPaint.textSize = FACE_CLASSIFICATION_TEXT_SIZE_LARGE
     classificationTextPaint.setShadowLayer(5.0f, -5.0f, 5.0f, Color.BLACK)
 
-    boxPaint.color = Color.GREEN
+    boxPaint.color = displayPreferences.faceBoxColor
     boxPaint.style = Paint.Style.STROKE
     boxPaint.strokeWidth = displayPreferences.faceBoxWidth
     boxPaint.pathEffect = CornerPathEffect(10.0f)
@@ -65,9 +65,9 @@ class FaceGraphic constructor(context: Context, overlay: GraphicOverlay?, privat
 
     canvas.drawRect(expandedRectF, boxPaint)
     if (3.0f * FACE_CLASSIFICATION_TEXT_SIZE_LARGE * faceClassifications.count().toFloat() < canvas.height.toFloat()){
-      classificationTextPaint.textSize = FACE_CLASSIFICATION_TEXT_SIZE_LARGE
+      classificationTextPaint.textSize = FACE_CLASSIFICATION_TEXT_SIZE_LARGE * displayPreferences.classifierTextSize
     } else {
-      classificationTextPaint.textSize = FACE_CLASSIFICATION_TEXT_SIZE_SMALL
+      classificationTextPaint.textSize = FACE_CLASSIFICATION_TEXT_SIZE_SMALL * displayPreferences.classifierTextSize
     }
     val sentences = mutableListOf<String>()
     for (classification in faceClassifications) {

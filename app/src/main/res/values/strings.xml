@@ -54,6 +54,26 @@
     <string name="pref_key_live_preview_object_detector_enable_classification" translatable="false">lpodec</string>
     <string name="pref_key_still_image_object_detector_enable_classification" translatable="false">siodec</string>
 
+    <!-- Strings for color preference. -->
+    <string name="pref_entry_values_color_red" translatable="false">Red</string>
+    <string name="pref_entry_values_color_green" translatable="false">Green</string>
+    <string name="pref_entry_values_color_blue" translatable="false">Blue</string>
+    <string name="pref_entry_values_color_yellow" translatable="false">Yellow</string>
+    <string name="pref_entry_values_color_black" translatable="false">Black</string>
+    <string name="pref_entry_values_color_white" translatable="false">White</string>
+    <string name="pref_entry_values_color_dark_gray" translatable="false">Dark Gray</string>
+    <string name="pref_entry_values_color_light_gray" translatable="false">Light Gray</string>
+    <string name="pref_entry_values_color_cyan" translatable="false">Cyan</string>
+    <string name="pref_entry_values_color_magenta" translatable="false">Magenta</string>
+    <string name="pref_entry_values_color_transparent" translatable="false">Transparent</string>
+
+    <!-- Strings for size preference. -->
+    <string name="pref_entry_values_size_very_large" translatable="false">Very Large</string>
+    <string name="pref_entry_values_size_large" translatable="false">Large</string>
+    <string name="pref_entry_values_size_medium" translatable="false">Medium</string>
+    <string name="pref_entry_values_size_small" translatable="false">Small</string>
+    <string name="pref_entry_values_size_very_small" translatable="false">Very Small</string>
+
     <!-- Strings for face detector landmark mode preference. -->
     <string name="pref_title_face_detector_landmark_mode" translatable="false">Landmark mode</string>
     <string name="pref_key_live_preview_face_detection_landmark_mode" translatable="false">lpfdlm</string>

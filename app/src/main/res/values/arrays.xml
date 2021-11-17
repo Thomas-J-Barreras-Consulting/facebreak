@@ -6,6 +6,42 @@
     <item>@string/pref_entries_face_detector_landmark_mode_all_landmarks</item>
   </string-array>
 
+  <string-array name="pref_entry_values_face_box_line_color">
+    <item>@string/pref_entry_values_color_red</item>
+    <item>@string/pref_entry_values_color_green</item>
+    <item>@string/pref_entry_values_color_blue</item>
+    <item>@string/pref_entry_values_color_yellow</item>
+    <item>@string/pref_entry_values_color_black</item>
+    <item>@string/pref_entry_values_color_white</item>
+    <item>@string/pref_entry_values_color_dark_gray</item>
+    <item>@string/pref_entry_values_color_light_gray</item>
+    <item>@string/pref_entry_values_color_cyan</item>
+    <item>@string/pref_entry_values_color_magenta</item>
+    <item>@string/pref_entry_values_color_transparent</item>
+  </string-array>
+
+  <string-array name="pref_entry_values_classifier_text_color">
+    <item>@string/pref_entry_values_color_red</item>
+    <item>@string/pref_entry_values_color_green</item>
+    <item>@string/pref_entry_values_color_blue</item>
+    <item>@string/pref_entry_values_color_yellow</item>
+    <item>@string/pref_entry_values_color_black</item>
+    <item>@string/pref_entry_values_color_white</item>
+    <item>@string/pref_entry_values_color_dark_gray</item>
+    <item>@string/pref_entry_values_color_light_gray</item>
+    <item>@string/pref_entry_values_color_cyan</item>
+    <item>@string/pref_entry_values_color_magenta</item>
+    <item>@string/pref_entry_values_color_transparent</item>
+  </string-array>
+
+  <string-array name="pref_entry_values_classifier_text_size">
+    <item>@string/pref_entry_values_size_very_large</item>
+    <item>@string/pref_entry_values_size_large</item>
+    <item>@string/pref_entry_values_size_medium</item>
+    <item>@string/pref_entry_values_size_small</item>
+    <item>@string/pref_entry_values_size_very_small</item>
+  </string-array>
+
   <string-array name="pref_entry_values_face_detector_landmark_mode">
     <item>@string/pref_entry_values_face_detector_landmark_mode_no_landmarks</item>
     <item>@string/pref_entry_values_face_detector_landmark_mode_all_landmarks</item>

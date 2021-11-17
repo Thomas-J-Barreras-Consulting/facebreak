@@ -1,17 +1,24 @@
 package com.thomasjbarrerasconsulting.faces.preference
 
 import android.content.Context
-import android.content.SharedPreferences
+import android.graphics.Color
 import android.preference.PreferenceManager
-import com.thomasjbarrerasconsulting.faces.R
 
 class DisplayPreferences {
     var faceBoxWidth: Float = FACE_BOX_STROKE_DEFAULT_WIDTH
+    var faceBoxColor: Int = FACE_BOX_DEFAULT_COLOR
+    var classifierTextColor: Int = CLASSIFIER_TEXT_DEFAULT_COLOR
+    var classifierTextSize: Float = SIZE_MEDIUM
 
     companion object {
-        private const val FACE_CLASSIFICATION_TEXT_SIZE_LARGE = 60.0f
-        private const val FACE_CLASSIFICATION_TEXT_SIZE_SMALL = 50.0f
+        private const val SIZE_VERY_LARGE = 1.5f
+        private const val SIZE_LARGE = 1.25f
+        private const val SIZE_MEDIUM = 1.0f
+        private const val SIZE_SMALL = 0.75f
+        private const val SIZE_VERY_SMALL = 0.5f
         private const val FACE_BOX_STROKE_DEFAULT_WIDTH = 5.0f
+        private const val FACE_BOX_DEFAULT_COLOR = Color.GREEN
+        private const val CLASSIFIER_TEXT_DEFAULT_COLOR = Color.WHITE
 
         private fun readFloat(prefKey: String, default:Float, context:Context):Float{
             // TODO: Take care of this
@@ -23,14 +30,56 @@ class DisplayPreferences {
             return default
         }
 
+        private fun readSize(prefKey: String, default:Float, context:Context):Float{
+            // TODO: Take care of this
+            val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+            val prefValueString = sharedPreferences.getString(prefKey, default.toString())
+            if (prefValueString != null) {
+                when (prefValueString) {
+                    "Very Large" -> return SIZE_VERY_LARGE
+                    "Large" -> return SIZE_LARGE
+                    "Medium" -> return SIZE_MEDIUM
+                    "Small" -> return SIZE_SMALL
+                    "Very Small" -> return SIZE_VERY_SMALL
+                }
+            }
+            return default
+        }
+
+        private fun readColor(prefKey: String, default:Int, context:Context): Int {
+            // TODO: Take care of this
+            val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+            val prefValueString = sharedPreferences.getString(prefKey, default.toString())
+            if (prefValueString != null) {
+                when (prefValueString) {
+                    "Red" -> return Color.RED
+                    "Green" -> return Color.GREEN
+                    "Blue" -> return Color.BLUE
+                    "Yellow" -> return Color.YELLOW
+                    "Black" -> return Color.BLACK
+                    "White" -> return Color.WHITE
+                    "Dark Gray" -> return Color.DKGRAY
+                    "Light Gray" -> return Color.LTGRAY
+                    "Cyan" -> return Color.CYAN
+                    "Magenta" -> return Color.MAGENTA
+                    "Transparent" -> return Color.TRANSPARENT
+                }
+            }
+            return default
+        }
+
         fun getDisplayPreferences(context: Context):DisplayPreferences{
             val preferences = DisplayPreferences()
 
 //            val prefKey: String = context.getString(R.string.pref_key_info_hide)
 
-            preferences.faceBoxWidth = readFloat("pref_key_live_preview_face_box_line_width", FACE_BOX_STROKE_DEFAULT_WIDTH, context)
+            preferences.faceBoxWidth = readFloat("pref_key_face_box_line_width", FACE_BOX_STROKE_DEFAULT_WIDTH, context)
+            preferences.faceBoxColor = readColor("pref_key_face_box_line_color", FACE_BOX_DEFAULT_COLOR, context)
+            preferences.classifierTextColor = readColor("pref_key_classifier_text_color", CLASSIFIER_TEXT_DEFAULT_COLOR, context)
+            preferences.classifierTextSize = readSize("pref_key_classifier_text_size", SIZE_MEDIUM, context)
 
             return preferences
         }
+
     }
 }
