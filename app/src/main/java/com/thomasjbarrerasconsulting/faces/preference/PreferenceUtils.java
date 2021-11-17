@@ -45,11 +45,7 @@ public class PreferenceUtils {
 
     SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
 
-    float minFaceSize =
-        Float.parseFloat(
-            sharedPreferences.getString(
-                context.getString(R.string.pref_key_live_preview_face_detection_min_face_size),
-                "0.1"));
+    float minFaceSize = 0.1f;
 
     FaceDetectorOptions.Builder optionsBuilder =
         new FaceDetectorOptions.Builder()

@@ -55,12 +55,6 @@
         android:persistent="true"
         android:title="@string/pref_title_face_detector_performance_mode"/>
 
-    <EditTextPreference
-        android:defaultValue="0.1"
-        android:dialogMessage="@string/pref_dialog_message_face_detector_min_face_size"
-        android:key="@string/pref_key_live_preview_face_detection_min_face_size"
-        android:persistent="true"
-        android:title="@string/pref_title_face_detector_min_face_size"/>
   </PreferenceCategory>
 
 </PreferenceScreen>
