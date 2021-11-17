@@ -36,9 +36,6 @@ public class FaceClassifierPreferenceFragment extends android.preference.Prefere
   }
 
   private void setUpFaceDetectionPreferences() {
-    setUpListPreference(R.string.pref_key_live_preview_face_detection_landmark_mode);
-    setUpListPreference(R.string.pref_key_live_preview_face_detection_contour_mode);
-    setUpListPreference(R.string.pref_key_live_preview_face_detection_classification_mode);
     setUpListPreference(R.string.pref_key_live_preview_face_detection_performance_mode);
 
     EditTextPreference minFaceSizePreference =

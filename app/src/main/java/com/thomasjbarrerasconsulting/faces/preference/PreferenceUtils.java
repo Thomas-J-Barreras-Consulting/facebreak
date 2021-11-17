@@ -36,29 +36,7 @@ import com.google.mlkit.vision.objects.defaults.ObjectDetectorOptions;
 
 /** Utility class to retrieve shared preferences. */
 public class PreferenceUtils {
-  static void saveString(Context context, @StringRes int prefKeyId, @Nullable String value) {
-    PreferenceManager.getDefaultSharedPreferences(context)
-        .edit()
-        .putString(context.getString(prefKeyId), value)
-        .apply();
-  }
-
   public static FaceDetectorOptions getFaceDetectorOptionsForLivePreview(Context context) {
-    int landmarkMode =
-        getModeTypePreferenceValue(
-            context,
-            R.string.pref_key_live_preview_face_detection_landmark_mode,
-            FaceDetectorOptions.LANDMARK_MODE_NONE);
-    int contourMode =
-        getModeTypePreferenceValue(
-            context,
-            R.string.pref_key_live_preview_face_detection_contour_mode,
-            FaceDetectorOptions.CONTOUR_MODE_ALL);
-    int classificationMode =
-        getModeTypePreferenceValue(
-            context,
-            R.string.pref_key_live_preview_face_detection_classification_mode,
-            FaceDetectorOptions.CLASSIFICATION_MODE_NONE);
     int performanceMode =
         getModeTypePreferenceValue(
             context,
@@ -66,9 +44,7 @@ public class PreferenceUtils {
             FaceDetectorOptions.PERFORMANCE_MODE_FAST);
 
     SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-    boolean enableFaceTracking =
-        sharedPreferences.getBoolean(
-            context.getString(R.string.pref_key_live_preview_face_detection_face_tracking), false);
+
     float minFaceSize =
         Float.parseFloat(
             sharedPreferences.getString(
@@ -77,14 +53,12 @@ public class PreferenceUtils {
 
     FaceDetectorOptions.Builder optionsBuilder =
         new FaceDetectorOptions.Builder()
-            .setLandmarkMode(landmarkMode)
-            .setContourMode(contourMode)
-            .setClassificationMode(classificationMode)
+            .setLandmarkMode(FaceDetectorOptions.LANDMARK_MODE_NONE)
+            .setContourMode(FaceDetectorOptions.CONTOUR_MODE_ALL)
+            .setClassificationMode(FaceDetectorOptions.CLASSIFICATION_MODE_NONE)
             .setPerformanceMode(performanceMode)
             .setMinFaceSize(minFaceSize);
-    if (enableFaceTracking) {
-      optionsBuilder.enableTracking();
-    }
+
     return optionsBuilder.build();
   }
 
