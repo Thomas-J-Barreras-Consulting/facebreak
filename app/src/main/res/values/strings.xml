@@ -66,5 +66,6 @@
     <string name="analyze_live_video">Analyze Live Video</string>
     <string name="live_video">Live Video</string>
     <string name="image_preview">Image Preview</string>
+    <string name="share_results">Share Results</string>
 
 </resources>

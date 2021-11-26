@@ -39,6 +39,16 @@
             android:name="com.google.mlkit.vision.DEPENDENCIES"
             android:value="barcode,face,ocr,ica"/>
 
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.thomasjbarrerasconsulting.faces.fileprovider"
+            android:grantUriPermissions="true"
+            android:exported="false">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/filepaths" />
+        </provider>
+
         <activity
             android:name=".kotlin.LivePreviewActivity"
             android:exported="true"

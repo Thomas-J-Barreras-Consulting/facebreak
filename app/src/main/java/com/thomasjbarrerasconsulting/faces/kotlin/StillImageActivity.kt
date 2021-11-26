@@ -32,7 +32,6 @@ import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
 import android.widget.ImageView
-import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -49,8 +48,12 @@ import java.io.IOException
 import kotlin.math.max
 import kotlin.math.min
 import android.view.ScaleGestureDetector
-import com.google.android.gms.common.internal.FallbackServiceBroker
 import com.thomasjbarrerasconsulting.faces.kotlin.facedetector.BitmapScaler
+import android.graphics.Bitmap
+
+import androidx.core.content.FileProvider
+import java.io.File
+import java.io.FileOutputStream
 
 
 /** Activity demonstrating different image detector features with a still image from camera.  */
@@ -106,6 +109,10 @@ class StillImageActivity : AppCompatActivity() {
       startActivity(Intent(this, LivePreviewActivity::class.java))
     }
 
+    binding.share?.setOnClickListener {
+      startShareIntent()
+    }
+
     preview = binding.preview
     graphicOverlay = binding.graphicOverlay
 
@@ -151,6 +158,46 @@ class StillImageActivity : AppCompatActivity() {
       )
       startActivity(intent)
     }
+  }
+
+  private fun startShareIntent() {
+    if (saveCurrentImageToCache()){
+      val imagePath: File = File(cacheDir, "images")
+      val newFile = File(imagePath, "image.jpg")
+      val contentUri: Uri = FileProvider.getUriForFile(this, "com.thomasjbarrerasconsulting.faces.fileprovider", newFile)
+
+      val shareIntent = Intent()
+      shareIntent.action = Intent.ACTION_SEND
+      shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION) // temp permission for receiving app to read this file
+      shareIntent.setDataAndType(contentUri, contentResolver.getType(contentUri))
+      shareIntent.putExtra(Intent.EXTRA_STREAM, contentUri)
+      startActivity(Intent.createChooser(shareIntent, "Send to..."))
+    }
+  }
+
+  private fun saveCurrentImageToCache(): Boolean {
+    var success = false
+    try {
+      // Still loading the view
+//      if (preview!!.drawable == null){
+//        return false
+//      }
+//      preview?.invalidate()
+//      val bitmapDrawable: BitmapDrawable = preview?.drawable as BitmapDrawable
+//      val bitmap = bitmapDrawable.bitmap
+      val bitmap = getBitmapOfDisplayedImage() ?: return false
+
+      val cachePath = File(cacheDir, "images")
+      cachePath.mkdirs() // don't forget to make the directory
+      val stream = FileOutputStream("$cachePath/image.jpg") // overwrites this image every time
+
+      bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+      stream.close()
+      success = true
+    } catch (e: IOException) {
+      e.printStackTrace()
+    }
+    return success
   }
 
   public override fun onResume() {
@@ -334,7 +381,6 @@ class StillImageActivity : AppCompatActivity() {
         graphicOverlay!!.setImageSourceInfo(
           scaledBitmap.width, scaledBitmap.height, /* isFlipped= */false
       )
-//      imageProcessor!!.scale = scaleFactor
       imageProcessor!!.processBitmap(scaledBitmap, graphicOverlay!!)
     } else {
       Log.e(
