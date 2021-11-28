@@ -281,23 +281,23 @@ class StillImageActivity : AppCompatActivity() {
     }
   }
 
-  public override fun onSaveInstanceState(outState: Bundle) {
-    super.onSaveInstanceState(outState)
-
-    outState.putParcelable(KEY_IMAGE_URI, imageUri)
-    outState.putFloat(KEY_SCALE_FACTOR, scaleFactor)
-    outState.putFloat(KEY_PREVIEW_X, preview!!.x)
-    outState.putFloat(KEY_PREVIEW_Y, preview!!.y)
-  }
-
-  public override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-    super.onRestoreInstanceState(savedInstanceState)
-
-    imageUri = savedInstanceState.getParcelable(KEY_IMAGE_URI)
-    scaleFactor = savedInstanceState.getFloat(KEY_SCALE_FACTOR)
-    preview!!.x = savedInstanceState.getFloat(KEY_PREVIEW_X)
-    preview!!.y = savedInstanceState.getFloat(KEY_PREVIEW_Y)
-  }
+//  public override fun onSaveInstanceState(outState: Bundle) {
+//    super.onSaveInstanceState(outState)
+//
+//    outState.putParcelable(KEY_IMAGE_URI, imageUri)
+//    outState.putFloat(KEY_SCALE_FACTOR, scaleFactor)
+//    outState.putFloat(KEY_PREVIEW_X, preview!!.x)
+//    outState.putFloat(KEY_PREVIEW_Y, preview!!.y)
+//  }
+//
+//  public override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+//    super.onRestoreInstanceState(savedInstanceState)
+//
+//    imageUri = savedInstanceState.getParcelable(KEY_IMAGE_URI)
+//    scaleFactor = savedInstanceState.getFloat(KEY_SCALE_FACTOR)
+//    preview!!.x = savedInstanceState.getFloat(KEY_PREVIEW_X)
+//    preview!!.y = savedInstanceState.getFloat(KEY_PREVIEW_Y)
+//  }
 
   override fun onTouchEvent(event: MotionEvent?): Boolean {
 //    println("onTouchEvent ${event}")
@@ -481,9 +481,9 @@ class StillImageActivity : AppCompatActivity() {
     const val GET_IMAGE_FROM = "getImageFrom"
     const val GET_IMAGE_FROM_CAMERA = "camera"
     const val GET_IMAGE_FROM_IMAGE_STORE = "imageStore"
-    private const val KEY_IMAGE_URI = "com.thomasjbarrerasconsulting.faces.KEY_IMAGE_URI"
-    private const val KEY_SCALE_FACTOR = "com.thomasjbarrerasconsulting.faces.KEY_SCALE_FACTOR"
-    private const val KEY_PREVIEW_X= "com.thomasjbarrerasconsulting.faces.KEY_PREVIEW_X"
-    private const val KEY_PREVIEW_Y = "com.thomasjbarrerasconsulting.faces.KEY_PREVIEW_Y"
+//    private const val KEY_IMAGE_URI = "com.thomasjbarrerasconsulting.faces.KEY_IMAGE_URI"
+//    private const val KEY_SCALE_FACTOR = "com.thomasjbarrerasconsulting.faces.KEY_SCALE_FACTOR"
+//    private const val KEY_PREVIEW_X= "com.thomasjbarrerasconsulting.faces.KEY_PREVIEW_X"
+//    private const val KEY_PREVIEW_Y = "com.thomasjbarrerasconsulting.faces.KEY_PREVIEW_Y"
   }
 }
