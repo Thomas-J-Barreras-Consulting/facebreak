@@ -1,2 +1,4 @@
 .gradle/
 app/build/
+app/proguard/
+app/release/
