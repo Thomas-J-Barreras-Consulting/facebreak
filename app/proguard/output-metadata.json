@@ -13,7 +13,7 @@
       "attributes": [],
       "versionCode": 11,
       "versionName": "1.11",
-      "outputFile": "vision-quickstart-proguard.apk"
+      "outputFile": "facebreak-proguard.apk"
     }
   ],
   "elementType": "File"
