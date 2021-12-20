@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:textAlignment="textStart">
+    <PreferenceCategory
+        android:textAlignment="textStart"
+        android:title="Display">
+
+        <EditTextPreference
+            android:defaultValue="5.0"
+            android:dialogMessage="Thickness of the line used for the box surrounding a face."
+            android:key="pref_key_face_box_line_width"
+            android:selectAllOnFocus="true"
+            android:summary="Thickness of the line used for the box surrounding a face"
+            android:textAlignment="textStart"
+            android:title="Face box line width"
+            app:persistent="true" />
+        <ListPreference
+            android:defaultValue="Green"
+            android:entries="@array/pref_entry_values_face_box_line_color"
+            android:entryValues="@array/pref_entry_values_face_box_line_color"
+            android:key="pref_key_face_box_line_color"
+            android:title="Face box line color"
+            app:persistent="true"
+            android:summary="Color of the line used for the box surrounding a face" />
+        <ListPreference
+            android:defaultValue="White"
+            android:entries="@array/pref_entry_values_classifier_text_color"
+            android:entryValues="@array/pref_entry_values_classifier_text_color"
+            android:key="pref_key_classifier_text_color"
+            android:summary="Font color used for the artificial intelligence's predictions about the face"
+            android:title="Font color"
+            app:persistent="true" />
+        <ListPreference
+            android:defaultValue="Medium"
+            android:entries="@array/pref_entry_values_classifier_text_size"
+            android:entryValues="@array/pref_entry_values_classifier_text_size"
+            android:key="pref_key_classifier_text_size"
+            android:title="Font size"
+            app:persistent="true"
+            android:summary="Font size of the artificial intelligence's predictions about the face" />
+
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/pref_category_face_detection">
+
+        <ListPreference
+            android:defaultValue="@string/pref_entry_values_face_detector_performance_mode_fast"
+            android:entries="@array/pref_entries_face_detector_performance_mode"
+            android:entryValues="@array/pref_entry_values_face_detector_performance_mode"
+            android:key="lpfdpm"
+            android:title="@string/pref_title_face_detector_performance_mode"
+            android:summary="Prediction speed vs. accuracy" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Prediction">
+
+    </PreferenceCategory>
+    <EditTextPreference
+        android:defaultValue="5"
+        android:dialogMessage="Number of seconds over which to average predictions. The smaller the number, the faster predictions are updated."
+        android:inputType="numberDecimal"
+        android:key="pref_key_live_preview_prediction_averaging_seconds"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:summary="Number of seconds over which to average predictions"
+        android:title="Averaging time" />
+    <PreferenceCategory android:title="Open Source Licenses">
+
+    </PreferenceCategory>
+    <com.thomasjbarrerasconsulting.faces.preference.OpenSourceDialogPreference
+        android:title="Google LLC"
+        android:summary="MLKit Vision Quickstart"
+        android:negativeButtonText="Close" />
+</PreferenceScreen>

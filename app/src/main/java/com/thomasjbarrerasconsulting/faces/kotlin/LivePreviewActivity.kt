@@ -54,6 +54,7 @@ import android.os.PersistableBundle
 import androidx.core.content.FileProvider
 import com.thomasjbarrerasconsulting.faces.*
 import com.thomasjbarrerasconsulting.faces.databinding.ActivityVisionLivePreviewBinding
+import com.thomasjbarrerasconsulting.faces.preference.PreferencesActivity
 import java.io.File
 
 
@@ -123,9 +124,12 @@ class LivePreviewActivity :
 
       val settingsButton = binding.settingsImageView.settingsImageView
       settingsButton.setOnClickListener {
-          val intent = Intent(applicationContext, SettingsActivity::class.java)
-          intent.putExtra(SettingsActivity.EXTRA_LAUNCH_SOURCE, LaunchSource.LIVE_PREVIEW)
-          startActivity(intent)
+//          val intent = Intent(applicationContext, SettingsActivity::class.java)
+//          intent.putExtra(SettingsActivity.EXTRA_LAUNCH_SOURCE, LaunchSource.LIVE_PREVIEW)
+//          startActivity(intent)
+        val intent = Intent(applicationContext, PreferencesActivity::class.java)
+        intent.putExtra(PreferencesActivity.EXTRA_LAUNCH_SOURCE, LaunchSource.LIVE_PREVIEW)
+        startActivity(intent)
       }
 
       binding.share.setOnClickListener {

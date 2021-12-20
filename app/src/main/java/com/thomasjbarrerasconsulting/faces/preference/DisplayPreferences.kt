@@ -6,7 +6,8 @@ package com.thomasjbarrerasconsulting.faces.preference
 
 import android.content.Context
 import android.graphics.Color
-import android.preference.PreferenceManager
+import androidx.preference.PreferenceManager
+import java.lang.Exception
 
 class DisplayPreferences {
     var faceBoxWidth: Float = FACE_BOX_STROKE_DEFAULT_WIDTH
@@ -27,17 +28,19 @@ class DisplayPreferences {
         private const val PREDICTION_AVERAGING_DEFAULT_SECONDS = 5.0f
 
         private fun readFloat(prefKey: String, default:Float, context:Context):Float{
-            // TODO: Take care of this
-            val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-            val prefValueString = sharedPreferences.getString(prefKey, default.toString())
-            if (prefValueString != null) {
-                return prefValueString.toFloat()
+            try {
+                val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+                val prefValueString = sharedPreferences.getString(prefKey, default.toString())
+                if (prefValueString != null) {
+                    return prefValueString.toFloat()
+                }
+            }
+            catch (e: Exception) {
             }
             return default
         }
 
         private fun readSize(prefKey: String, default:Float, context:Context):Float{
-            // TODO: Take care of this
             val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
             val prefValueString = sharedPreferences.getString(prefKey, default.toString())
             if (prefValueString != null) {
@@ -53,7 +56,6 @@ class DisplayPreferences {
         }
 
         private fun readColor(prefKey: String, default:Int, context:Context): Int {
-            // TODO: Take care of this
             val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
             val prefValueString = sharedPreferences.getString(prefKey, default.toString())
             if (prefValueString != null) {

@@ -56,6 +56,7 @@ import android.graphics.Bitmap
 import android.os.Handler
 import android.os.Looper
 import com.thomasjbarrerasconsulting.faces.ImageUtils
+import com.thomasjbarrerasconsulting.faces.preference.PreferencesActivity
 
 /** Activity demonstrating different image detector features with a still image from camera.  */
 @KeepName
@@ -157,15 +158,8 @@ class StillImageActivity : AppCompatActivity() {
     val settingsButton = binding.settingsImageView.settingsImageView
 
     settingsButton.setOnClickListener {
-      val intent =
-        Intent(
-          applicationContext,
-          SettingsActivity::class.java
-        )
-      intent.putExtra(
-        SettingsActivity.EXTRA_LAUNCH_SOURCE,
-        LaunchSource.STILL_IMAGE
-      )
+      val intent = Intent(applicationContext, PreferencesActivity::class.java)
+      intent.putExtra(PreferencesActivity.EXTRA_LAUNCH_SOURCE, LaunchSource.STILL_IMAGE)
       startActivity(intent)
     }
   }

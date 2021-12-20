@@ -68,6 +68,10 @@
             android:name=".preference.SettingsActivity"
             android:exported="false"/>
 
+        <activity
+            android:name=".preference.PreferencesActivity"
+            android:exported="false"/>
+
     </application>
     <queries>
         <intent>

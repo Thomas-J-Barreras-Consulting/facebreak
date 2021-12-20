@@ -44,8 +44,7 @@
         android:title="Font size" />
   </PreferenceCategory>
 
-  <PreferenceCategory
-      android:title="@string/pref_category_face_detection">
+  <PreferenceCategory android:title="@string/pref_category_face_detection">
 
     <ListPreference
         android:defaultValue="@string/pref_entry_values_face_detector_performance_mode_fast"
@@ -53,7 +52,10 @@
         android:entryValues="@array/pref_entry_values_face_detector_performance_mode"
         android:key="@string/pref_key_live_preview_face_detection_performance_mode"
         android:persistent="true"
-        android:title="@string/pref_title_face_detector_performance_mode"/>
+        android:title="@string/pref_title_face_detector_performance_mode" />
+
+  </PreferenceCategory>
+  <PreferenceCategory android:title="Open Source">
 
   </PreferenceCategory>
 

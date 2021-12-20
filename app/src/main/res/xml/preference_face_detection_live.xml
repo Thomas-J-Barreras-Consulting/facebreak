@@ -69,5 +69,8 @@
       android:singleLine="true"
       android:summary="Number of seconds over which to average predictions"
       android:title="Averaging time" />
+  <PreferenceCategory android:title="Open Source">
+
+  </PreferenceCategory>
 
 </PreferenceScreen>
