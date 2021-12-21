@@ -8,27 +8,27 @@
 
         <EditTextPreference
             android:defaultValue="5.0"
-            android:dialogMessage="Thickness of the line used for the box surrounding a face."
+            android:dialogMessage="Line width of the rectangle surrounding the face"
             android:key="pref_key_face_box_line_width"
             android:selectAllOnFocus="true"
-            android:summary="Thickness of the line used for the box surrounding a face"
+            android:summary="Line width of the rectangle surrounding the face"
             android:textAlignment="textStart"
-            android:title="Face box line width"
+            android:title="Rectangle line width"
             app:persistent="true" />
         <ListPreference
             android:defaultValue="Green"
             android:entries="@array/pref_entry_values_face_box_line_color"
             android:entryValues="@array/pref_entry_values_face_box_line_color"
             android:key="pref_key_face_box_line_color"
-            android:title="Face box line color"
+            android:title="Rectangle color"
             app:persistent="true"
-            android:summary="Color of the line used for the box surrounding a face" />
+            android:summary="Color of the rectangle surrounding the face" />
         <ListPreference
             android:defaultValue="White"
             android:entries="@array/pref_entry_values_classifier_text_color"
             android:entryValues="@array/pref_entry_values_classifier_text_color"
             android:key="pref_key_classifier_text_color"
-            android:summary="Font color used for the artificial intelligence's predictions about the face"
+            android:summary="Font color used for the AI's amazing analysis of the face"
             android:title="Font color"
             app:persistent="true" />
         <ListPreference
@@ -38,7 +38,7 @@
             android:key="pref_key_classifier_text_size"
             android:title="Font size"
             app:persistent="true"
-            android:summary="Font size of the artificial intelligence's predictions about the face" />
+            android:summary="Font size used for the AI's astonishingly accurate analysis of the face" />
 
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/pref_category_face_detection">
@@ -49,25 +49,25 @@
             android:entryValues="@array/pref_entry_values_face_detector_performance_mode"
             android:key="lpfdpm"
             android:title="@string/pref_title_face_detector_performance_mode"
-            android:summary="Prediction speed vs. accuracy" />
+            android:summary="Whether to be fast and accurate or slow and unbelievably accurate" />
     </PreferenceCategory>
     <PreferenceCategory android:title="Prediction">
 
     </PreferenceCategory>
     <EditTextPreference
         android:defaultValue="5"
-        android:dialogMessage="Number of seconds over which to average predictions. The smaller the number, the faster predictions are updated."
+        android:dialogMessage="Number of seconds to spend analyzing live video of the face. Large numbers give more stable results, while small numbers give results that update more frequently."
         android:inputType="numberDecimal"
         android:key="pref_key_live_preview_prediction_averaging_seconds"
         android:selectAllOnFocus="true"
         android:singleLine="true"
-        android:summary="Number of seconds over which to average predictions"
-        android:title="Averaging time" />
-    <PreferenceCategory android:title="Open Source Licenses">
+        android:summary="Number of seconds to spend analyzing live video of the face"
+        android:title="Analysis time" />
+    <PreferenceCategory android:title="Licenses">
 
     </PreferenceCategory>
     <com.thomasjbarrerasconsulting.faces.preference.OpenSourceDialogPreference
-        android:title="Google LLC"
-        android:summary="MLKit Vision Quickstart"
+        android:title="Open Source Licenses"
+        android:summary="All of the cool free stuff that made this app possible"
         android:negativeButtonText="Close" />
 </PreferenceScreen>

@@ -5,9 +5,11 @@
 
 package com.thomasjbarrerasconsulting.faces.preference
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
+import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.thomasjbarrerasconsulting.faces.R
 
 class PreferencesFragment : PreferenceFragmentCompat() {
@@ -17,8 +19,8 @@ class PreferencesFragment : PreferenceFragmentCompat() {
 
     override fun onDisplayPreferenceDialog(preference: Preference?) {
         if (preference is OpenSourceDialogPreference){
-            val dialogFragment = OpenSourceDialog()
-            dialogFragment.show(parentFragmentManager, "OpenSourcePreference")
+            // When the user selects an option to see the licenses:
+            startActivity(Intent(context, OssLicensesMenuActivity::class.java))
         } else {
             super.onDisplayPreferenceDialog(preference)
         }
