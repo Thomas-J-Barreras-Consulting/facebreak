@@ -101,13 +101,21 @@
 
     <ToggleButton
         android:id="@+id/facing_switch"
+        style="@style/Widget.AppCompat.Button"
         android:layout_width="48dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:background="@drawable/ic_switch_camera_white_48dp"
+        android:background="@drawable/ic_baseline_flip_camera_ios_48dp"
         android:checked="true"
         android:contentDescription="@string/switch_camera_view"
         android:foreground="?attr/selectableItemBackground"
+        android:padding="1dp"
+        android:paddingStart="1dp"
+        android:paddingLeft="1dp"
+        android:paddingTop="1dp"
+        android:paddingEnd="1dp"
+        android:paddingRight="1dp"
+        android:paddingBottom="1dp"
         android:textOff="@string/space"
         android:textOn="@string/space" />
 
