@@ -6,6 +6,7 @@ package com.thomasjbarrerasconsulting.faces.kotlin
 
 import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import java.lang.Exception
 
@@ -16,11 +17,7 @@ class ExceptionHandler {
             val fullMessage = "$message: ${e.message}"
             Log.e(tag, fullMessage)
 
-            AlertDialog.Builder(context)
-                .setTitle("Exception")
-                .setMessage(fullMessage)
-                .setIcon(android.R.drawable.ic_dialog_alert)
-                .show()
+            Toast.makeText(context, fullMessage, Toast.LENGTH_LONG).show()
         }
     }
 }

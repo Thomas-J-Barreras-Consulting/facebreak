@@ -69,4 +69,22 @@
     <string name="share_results">Share Results</string>
     <string name="no_camera_permission_detected">Grant Camera permission if you would like to enable the amazing live video feature</string>
     <string name="no_camera_detected_message">No Camera Detected</string>
+    <string name="failed_to_launch_image_browser_exception">Failed to display the image browser</string>
+    <string name="failed_to_connect_to_camera_exception_message">Failed to connect to the camera</string>
+    <string name="failed_to_load_and_classify_image_exception">Failed to load and classify image</string>
+    <string name="failed_to_reset_image_exception">Failed to reset image</string>
+    <string name="failed_to_share_image_exception">Failed ot share image</string>
+    <string name="send_to_title">Send to...</string>
+    <string name="failed_to_start_live_preview_exception">Failed to start live preview</string>
+    <string name="new_picture_title">New Picture</string>
+    <string name="from_camera_description">From Camera</string>
+    <string name="select_picture_title">Select Picture</string>
+    <string name="preferences_title">Preferences</string>
+    <string name="failed_to_update_image_preview_exception">Failed to update image preview</string>
+    <string name="failed_to_classify_displayed_image_exception">Failed to classify displayed image</string>
+    <string name="image_process_is_null_exception">Image process is null</string>
+    <string name="failed_to_create_image_processor_exception">Failed to create image processor</string>
+    <string name="failed_to_show_preferences_exception">Failed to show preferences</string>
+    <string name="failed_to_start_camera_source_exception">Failed to start camera source</string>
+    <string name="failed_to_initialize_camera_source_exception">Failed to initialize camera source for model</string>
 </resources>

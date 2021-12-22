@@ -35,7 +35,6 @@ import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
 import android.widget.ImageView
-import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import com.google.android.gms.common.annotation.KeepName
@@ -45,7 +44,6 @@ import com.thomasjbarrerasconsulting.faces.R
 import com.thomasjbarrerasconsulting.faces.databinding.ActivityStillImageBinding
 import com.thomasjbarrerasconsulting.faces.kotlin.facedetector.FaceClassifierProcessor
 import com.thomasjbarrerasconsulting.faces.kotlin.facedetector.FaceDetectorProcessor
-import java.io.IOException
 import kotlin.math.max
 import kotlin.math.min
 import android.view.ScaleGestureDetector
@@ -55,6 +53,7 @@ import android.os.Handler
 import android.os.Looper
 import com.thomasjbarrerasconsulting.faces.ImageUtils
 import com.thomasjbarrerasconsulting.faces.preference.PreferencesActivity
+import java.lang.NullPointerException
 
 /** Activity demonstrating different image detector features with a still image from camera.  */
 @KeepName
@@ -130,7 +129,7 @@ class StillImageActivity : AppCompatActivity() {
     }
 
     binding.launchLiveView.setOnClickListener {
-      startActivity(Intent(this, LivePreviewActivity::class.java))
+      startLivePreviewActivity()
     }
 
     binding.share.setOnClickListener {
@@ -169,23 +168,37 @@ class StillImageActivity : AppCompatActivity() {
     }
   }
 
-  private fun resetImage(imageUri: Uri?) {
-    val imageBitmap = if (imageUri == null) null else BitmapUtils.getBitmapFromContentUri(contentResolver, imageUri)
-
-    if (imageBitmap == null) {
-      ImageUtils.deleteImageFromCache(this, CLASSIFIED_IMAGE_NAME, Bitmap.CompressFormat.PNG)
-    } else {
-      ImageUtils.saveImageToCache(this, imageBitmap, CLASSIFIED_IMAGE_NAME, Bitmap.CompressFormat.PNG)
+  private fun startLivePreviewActivity() {
+    try {
+      startActivity(Intent(this, LivePreviewActivity::class.java))
     }
+    catch (e: Exception) {
+      ExceptionHandler.Alert(this, getString(R.string.failed_to_start_live_preview_exception), TAG, e)
+    }
+  }
 
-    loadImage(null)
+  private fun resetImage(imageUri: Uri?) {
+    try {
+      val imageBitmap = if (imageUri == null) null else BitmapUtils.getBitmapFromContentUri(contentResolver, imageUri)
 
-    imageExists = imageBitmap != null
-    scaleFactor = 1.0f
-    preview!!.x = preview!!.left.toFloat()
-    preview!!.y = preview!!.top.toFloat()
+      if (imageBitmap == null) {
+        ImageUtils.deleteImageFromCache(this, CLASSIFIED_IMAGE_NAME, Bitmap.CompressFormat.PNG)
+      } else {
+        ImageUtils.saveImageToCache(this, imageBitmap, CLASSIFIED_IMAGE_NAME, Bitmap.CompressFormat.PNG)
+      }
 
-    saveState()
+      loadImage(null)
+
+      imageExists = imageBitmap != null
+      scaleFactor = 1.0f
+      preview!!.x = preview!!.left.toFloat()
+      preview!!.y = preview!!.top.toFloat()
+
+      saveState()
+    }
+    catch (e: Exception){
+      ExceptionHandler.Alert(this, getString(R.string.failed_to_reset_image_exception), TAG, e)
+    }
   }
 
   private fun saveState(){
@@ -203,8 +216,12 @@ class StillImageActivity : AppCompatActivity() {
   }
 
   private fun startShareIntent() {
-    if (saveCurrentImageToCache(SHARED_IMAGE_NAME, Bitmap.CompressFormat.JPEG)){
-      startActivity(Intent.createChooser(ShareUtils.createShareIntent(this), "Send to..."))
+    try {
+      if (saveCurrentImageToCache(SHARED_IMAGE_NAME, Bitmap.CompressFormat.JPEG)){
+        startActivity(Intent.createChooser(ShareUtils.createShareIntent(this), getString(R.string.send_to_title)))
+      }
+    } catch (e: Exception){
+      ExceptionHandler.Alert(this, getString(R.string.failed_to_share_image_exception), TAG, e)
     }
   }
 
@@ -313,6 +330,12 @@ class StillImageActivity : AppCompatActivity() {
     val drawable = preview!!.drawable as BitmapDrawable
     val scaledWidth = (scaleFactor * drawable.intrinsicWidth).toInt()
     val scaledHeight = (scaleFactor * drawable.intrinsicHeight).toInt()
+
+    // Still loading the view
+    if (scaledHeight == -1 || scaledWidth == -1){
+      return null
+    }
+
     val bitmap = Bitmap.createScaledBitmap(drawable.bitmap, scaledWidth, scaledHeight, true)
     val scaledAndPositioned = Bitmap.createBitmap(
       drawable.intrinsicWidth + 2 * preview!!.left,
@@ -331,30 +354,45 @@ class StillImageActivity : AppCompatActivity() {
   }
 
   private fun startCameraIntentForResult() { // Clean up last time's image
-    loadImage(null)
+    try {
+      loadImage(null)
 
-    val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-    if (takePictureIntent.resolveActivity(packageManager) != null) {
-      val values = ContentValues()
-      values.put(MediaStore.Images.Media.TITLE, "New Picture")
-      values.put(MediaStore.Images.Media.DESCRIPTION, "From Camera")
-      cameraImageUri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
-      takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, cameraImageUri)
+      val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+      if (takePictureIntent.resolveActivity(packageManager) != null) {
+        val values = ContentValues()
+        values.put(MediaStore.Images.Media.TITLE, getString(R.string.new_picture_title))
+        values.put(MediaStore.Images.Media.DESCRIPTION, getString(R.string.from_camera_description))
+        cameraImageUri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
+        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, cameraImageUri)
 
-      imageFromPhotoResultLauncher?.launch(takePictureIntent)
+        imageFromPhotoResultLauncher?.launch(takePictureIntent)
+      }
+    }
+    catch (e: java.lang.Exception){
+      ExceptionHandler.Alert(this, getString(R.string.failed_to_connect_to_camera_exception_message), TAG, e)
     }
   }
 
   private fun startChooseImageIntentForResult() {
-    val intent = Intent()
-    intent.type = "image/*"
-    intent.action = Intent.ACTION_GET_CONTENT
-    localImageResultLauncher?.launch(Intent.createChooser(intent, "Select Picture"))
+    try {
+      val intent = Intent()
+      intent.type = "image/*"
+      intent.action = Intent.ACTION_GET_CONTENT
+
+      localImageResultLauncher?.launch(Intent.createChooser(intent, getString(R.string.select_picture_title)))
+    }
+    catch (e: Exception){
+      ExceptionHandler.Alert(this, getString(R.string.failed_to_launch_image_browser_exception), TAG, e)
+    }
   }
 
   private fun startPreferencesIntentForResult(){
-    val intent = Intent(applicationContext, PreferencesActivity::class.java)
-    preferencesResultLauncher?.launch(Intent.createChooser(intent, "Preferences"))
+    try {
+      val intent = Intent(applicationContext, PreferencesActivity::class.java)
+      preferencesResultLauncher?.launch(Intent.createChooser(intent, getString(R.string.preferences_title)))
+    } catch (e: Exception){
+      ExceptionHandler.Alert(this, getString(R.string.failed_to_show_preferences_exception), TAG, e)
+    }
   }
 
   private fun tryLoadAndClassifyImage() {
@@ -379,11 +417,8 @@ class StillImageActivity : AppCompatActivity() {
       // Post to give the UI time to position itself
       Handler(Looper.getMainLooper()).post{ classifyDisplayedImage() }
 
-    } catch (e: IOException) {
-      Log.e(
-        TAG,
-        "Error loading and classifying image"
-      )
+    } catch (e: Exception) {
+      ExceptionHandler.Alert(this, getString(R.string.failed_to_load_and_classify_image_exception), TAG, e)
     }
   }
 
@@ -394,10 +429,7 @@ class StillImageActivity : AppCompatActivity() {
       preview!!.setImageBitmap(scaledBitmap)
     }
     catch (e: Exception){
-      Log.e(
-        TAG,
-        "Error loading image"
-      )
+      ExceptionHandler.Alert(this, getString(R.string.failed_to_update_image_preview_exception), TAG, e)
     }
   }
 
@@ -406,11 +438,8 @@ class StillImageActivity : AppCompatActivity() {
     try {
       classifyImage(getBitmapOfDisplayedImage())
     }
-    catch (e: java.lang.Exception) {
-      Log.e(
-        TAG,
-        "Error processing displayed bitmap"
-      )
+    catch (e: Exception) {
+      ExceptionHandler.Alert(this, getString(R.string.failed_to_classify_displayed_image_exception), TAG, e)
     }
   }
 
@@ -426,10 +455,7 @@ class StillImageActivity : AppCompatActivity() {
       graphicOverlay!!.clear()
       imageProcessor!!.processBitmap(scaledBitmap, graphicOverlay!!)
     } else {
-      Log.e(
-        TAG,
-        "Error processing image"
-      )
+      ExceptionHandler.Alert(this, getString(R.string.image_process_is_null_exception), TAG, NullPointerException())
     }
   }
 
@@ -438,17 +464,8 @@ class StillImageActivity : AppCompatActivity() {
       imageProcessor = FaceDetectorProcessor(this, null)
     }
     catch (e: Exception) {
-      Log.e(
-        TAG,
-        "Can not create image processor: ${FaceClassifierProcessor.classifier}",
-        e
-      )
-      Toast.makeText(
-        applicationContext,
-        "Can not create image processor: " + e.message,
-        Toast.LENGTH_LONG
-      )
-        .show()
+      val message = getString(R.string.failed_to_create_image_processor_exception)
+      ExceptionHandler.Alert(applicationContext, message + " '${FaceClassifierProcessor.classifier}'", TAG, e)
     }
   }
 

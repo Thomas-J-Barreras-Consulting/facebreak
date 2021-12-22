@@ -30,9 +30,6 @@ import android.util.Log
 import android.view.View
 import android.widget.*
 import android.widget.AdapterView.OnItemSelectedListener
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.common.annotation.KeepName
 import com.thomasjbarrerasconsulting.faces.kotlin.facedetector.FaceClassifierProcessor
@@ -57,27 +54,12 @@ class LivePreviewActivity :
   private var selectedModel = FACE_DETECTION
   private lateinit var binding: ActivityVisionLivePreviewBinding
   private lateinit var permissionsHandler: PermissionsHandler
-  private lateinit var requestCameraPermissionLauncher: ActivityResultLauncher<String>
 
   override fun onCreate(savedInstanceState: Bundle?) {
     try {
       Log.d(TAG, "onCreate")
       super.onCreate(savedInstanceState)
 
-      requestCameraPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
-        if (isGranted) {
-          createCameraSource(selectedModel)
-          startCameraSource()
-        } else {
-          AlertDialog.Builder(this)
-            .setTitle("Camera Permission Not Granted")
-            .setMessage("Live video analysis is not available without Camera permission, but you can still use this amazing app to analyze images in your gallery.")
-            .setIcon(android.R.drawable.ic_dialog_info)
-            .show()
-        }
-      }
-
-      // TODO: handle permissions properly
       permissionsHandler = PermissionsHandler(this)
       if (!permissionsHandler.allPermissionsGranted()) {
         permissionsHandler.getRuntimePermissions()
@@ -92,20 +74,10 @@ class LivePreviewActivity :
       setContentView(view)
 
       val launchStillImageAndUseCameraButton = binding.launchStillImageAndUseCamera
-      launchStillImageAndUseCameraButton.setOnClickListener {
-        Settings.stillImageExists = false
-        val intent = Intent(this, StillImageActivity::class.java)
-        intent.putExtra(StillImageActivity.GET_IMAGE_FROM, StillImageActivity.GET_IMAGE_FROM_CAMERA)
-        startActivity(intent)
-      }
+      launchStillImageAndUseCameraButton.setOnClickListener { startStillImageFromCameraActivity() }
 
       val launchStillImageAndSelectImageButton = binding.launchStillImageAndSelectImage
-      launchStillImageAndSelectImageButton.setOnClickListener {
-        Settings.stillImageExists = false
-        val intent = Intent(this, StillImageActivity::class.java)
-        intent.putExtra(StillImageActivity.GET_IMAGE_FROM, StillImageActivity.GET_IMAGE_FROM_IMAGE_STORE)
-        startActivity(intent)
-      }
+      launchStillImageAndSelectImageButton.setOnClickListener { startLocalStillImageActivity()  }
 
       val spinner = binding.featureSelector
 
@@ -124,26 +96,57 @@ class LivePreviewActivity :
       facingSwitch.setOnCheckedChangeListener(this)
 
       val settingsButton = binding.settingsImageView.settingsImageView
-      settingsButton.setOnClickListener {
-        val intent = Intent(applicationContext, PreferencesActivity::class.java)
-        startActivity(intent)
-      }
+      settingsButton.setOnClickListener { startPreferencesActivity() }
 
-      binding.share.setOnClickListener {
-        startShareIntent()
-      }
+      binding.share.setOnClickListener { startShareIntent() }
 
-      createCameraSource(selectedModel)
+      createAndInitializeCameraSource(selectedModel)
 
     } catch (e: Exception){
       Log.e(TAG, e.message.toString())
     }
+  }
 
+  private fun startPreferencesActivity() {
+    try {
+      val intent = Intent(applicationContext, PreferencesActivity::class.java)
+      startActivity(intent)
+    } catch (e: Exception) {
+      ExceptionHandler.Alert(this, getString(R.string.failed_to_show_preferences_exception), TAG, e)
+    }
+  }
+
+  private fun startLocalStillImageActivity() {
+    try {
+      Settings.stillImageExists = false
+      val intent = Intent(this, StillImageActivity::class.java)
+      intent.putExtra(StillImageActivity.GET_IMAGE_FROM, StillImageActivity.GET_IMAGE_FROM_IMAGE_STORE)
+      startActivity(intent)
+    }
+    catch (e: Exception){
+      ExceptionHandler.Alert(this, getString(R.string.failed_to_launch_image_browser_exception), TAG, e)
+    }
+  }
+
+  private fun startStillImageFromCameraActivity() {
+      try {
+        Settings.stillImageExists = false
+        val intent = Intent(this, StillImageActivity::class.java)
+        intent.putExtra(StillImageActivity.GET_IMAGE_FROM, StillImageActivity.GET_IMAGE_FROM_CAMERA)
+        startActivity(intent)
+      }
+      catch (e: Exception){
+        ExceptionHandler.Alert(this, getString(R.string.failed_to_connect_to_camera_exception_message), TAG, e)
+    }
   }
 
   private fun startShareIntent() {
-    if (saveCurrentImageToCache(StillImageActivity.SHARED_IMAGE_NAME, Bitmap.CompressFormat.JPEG)){
-      startActivity(Intent.createChooser(ShareUtils.createShareIntent(this), "Send to..."))
+    try {
+      if (saveCurrentImageToCache(StillImageActivity.SHARED_IMAGE_NAME, Bitmap.CompressFormat.JPEG)){
+        startActivity(Intent.createChooser(ShareUtils.createShareIntent(this), "Send to..."))
+      }
+    } catch (e: Exception){
+      ExceptionHandler.Alert(this, getString(R.string.failed_to_share_image_exception), TAG, e)
     }
   }
 
@@ -180,19 +183,10 @@ class LivePreviewActivity :
     pos: Int,
     id: Long
   ) {
-    // An item was selected. You can retrieve the selected item using
-    // parent.getItemAtPosition(pos)
     val selectedClassifier = parent?.getItemAtPosition(pos).toString()
     Settings.selectedClassifier = pos
     FaceClassifierProcessor.classifier = selectedClassifier
     Log.d(TAG, "Selected classifier: $selectedClassifier")
-//    preview?.stop()
-//    if (allPermissionsGranted()) {
-//      createCameraSource(selectedModel)
-//      startCameraSource()
-//    } else {
-//      runtimePermissions
-//    }
   }
 
   override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -213,7 +207,7 @@ class LivePreviewActivity :
   }
 
   private fun checkCameraAndPermissionsExist():Boolean {
-    var result: Boolean = true
+    var result = true
 
     if (!CameraHandler.cameraExists(this)){
       messageText?.text = getString(R.string.no_camera_detected_message)
@@ -251,14 +245,16 @@ class LivePreviewActivity :
     return result
   }
 
-  private fun createCameraSource(model: String) {
+  private fun createAndInitializeCameraSource(model: String) {
     // If there's no existing cameraSource, create one.
     if (cameraSource == null) {
       if (!checkCameraAndPermissionsExist()){
         return
       }
-      cameraSource = CameraSource(this, graphicOverlay)
-      cameraSource?.setFacing(Settings.cameraFacing)
+
+      if (!createCameraSourceObject()) {
+        return
+      }
     }
     try {
       when (model) {
@@ -272,12 +268,19 @@ class LivePreviewActivity :
         else -> Log.e(TAG, "Unknown model: $model")
       }
     } catch (e: Exception) {
-      Log.e(TAG, "Can not create image processor: $model", e)
-      Toast.makeText(
-        applicationContext, "Can not create image processor: " + e.message,
-        Toast.LENGTH_LONG
-      ).show()
+      ExceptionHandler.Alert(this,  getString(R.string.failed_to_initialize_camera_source_exception) + " '$model'", TAG, e)
     }
+  }
+
+  private fun createCameraSourceObject(): Boolean {
+    try {
+      cameraSource = CameraSource(this, graphicOverlay)
+      cameraSource?.setFacing(Settings.cameraFacing)
+    } catch (e: Exception) {
+      ExceptionHandler.Alert(this, getString(R.string.failed_to_connect_to_camera_exception_message), TAG, e)
+      return false
+    }
+    return true
   }
 
   /**
@@ -292,7 +295,7 @@ class LivePreviewActivity :
           preview!!.start(cameraSource, graphicOverlay)
         }
       } catch (e: Exception) {
-        ExceptionHandler.Alert(this, "Unable to start camera source", TAG, e)
+        ExceptionHandler.Alert(this, getString(R.string.failed_to_start_camera_source_exception), TAG, e)
         cameraSource!!.release()
         cameraSource = null
       }
@@ -302,7 +305,7 @@ class LivePreviewActivity :
   public override fun onResume() {
     super.onResume()
     Log.d(TAG, "onResume")
-    createCameraSource(selectedModel)
+    createAndInitializeCameraSource(selectedModel)
     startCameraSource()
     binding.featureSelector.setSelection(Settings.selectedClassifier)
   }
@@ -326,7 +329,7 @@ class LivePreviewActivity :
     grantResults: IntArray
   ) {
     Log.i(TAG, "Permission granted!")
-    createCameraSource(selectedModel)
+    createAndInitializeCameraSource(selectedModel)
     super.onRequestPermissionsResult(requestCode, permissions, grantResults)
   }
 
