@@ -13,7 +13,7 @@ import java.lang.Exception
 class ExceptionHandler {
     companion object{
         @JvmStatic
-        fun Alert(context: Context, message:String, tag:String, e:Exception){
+        fun alert(context: Context, message:String, tag:String, e:Exception){
             val fullMessage = "$message: ${e.message}"
             Log.e(tag, fullMessage)
 

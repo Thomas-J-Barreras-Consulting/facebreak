@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.android.gms.oss-licenses-plugin'
 apply plugin: 'kotlin-android'
+apply plugin: 'com.google.gms.google-services'
 
 android {
     compileSdkVersion 31
@@ -68,6 +69,9 @@ repositories {
 }
 
 dependencies {
+    implementation platform('com.google.firebase:firebase-bom:29.0.3')
+    implementation 'com.google.firebase:firebase-analytics-ktx'
+
     // https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-stdlib
 //    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.4.32'
 
@@ -115,6 +119,7 @@ dependencies {
     implementation 'org.tensorflow:tensorflow-lite-metadata:0.1.0-rc2'
     implementation 'org.tensorflow:tensorflow-lite-gpu:2.3.0'
     implementation 'com.google.android.gms:play-services-ads-lite:20.5.0'
+    implementation 'com.google.firebase:firebase-common-ktx:20.0.0'
 
     // For how to setup gradle dependencies in Android X, see:
     // https://developer.android.com/training/testing/set-up-project#gradle-dependencies
@@ -140,6 +145,7 @@ dependencies {
     implementation 'androidx.preference:preference-ktx:1.1.1'
     implementation 'com.google.android.gms:play-services-oss-licenses:17.0.0'
     implementation 'com.google.android.gms:play-services-ads:20.5.0'
+    implementation 'com.google.android.ump:user-messaging-platform:2.0.0'
 }
 
 configurations {

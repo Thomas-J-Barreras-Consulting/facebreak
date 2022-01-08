@@ -21,6 +21,7 @@
 <!--    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>-->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:required="false"/>
     <uses-permission android:name="android.permission.CAMERA" android:required="false"/>
+    <uses-permission android:name="android.permission.BILLING" android:required="false"/>
 
     <application
         android:name="androidx.multidex.MultiDexApplication"
@@ -42,6 +43,11 @@
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-5555304935446174~3872522205"/>
+
+        <!-- Delay app measurement until MobileAds.initialize() is called. -->
+        <meta-data
+            android:name="com.google.android.gms.ads.DELAY_APP_MEASUREMENT_INIT"
+            android:value="true"/>
 
         <provider
             android:name="androidx.core.content.FileProvider"

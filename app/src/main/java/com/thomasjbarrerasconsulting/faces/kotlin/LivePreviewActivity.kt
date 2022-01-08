@@ -21,6 +21,7 @@
 
 package com.thomasjbarrerasconsulting.faces.kotlin
 
+import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -30,11 +31,21 @@ import android.util.Log
 import android.view.View
 import android.widget.*
 import android.widget.AdapterView.OnItemSelectedListener
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.common.annotation.KeepName
+import com.google.android.ump.ConsentForm;
+import com.google.android.ump.ConsentInformation;
+import com.google.android.ump.ConsentRequestParameters;
+import com.google.android.ump.UserMessagingPlatform;
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.analytics.ktx.logEvent
+import com.google.firebase.ktx.Firebase
 import com.thomasjbarrerasconsulting.faces.kotlin.facedetector.FaceClassifierProcessor
 import com.thomasjbarrerasconsulting.faces.kotlin.facedetector.FaceDetectorProcessor
 import com.thomasjbarrerasconsulting.faces.preference.PreferenceUtils
@@ -50,14 +61,18 @@ class LivePreviewActivity :
   OnItemSelectedListener,
   CompoundButton.OnCheckedChangeListener {
 
+  private var shareResultLauncher: ActivityResultLauncher<Intent>? = null
   private var cameraSource: CameraSource? = null
   private var preview: CameraSourcePreview? = null
   private var graphicOverlay: GraphicOverlay? = null
   private var messageText: TextView? = null
   lateinit var adView : AdView
+  private lateinit var consentInformation: ConsentInformation
+  private lateinit var consentForm: ConsentForm
   private var selectedModel = FACE_DETECTION
   private lateinit var binding: ActivityVisionLivePreviewBinding
   private lateinit var permissionsHandler: PermissionsHandler
+  private lateinit var firebaseAnalytics: FirebaseAnalytics
 
   override fun onCreate(savedInstanceState: Bundle?) {
     try {
@@ -77,10 +92,11 @@ class LivePreviewActivity :
 
       setContentView(view)
 
-      MobileAds.initialize(this) {}
-      adView = findViewById(R.id.adView)
-      val adRequest = AdRequest.Builder().build()
-      adView.loadAd(adRequest)
+      obtainConsent()
+
+      firebaseAnalytics = Firebase.analytics
+
+      initializeAds()
 
       val launchStillImageAndUseCameraButton = binding.launchStillImageAndUseCamera
       launchStillImageAndUseCameraButton.setOnClickListener { startStillImageFromCameraActivity() }
@@ -107,6 +123,15 @@ class LivePreviewActivity :
       val settingsButton = binding.settingsImageView.settingsImageView
       settingsButton.setOnClickListener { startPreferencesActivity() }
 
+      shareResultLauncher =  registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+
+          firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SHARE) {
+            param(FirebaseAnalytics.Param.CONTENT_TYPE, "live image")
+          }
+        }
+      }
+
       binding.share.setOnClickListener { startShareIntent() }
 
       createAndInitializeCameraSource(selectedModel)
@@ -116,12 +141,60 @@ class LivePreviewActivity :
     }
   }
 
+  private fun obtainConsent() {
+    // Set tag for underage of consent. false means users are not underage.
+    val params = ConsentRequestParameters.Builder()
+      .setTagForUnderAgeOfConsent(false)
+      .build()
+
+    consentInformation = UserMessagingPlatform.getConsentInformation(this)
+    consentInformation.requestConsentInfoUpdate(
+      this,
+      params,
+      {
+        // The consent information state was updated.
+        // You are now ready to check if a form is available.
+        if (consentInformation.isConsentFormAvailable) {
+          loadConsentForm()
+        }
+      },
+      {
+        ExceptionHandler.alert(this, "Failed to obtain consent (${it.errorCode}", TAG, java.lang.Exception(it.message))
+      })
+  }
+
+  private fun loadConsentForm() {
+    UserMessagingPlatform.loadConsentForm(
+      this,
+      { consentForm ->
+        this.consentForm = consentForm
+        if (consentInformation.consentStatus == ConsentInformation.ConsentStatus.REQUIRED) {
+          consentForm.show(
+            this
+          ) { // Handle dismissal by reloading form.
+            loadConsentForm()
+          }
+        }
+      }
+    ) {
+      /// Handle Error.
+      ExceptionHandler.alert(this, "Failed to load consent form (${it.errorCode}", TAG, java.lang.Exception(it.message))
+    }
+  }
+
+  private fun initializeAds() {
+    MobileAds.initialize(this) {}
+    adView = findViewById(R.id.adView)
+    val adRequest = AdRequest.Builder().build()
+    adView.loadAd(adRequest)
+  }
+
   private fun startPreferencesActivity() {
     try {
       val intent = Intent(applicationContext, PreferencesActivity::class.java)
       startActivity(intent)
     } catch (e: Exception) {
-      ExceptionHandler.Alert(this, getString(R.string.failed_to_show_preferences_exception), TAG, e)
+      ExceptionHandler.alert(this, getString(R.string.failed_to_show_preferences_exception), TAG, e)
     }
   }
 
@@ -133,7 +206,7 @@ class LivePreviewActivity :
       startActivity(intent)
     }
     catch (e: Exception){
-      ExceptionHandler.Alert(this, getString(R.string.failed_to_launch_image_browser_exception), TAG, e)
+      ExceptionHandler.alert(this, getString(R.string.failed_to_launch_image_browser_exception), TAG, e)
     }
   }
 
@@ -145,17 +218,17 @@ class LivePreviewActivity :
         startActivity(intent)
       }
       catch (e: Exception){
-        ExceptionHandler.Alert(this, getString(R.string.failed_to_connect_to_camera_exception_message), TAG, e)
+        ExceptionHandler.alert(this, getString(R.string.failed_to_connect_to_camera_exception_message), TAG, e)
     }
   }
 
   private fun startShareIntent() {
     try {
       if (saveCurrentImageToCache(StillImageActivity.SHARED_IMAGE_NAME, Bitmap.CompressFormat.JPEG)){
-        startActivity(Intent.createChooser(ShareUtils.createShareIntent(this), "Send to..."))
+        shareResultLauncher?.launch(Intent.createChooser(ShareUtils.createShareIntent(this), "Send to..."))
       }
     } catch (e: Exception){
-      ExceptionHandler.Alert(this, getString(R.string.failed_to_share_image_exception), TAG, e)
+      ExceptionHandler.alert(this, getString(R.string.failed_to_share_image_exception), TAG, e)
     }
   }
 
@@ -194,6 +267,9 @@ class LivePreviewActivity :
   ) {
     val selectedClassifier = parent?.getItemAtPosition(pos).toString()
     Settings.selectedClassifier = pos
+    firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_ITEM) {
+      param(FirebaseAnalytics.Param.ITEM_LIST_NAME, selectedClassifier)
+    }
     FaceClassifierProcessor.classifier = selectedClassifier
     Log.d(TAG, "Selected classifier: $selectedClassifier")
   }
@@ -277,7 +353,7 @@ class LivePreviewActivity :
         else -> Log.e(TAG, "Unknown model: $model")
       }
     } catch (e: Exception) {
-      ExceptionHandler.Alert(this,  getString(R.string.failed_to_initialize_camera_source_exception) + " '$model'", TAG, e)
+      ExceptionHandler.alert(this,  getString(R.string.failed_to_initialize_camera_source_exception) + " '$model'", TAG, e)
     }
   }
 
@@ -286,7 +362,7 @@ class LivePreviewActivity :
       cameraSource = CameraSource(this, graphicOverlay)
       cameraSource?.setFacing(Settings.cameraFacing)
     } catch (e: Exception) {
-      ExceptionHandler.Alert(this, getString(R.string.failed_to_connect_to_camera_exception_message), TAG, e)
+      ExceptionHandler.alert(this, getString(R.string.failed_to_connect_to_camera_exception_message), TAG, e)
       return false
     }
     return true
@@ -304,7 +380,7 @@ class LivePreviewActivity :
           preview!!.start(cameraSource, graphicOverlay)
         }
       } catch (e: Exception) {
-        ExceptionHandler.Alert(this, getString(R.string.failed_to_start_camera_source_exception), TAG, e)
+        ExceptionHandler.alert(this, getString(R.string.failed_to_start_camera_source_exception), TAG, e)
         cameraSource!!.release()
         cameraSource = null
       }

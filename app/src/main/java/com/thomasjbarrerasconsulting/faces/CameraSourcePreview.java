@@ -35,7 +35,6 @@ import androidx.annotation.NonNull;
 
 import com.google.android.gms.common.images.Size;
 import com.thomasjbarrerasconsulting.faces.kotlin.ExceptionHandler;
-import com.thomasjbarrerasconsulting.faces.kotlin.PermissionsHandler;
 
 import java.io.IOException;
 import java.util.List;
@@ -130,7 +129,7 @@ public class CameraSourcePreview extends ViewGroup {
       try {
         startIfReady();
       } catch (Exception e) {
-        ExceptionHandler.Alert (context, TAG, "Could not start camera source", e);
+        ExceptionHandler.alert(context, TAG, "Could not start camera source", e);
       }
     }
 

@@ -57,6 +57,10 @@ import com.google.android.gms.ads.MobileAds
 import com.thomasjbarrerasconsulting.faces.ImageUtils
 import com.thomasjbarrerasconsulting.faces.preference.PreferencesActivity
 import java.lang.NullPointerException
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.analytics.ktx.logEvent
+import com.google.firebase.ktx.Firebase
 
 /** Activity demonstrating different image detector features with a still image from camera.  */
 @KeepName
@@ -74,11 +78,14 @@ class StillImageActivity : AppCompatActivity() {
   private var localImageResultLauncher: ActivityResultLauncher<Intent>? = null
   private var imageFromPhotoResultLauncher: ActivityResultLauncher<Intent>? = null
   private var preferencesResultLauncher: ActivityResultLauncher<Intent>? = null
+  private var shareResultLauncher: ActivityResultLauncher<Intent>? = null
   private lateinit var scaleGestureDetector: ScaleGestureDetector
   private lateinit var panGestureDetector: GestureDetector
   private var scrolling: Boolean = false
   private var imageExists: Boolean = false
   private var cameraImageUri: Uri? = null
+  private var localImage: Boolean = false
+  private lateinit var firebaseAnalytics: FirebaseAnalytics
 
   private var scaleFactor: Float = 1.0f
     set(value){
@@ -100,6 +107,8 @@ class StillImageActivity : AppCompatActivity() {
 
     setContentView(view)
 
+    firebaseAnalytics = Firebase.analytics
+
     MobileAds.initialize(this) {}
     adView = findViewById(R.id.adView)
     val adRequest = AdRequest.Builder().build()
@@ -108,6 +117,12 @@ class StillImageActivity : AppCompatActivity() {
     localImageResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
       if (result.resultCode == Activity.RESULT_OK) {
         val data: Intent? = result.data
+        localImage = true
+
+        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_ITEM) {
+          param(FirebaseAnalytics.Param.CONTENT_TYPE, "local_image")
+        }
+
         resetImage(data!!.data)
       } else if (result.resultCode == Activity.RESULT_CANCELED) {
         if (!imageExists){
@@ -118,6 +133,12 @@ class StillImageActivity : AppCompatActivity() {
 
     imageFromPhotoResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
       if (result.resultCode == Activity.RESULT_OK) {
+        localImage = false
+
+        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_ITEM) {
+          param(FirebaseAnalytics.Param.CONTENT_TYPE, "camera_image")
+        }
+
         resetImage(cameraImageUri)
       } else if (result.resultCode == Activity.RESULT_CANCELED) {
         if (!imageExists){
@@ -128,6 +149,16 @@ class StillImageActivity : AppCompatActivity() {
 
     preferencesResultLauncher =  registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
       tryLoadAndClassifyImage()
+    }
+
+    shareResultLauncher =  registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+      if (result.resultCode == Activity.RESULT_OK) {
+
+        val type = if (localImage) "local image" else "photograph"
+        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SHARE) {
+          param(FirebaseAnalytics.Param.CONTENT_TYPE, type)
+        }
+      }
     }
 
     binding.selectImage.setOnClickListener {
@@ -183,7 +214,7 @@ class StillImageActivity : AppCompatActivity() {
       startActivity(Intent(this, LivePreviewActivity::class.java))
     }
     catch (e: Exception) {
-      ExceptionHandler.Alert(this, getString(R.string.failed_to_start_live_preview_exception), TAG, e)
+      ExceptionHandler.alert(this, getString(R.string.failed_to_start_live_preview_exception), TAG, e)
     }
   }
 
@@ -207,7 +238,7 @@ class StillImageActivity : AppCompatActivity() {
       saveState()
     }
     catch (e: Exception){
-      ExceptionHandler.Alert(this, getString(R.string.failed_to_reset_image_exception), TAG, e)
+      ExceptionHandler.alert(this, getString(R.string.failed_to_reset_image_exception), TAG, e)
     }
   }
 
@@ -228,10 +259,10 @@ class StillImageActivity : AppCompatActivity() {
   private fun startShareIntent() {
     try {
       if (saveCurrentImageToCache(SHARED_IMAGE_NAME, Bitmap.CompressFormat.JPEG)){
-        startActivity(Intent.createChooser(ShareUtils.createShareIntent(this), getString(R.string.send_to_title)))
+        shareResultLauncher?.launch(Intent.createChooser(ShareUtils.createShareIntent(this), getString(R.string.send_to_title)))
       }
     } catch (e: Exception){
-      ExceptionHandler.Alert(this, getString(R.string.failed_to_share_image_exception), TAG, e)
+      ExceptionHandler.alert(this, getString(R.string.failed_to_share_image_exception), TAG, e)
     }
   }
 
@@ -305,6 +336,9 @@ class StillImageActivity : AppCompatActivity() {
           Settings.selectedClassifier = pos
           val selectedClassifier = parentView.getItemAtPosition(pos).toString()
           FaceClassifierProcessor.classifier = selectedClassifier
+          firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_ITEM) {
+            param(FirebaseAnalytics.Param.ITEM_LIST_NAME, selectedClassifier)
+          }
           Log.d(TAG, "Selected classifier: $selectedClassifier")
 
           createImageProcessor()
@@ -379,7 +413,7 @@ class StillImageActivity : AppCompatActivity() {
       }
     }
     catch (e: java.lang.Exception){
-      ExceptionHandler.Alert(this, getString(R.string.failed_to_connect_to_camera_exception_message), TAG, e)
+      ExceptionHandler.alert(this, getString(R.string.failed_to_connect_to_camera_exception_message), TAG, e)
     }
   }
 
@@ -392,7 +426,7 @@ class StillImageActivity : AppCompatActivity() {
       localImageResultLauncher?.launch(Intent.createChooser(intent, getString(R.string.select_picture_title)))
     }
     catch (e: Exception){
-      ExceptionHandler.Alert(this, getString(R.string.failed_to_launch_image_browser_exception), TAG, e)
+      ExceptionHandler.alert(this, getString(R.string.failed_to_launch_image_browser_exception), TAG, e)
     }
   }
 
@@ -401,7 +435,7 @@ class StillImageActivity : AppCompatActivity() {
       val intent = Intent(applicationContext, PreferencesActivity::class.java)
       preferencesResultLauncher?.launch(Intent.createChooser(intent, getString(R.string.preferences_title)))
     } catch (e: Exception){
-      ExceptionHandler.Alert(this, getString(R.string.failed_to_show_preferences_exception), TAG, e)
+      ExceptionHandler.alert(this, getString(R.string.failed_to_show_preferences_exception), TAG, e)
     }
   }
 
@@ -428,7 +462,7 @@ class StillImageActivity : AppCompatActivity() {
       Handler(Looper.getMainLooper()).post{ classifyDisplayedImage() }
 
     } catch (e: Exception) {
-      ExceptionHandler.Alert(this, getString(R.string.failed_to_load_and_classify_image_exception), TAG, e)
+      ExceptionHandler.alert(this, getString(R.string.failed_to_load_and_classify_image_exception), TAG, e)
     }
   }
 
@@ -439,7 +473,7 @@ class StillImageActivity : AppCompatActivity() {
       preview!!.setImageBitmap(scaledBitmap)
     }
     catch (e: Exception){
-      ExceptionHandler.Alert(this, getString(R.string.failed_to_update_image_preview_exception), TAG, e)
+      ExceptionHandler.alert(this, getString(R.string.failed_to_update_image_preview_exception), TAG, e)
     }
   }
 
@@ -449,7 +483,7 @@ class StillImageActivity : AppCompatActivity() {
       classifyImage(getBitmapOfDisplayedImage())
     }
     catch (e: Exception) {
-      ExceptionHandler.Alert(this, getString(R.string.failed_to_classify_displayed_image_exception), TAG, e)
+      ExceptionHandler.alert(this, getString(R.string.failed_to_classify_displayed_image_exception), TAG, e)
     }
   }
 
@@ -465,7 +499,7 @@ class StillImageActivity : AppCompatActivity() {
       graphicOverlay!!.clear()
       imageProcessor!!.processBitmap(scaledBitmap, graphicOverlay!!)
     } else {
-      ExceptionHandler.Alert(this, getString(R.string.image_process_is_null_exception), TAG, NullPointerException())
+      ExceptionHandler.alert(this, getString(R.string.image_process_is_null_exception), TAG, NullPointerException())
     }
   }
 
@@ -475,7 +509,7 @@ class StillImageActivity : AppCompatActivity() {
     }
     catch (e: Exception) {
       val message = getString(R.string.failed_to_create_image_processor_exception)
-      ExceptionHandler.Alert(applicationContext, message + " '${FaceClassifierProcessor.classifier}'", TAG, e)
+      ExceptionHandler.alert(applicationContext, message + " '${FaceClassifierProcessor.classifier}'", TAG, e)
     }
   }
 
