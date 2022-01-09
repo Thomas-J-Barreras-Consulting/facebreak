@@ -99,4 +99,23 @@
     <string name="classifier_hair_color">Hair Color</string>
     <string name="classifier_hair_style">Hair Style</string>
     <string name="classifier_physical_features">Physical Features</string>
+    <string name="preference_rectangle_line_width_dialog_message">Line width of the rectangle surrounding the face</string>
+    <string name="preference_rectangle_line_width_summary">Line width of the rectangle surrounding the face</string>
+    <string name="preference_rectangle_line_width_title">Rectangle line width</string>
+    <string name="preference_rectangle_color_title">Rectangle color</string>
+    <string name="preference_rectangle_color_summary">Color of the rectangle surrounding the face</string>
+    <string name="preference_text_color_summary">Font color used for the artificial intelligence\'s amazing analysis of the face</string>
+    <string name="preference_text_color_title">Font color</string>
+    <string name="preference_font_size_title">Font size</string>
+    <string name="preference_font_size_summary">Font size used for the artificial intelligence\'s astonishingly accurate analysis of the face</string>
+    <string name="preference_analysis_time_dialog_message">Number of seconds to spend analyzing live video of the face. Large numbers give more stable results, while small numbers give results that update more frequently.</string>
+    <string name="preference_analysis_time_summary">Number of seconds to spend analyzing live video of the face</string>
+    <string name="preference_analysis_time_title">Analysis time</string>
+    <string name="preference_category_prediction">Prediction</string>
+    <string name="preference_category_licenses">Licenses</string>
+    <string name="preference_licenses_title">Open Source Licenses</string>
+    <string name="preference_licenses_summary">All of the cool free stuff that made this app possible</string>
+    <string name="preference_licenses_close">Close</string>
+    <string name="preference_performance_mode_summary">Whether to be fast and accurate or slow and unbelievably accurate</string>
+    <string name="preference_category_display">Display</string>
 </resources>

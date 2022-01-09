@@ -4,41 +4,41 @@
     android:textAlignment="textStart">
     <PreferenceCategory
         android:textAlignment="textStart"
-        android:title="Display">
+        android:title="@string/preference_category_display">
 
         <EditTextPreference
             android:defaultValue="5.0"
-            android:dialogMessage="Line width of the rectangle surrounding the face"
+            android:dialogMessage="@string/preference_rectangle_line_width_dialog_message"
             android:key="pref_key_face_box_line_width"
             android:selectAllOnFocus="true"
-            android:summary="Line width of the rectangle surrounding the face"
+            android:summary="@string/preference_rectangle_line_width_summary"
             android:textAlignment="textStart"
-            android:title="Rectangle line width"
+            android:title="@string/preference_rectangle_line_width_title"
             app:persistent="true" />
         <ListPreference
-            android:defaultValue="Green"
+            android:defaultValue="@string/pref_entry_values_color_green"
             android:entries="@array/pref_entry_values_face_box_line_color"
             android:entryValues="@array/pref_entry_values_face_box_line_color"
             android:key="pref_key_face_box_line_color"
-            android:title="Rectangle color"
+            android:title="@string/preference_rectangle_color_title"
             app:persistent="true"
-            android:summary="Color of the rectangle surrounding the face" />
+            android:summary="@string/preference_rectangle_color_summary" />
         <ListPreference
-            android:defaultValue="White"
+            android:defaultValue="@string/pref_entry_values_color_white"
             android:entries="@array/pref_entry_values_classifier_text_color"
             android:entryValues="@array/pref_entry_values_classifier_text_color"
             android:key="pref_key_classifier_text_color"
-            android:summary="Font color used for the AI's amazing analysis of the face"
-            android:title="Font color"
+            android:summary="@string/preference_text_color_summary"
+            android:title="@string/preference_text_color_title"
             app:persistent="true" />
         <ListPreference
-            android:defaultValue="Medium"
+            android:defaultValue="@string/pref_entry_values_size_medium"
             android:entries="@array/pref_entry_values_classifier_text_size"
             android:entryValues="@array/pref_entry_values_classifier_text_size"
             android:key="pref_key_classifier_text_size"
-            android:title="Font size"
+            android:title="@string/preference_font_size_title"
             app:persistent="true"
-            android:summary="Font size used for the AI's astonishingly accurate analysis of the face" />
+            android:summary="@string/preference_font_size_summary" />
 
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/pref_category_face_detection">
@@ -49,25 +49,25 @@
             android:entryValues="@array/pref_entry_values_face_detector_performance_mode"
             android:key="lpfdpm"
             android:title="@string/pref_title_face_detector_performance_mode"
-            android:summary="Whether to be fast and accurate or slow and unbelievably accurate" />
+            android:summary="@string/preference_performance_mode_summary" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="Prediction">
+    <PreferenceCategory android:title="@string/preference_category_prediction">
 
     </PreferenceCategory>
     <EditTextPreference
         android:defaultValue="5"
-        android:dialogMessage="Number of seconds to spend analyzing live video of the face. Large numbers give more stable results, while small numbers give results that update more frequently."
+        android:dialogMessage="@string/preference_analysis_time_dialog_message"
         android:inputType="numberDecimal"
         android:key="pref_key_live_preview_prediction_averaging_seconds"
         android:selectAllOnFocus="true"
         android:singleLine="true"
-        android:summary="Number of seconds to spend analyzing live video of the face"
-        android:title="Analysis time" />
-    <PreferenceCategory android:title="Licenses">
+        android:summary="@string/preference_analysis_time_summary"
+        android:title="@string/preference_analysis_time_title" />
+    <PreferenceCategory android:title="@string/preference_category_licenses">
 
     </PreferenceCategory>
     <com.thomasjbarrerasconsulting.faces.preference.OpenSourceDialogPreference
-        android:title="Open Source Licenses"
-        android:summary="All of the cool free stuff that made this app possible"
-        android:negativeButtonText="Close" />
+        android:title="@string/preference_licenses_title"
+        android:summary="@string/preference_licenses_summary"
+        android:negativeButtonText="@string/preference_licenses_close" />
 </PreferenceScreen>

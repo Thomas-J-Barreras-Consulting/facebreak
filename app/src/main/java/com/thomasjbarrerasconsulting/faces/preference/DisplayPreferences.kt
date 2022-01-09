@@ -7,6 +7,7 @@ package com.thomasjbarrerasconsulting.faces.preference
 import android.content.Context
 import android.graphics.Color
 import androidx.preference.PreferenceManager
+import com.thomasjbarrerasconsulting.faces.R
 import java.lang.Exception
 
 class DisplayPreferences {
@@ -45,11 +46,11 @@ class DisplayPreferences {
             val prefValueString = sharedPreferences.getString(prefKey, default.toString())
             if (prefValueString != null) {
                 when (prefValueString) {
-                    "Very Large" -> return SIZE_VERY_LARGE
-                    "Large" -> return SIZE_LARGE
-                    "Medium" -> return SIZE_MEDIUM
-                    "Small" -> return SIZE_SMALL
-                    "Very Small" -> return SIZE_VERY_SMALL
+                    context.getString(R.string.pref_entry_values_size_very_large) -> return SIZE_VERY_LARGE
+                    context.getString(R.string.pref_entry_values_size_large) -> return SIZE_LARGE
+                    context.getString(R.string.pref_entry_values_size_medium) -> return SIZE_MEDIUM
+                    context.getString(R.string.pref_entry_values_size_small) -> return SIZE_SMALL
+                    context.getString(R.string.pref_entry_values_size_very_small) -> return SIZE_VERY_SMALL
                 }
             }
             return default
@@ -60,17 +61,17 @@ class DisplayPreferences {
             val prefValueString = sharedPreferences.getString(prefKey, default.toString())
             if (prefValueString != null) {
                 when (prefValueString) {
-                    "Red" -> return Color.RED
-                    "Green" -> return Color.GREEN
-                    "Blue" -> return Color.BLUE
-                    "Yellow" -> return Color.YELLOW
-                    "Black" -> return Color.BLACK
-                    "White" -> return Color.WHITE
-                    "Dark Gray" -> return Color.DKGRAY
-                    "Light Gray" -> return Color.LTGRAY
-                    "Cyan" -> return Color.CYAN
-                    "Magenta" -> return Color.MAGENTA
-                    "Transparent" -> return Color.TRANSPARENT
+                    context.getString(R.string.pref_entry_values_color_red) -> return Color.RED
+                    context.getString(R.string.pref_entry_values_color_green) -> return Color.GREEN
+                    context.getString(R.string.pref_entry_values_color_blue) -> return Color.BLUE
+                    context.getString(R.string.pref_entry_values_color_yellow) -> return Color.YELLOW
+                    context.getString(R.string.pref_entry_values_color_black) -> return Color.BLACK
+                    context.getString(R.string.pref_entry_values_color_white) -> return Color.WHITE
+                    context.getString(R.string.pref_entry_values_color_dark_gray) -> return Color.DKGRAY
+                    context.getString(R.string.pref_entry_values_color_light_gray) -> return Color.LTGRAY
+                    context.getString(R.string.pref_entry_values_color_cyan) -> return Color.CYAN
+                    context.getString(R.string.pref_entry_values_color_magenta)-> return Color.MAGENTA
+                    context.getString(R.string.pref_entry_values_color_transparent) -> return Color.TRANSPARENT
                 }
             }
             return default
