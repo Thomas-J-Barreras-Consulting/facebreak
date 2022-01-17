@@ -128,8 +128,14 @@
     <string name="product_info_unavailable">Unavailable</string>
     <string name="premium_status_you_are_using_the_free_version">You are using the Free version</string>
     <string name="premium_status_you_are_using_the_premium_version">You are using the Premium version</string>
-    <string name="premium_status_your_premium_payment_is_pending">Your Premium payment is pending</string>
+    <string name="premium_status_your_premium_payment_is_pending">Your Premium purchase is pending</string>
     <string name="premium_status_description_upgrade_to_unlock_capabilities">Upgrade to unlock phenomenal, additional capabilities!</string>
-    <string name="premium_status_description_premium_customer">You are already an elite patron, the best of the best of the best! Of the best!</string>
-    <string name="premium_status_description_premium_pending">Great things await you, as soon as your payment is processed!</string>
+    <string name="premium_status_description_premium_customer">You are an elite patron, the best of the best of the best! Of the best!</string>
+    <string name="premium_status_description_premium_pending">Great things await you, as soon as your payment is processed! Visit pay.google.com to resolve any payment issues.</string>
+    <string name="preference_premium_status_title">Premium Status</string>
+    <string name="preference_premium_status_summary">Whether you are using the free or premium version</string>
+    <string name="product_image_view">Product image</string>
+    <string name="purchase_premium_button_text">Purchase Premium!</string>
+    <string name="back_button_text">Back</string>
+    <string name="free_or_premium_image_view_description">Free or Premium image</string>
 </resources>

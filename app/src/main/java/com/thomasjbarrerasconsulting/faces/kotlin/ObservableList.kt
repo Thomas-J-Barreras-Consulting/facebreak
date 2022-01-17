@@ -22,7 +22,7 @@ class ObservableList<T> () {
     fun merge(updatedList: List<T>){
         var differencesDetected = false
         synchronized(this){
-            differencesDetected = (list.count() != updatedList.count()) || list.map{ it.toString() } == updatedList.map { it.toString() }
+            differencesDetected = (list.count() != updatedList.count()) || list.map{ it.toString() } != updatedList.map { it.toString() }
 
             list.clear()
             list.addAll(updatedList)
@@ -46,7 +46,6 @@ class ObservableList<T> () {
                 listeners.add(listener)
             }
         }
-        toast("Listeners: ${listeners.count()}")
     }
 
     fun removeListener(listener: ListUpdatedListener<T>){
@@ -55,7 +54,6 @@ class ObservableList<T> () {
                 listeners.remove(listener)
             }
         }
-        toast("Listeners: ${listeners.count()}")
     }
 
     companion object {

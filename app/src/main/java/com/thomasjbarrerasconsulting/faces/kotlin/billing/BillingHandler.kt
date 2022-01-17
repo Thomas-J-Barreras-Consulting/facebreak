@@ -138,16 +138,18 @@ class BillingHandler() {
             }
 
             private fun processPurchases(purchases: MutableList<Purchase>?) {
-                purchases?.let {
-                    for (purchase in purchases) {
-                        when (purchase.purchaseState) {
-                            Purchase.PurchaseState.PURCHASED -> ensurePurchaseAcknowledged(purchase)
-                            Purchase.PurchaseState.PENDING -> toast("Purchase pending for: $purchase. Please visit pay.google.apps to complete your purchase.")
-                        }
+                for (purchase in purchases!!) {
+                    when (purchase.purchaseState) {
+                        Purchase.PurchaseState.PURCHASED -> ensurePurchaseAcknowledged(purchase)
+                        Purchase.PurchaseState.PENDING -> processPendingPurchase(purchase)
                     }
-                    refreshInAppPurchases()
                 }
+                refreshInAppPurchases()
                 Log.d(TAG, "Purchase updated: $purchases")
+            }
+
+            private fun processPendingPurchase(purchase: Purchase){
+                toast("Purchase pending for order ID ${purchase.orderId}.")
             }
 
             private fun ensurePurchaseAcknowledged(purchase: Purchase) {

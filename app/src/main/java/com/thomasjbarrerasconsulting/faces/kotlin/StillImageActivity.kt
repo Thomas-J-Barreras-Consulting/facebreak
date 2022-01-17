@@ -87,13 +87,13 @@ class StillImageActivity : AppCompatActivity() {
 
   private val purchasesListener = object: ObservableList.ListUpdatedListener<Purchase> {
     override fun listUpdated(list: List<Purchase>) {
-      Toaster.toast("Purchases: $list")
+
     }
   }
 
   private val skusListener = object: ObservableList.ListUpdatedListener<SkuDetails> {
     override fun listUpdated(list: List<SkuDetails>) {
-      Toaster.toast("Skus: $list")
+
     }
   }
 

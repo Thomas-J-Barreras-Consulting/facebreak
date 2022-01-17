@@ -1,11 +1,8 @@
 package com.thomasjbarrerasconsulting.faces.kotlin
 
 import android.os.Bundle
-import android.os.Handler
 import androidx.appcompat.app.AppCompatActivity
 import com.android.billingclient.api.Purchase
-import com.android.billingclient.api.PurchasesResult
-import com.android.billingclient.api.SkuDetails
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.ktx.Firebase
@@ -30,12 +27,6 @@ class PremiumStatusActivity: AppCompatActivity() {
         }
     }
 
-    private val skusListener = object: ObservableList.ListUpdatedListener<SkuDetails> {
-        override fun listUpdated(list: List<SkuDetails>) {
-            updateProductsText()
-        }
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initializeBillingAndPurchases()
@@ -49,7 +40,6 @@ class PremiumStatusActivity: AppCompatActivity() {
 
     private fun initializeBillingAndPurchases() {
         BillingHandler.addPurchasesListener(purchasesListener)
-        BillingHandler.addSkusListener(skusListener)
         BillingHandler.refreshInAppPurchases()
     }
 
@@ -69,9 +59,6 @@ class PremiumStatusActivity: AppCompatActivity() {
                 binding.premiumStatusDescriptionTextView.text = getString(R.string.premium_status_description_premium_pending)
                 binding.premiumStatusImageView.setBackgroundResource(R.drawable.ic_free)
                 binding.purchasePremiumButton.isEnabled = false
-                Timer().schedule(1000){
-                    updatePremiumStatusText()
-                }
             }
             else -> {
                 binding.premiumStatusTextView.text = getString(R.string.premium_status_you_are_using_the_free_version)

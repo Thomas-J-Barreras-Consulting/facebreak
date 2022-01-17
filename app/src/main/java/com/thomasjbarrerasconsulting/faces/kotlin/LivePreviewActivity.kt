@@ -79,13 +79,13 @@ class LivePreviewActivity :
 
   private val purchasesListener = object: ObservableList.ListUpdatedListener<Purchase> {
     override fun listUpdated(list: List<Purchase>) {
-      toast("Purchases: $list")
+//      toast("Purchases: $list")
     }
   }
 
   private val skusListener = object: ObservableList.ListUpdatedListener<SkuDetails> {
     override fun listUpdated(list: List<SkuDetails>) {
-      toast("Skus: $list")
+//      toast("Skus: $list")
     }
   }
 
@@ -441,7 +441,6 @@ class LivePreviewActivity :
   }
 
   public override fun onDestroy() {
-    toast("Destroy")
     super.onDestroy()
     BillingHandler.removePurchasesListener(purchasesListener)
     BillingHandler.removeSkusListener(skusListener)

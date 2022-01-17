@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -9,7 +10,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="UseCompoundDrawables">
 
         <ImageView
             android:id="@+id/premium_status_image_view"
@@ -23,7 +25,8 @@
             android:paddingEnd="5dp"
             android:paddingRight="5dp"
             android:paddingBottom="5dp"
-            android:background="@drawable/ic_free" />
+            android:background="@drawable/ic_free"
+            android:contentDescription="@string/free_or_premium_image_view_description" />
 
         <TextView
             android:id="@+id/premium_status_text_view"
@@ -83,7 +86,8 @@
                 android:layout_gravity="center_vertical"
                 android:layout_weight="0"
                 android:padding="5dp"
-                app:srcCompat="@drawable/ic_premium" />
+                app:srcCompat="@drawable/ic_premium"
+                android:contentDescription="@string/product_image_view" />
 
             <TextView
                 android:id="@+id/product_title_text_view"
@@ -92,7 +96,7 @@
                 android:layout_margin="5dp"
                 android:layout_weight="1"
                 android:fontFamily="sans-serif-black"
-                android:text="Title"
+                android:text=""
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
@@ -103,19 +107,20 @@
                 android:layout_margin="5dp"
                 android:layout_weight="1"
                 android:gravity="right"
-                android:text="Price"
+                android:text=""
                 android:textAlignment="gravity"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                tools:ignore="RtlHardcoded" />
 
         </LinearLayout>
 
         <TextView
             android:id="@+id/product_description_text_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:layout_margin="5dp"
             android:layout_weight="1"
-            android:text="Description" />
+            android:text="" />
 
     </LinearLayout>
 
@@ -139,7 +144,8 @@
             android:layout_marginEnd="5dp"
             android:layout_marginBottom="5dp"
             android:layout_weight="1"
-            android:text="Purchase Premium!" />
+            android:text="@string/purchase_premium_button_text"
+            tools:ignore="ButtonStyle,RtlHardcoded" />
 
         <Button
             android:id="@+id/back_button"
@@ -154,7 +160,8 @@
             android:layout_marginRight="5dp"
             android:layout_marginBottom="5dp"
             android:layout_weight="1"
-            android:text="Back" />
+            android:text="@string/back_button_text"
+            tools:ignore="ButtonStyle,RtlHardcoded" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
