@@ -8,6 +8,18 @@
     android:keepScreenOn="true">
 
   <ImageView
+      android:id="@+id/premium_status_image_view"
+      layout="@layout/settings_style"
+      android:layout_width="24dp"
+      android:layout_height="24dp"
+      android:layout_marginStart="10dp"
+      android:layout_marginBottom="12dp"
+      android:background="@drawable/ic_free"
+      android:contentDescription="@string/free_or_premium_image_view_description"
+      app:layout_constraintBottom_toBottomOf="@id/settings_image_view"
+      app:layout_constraintStart_toStartOf="parent" />
+
+  <ImageView
       android:id="@+id/preview"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
@@ -42,9 +54,10 @@
       android:id="@id/toolbar"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      app:layout_constraintBottom_toBottomOf="parent"
       android:background="#000"
-      android:orientation="vertical">
+      android:orientation="vertical"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintLeft_toLeftOf="parent">
 
     <LinearLayout
         android:id="@+id/control2"

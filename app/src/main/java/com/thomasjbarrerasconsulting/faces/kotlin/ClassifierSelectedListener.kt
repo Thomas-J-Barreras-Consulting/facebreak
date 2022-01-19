@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.AdapterView
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.logEvent
+import com.thomasjbarrerasconsulting.faces.kotlin.billing.Premium
 import com.thomasjbarrerasconsulting.faces.kotlin.facedetector.FaceClassifierProcessor
 
 open class ClassifierSelectedListener(private val context: Context, private val firebaseAnalytics: FirebaseAnalytics, private val premiumAction: () -> Unit): AdapterView.OnItemSelectedListener {
@@ -15,7 +16,7 @@ open class ClassifierSelectedListener(private val context: Context, private val 
         pos: Int,
         id: Long
     ) {
-        if (FaceClassifierProcessor.isPremiumClassifier(pos)){
+        if (FaceClassifierProcessor.isPremiumClassifier(pos) && !Premium.premiumIsActive()){
             premiumAction()
         } else {
             val selectedClassifier = FaceClassifierProcessor.Classifier.values()[pos]

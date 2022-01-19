@@ -19,7 +19,6 @@
 */
 package com.thomasjbarrerasconsulting.faces.kotlin
 
-import android.app.Activity
 import android.content.ContentValues
 import android.content.Intent
 import android.content.res.Configuration
@@ -50,7 +49,6 @@ import android.graphics.Bitmap
 import android.os.Handler
 import android.os.Looper
 import com.android.billingclient.api.Purchase
-import com.android.billingclient.api.SkuDetails
 import com.google.android.gms.ads.AdView
 import com.thomasjbarrerasconsulting.faces.ImageUtils
 import com.thomasjbarrerasconsulting.faces.preference.PreferencesActivity
@@ -60,6 +58,7 @@ import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.analytics.ktx.logEvent
 import com.google.firebase.ktx.Firebase
 import com.thomasjbarrerasconsulting.faces.kotlin.billing.BillingHandler
+import com.thomasjbarrerasconsulting.faces.kotlin.billing.Premium
 
 @KeepName
 class StillImageActivity : AppCompatActivity() {
@@ -77,6 +76,7 @@ class StillImageActivity : AppCompatActivity() {
   private var imageFromPhotoResultLauncher: ActivityResultLauncher<Intent>? = null
   private var preferencesResultLauncher: ActivityResultLauncher<Intent>? = null
   private var shareResultLauncher: ActivityResultLauncher<Intent>? = null
+  private var premiumStatusResultLauncher: ActivityResultLauncher<Intent>? = null
   private lateinit var scaleGestureDetector: ScaleGestureDetector
   private lateinit var panGestureDetector: GestureDetector
   private var scrolling: Boolean = false
@@ -87,13 +87,8 @@ class StillImageActivity : AppCompatActivity() {
 
   private val purchasesListener = object: ObservableList.ListUpdatedListener<Purchase> {
     override fun listUpdated(list: List<Purchase>) {
-
-    }
-  }
-
-  private val skusListener = object: ObservableList.ListUpdatedListener<SkuDetails> {
-    override fun listUpdated(list: List<SkuDetails>) {
-
+      updatePremiumStatus()
+      populateClassifierSelector()
     }
   }
 
@@ -122,15 +117,35 @@ class StillImageActivity : AppCompatActivity() {
     initializeImageFromPhotoButton()
     initializePreferencesButton()
     initializeShareButton()
+    updatePremiumStatus()
 
     binding.launchLiveView.setOnClickListener { startLivePreviewActivity() }
 
+    initializePremiumStatusButton()
     initializeGestureDetection()
-    populateClassifierSelector()
+    initializeClassifierSelector()
 
     isLandScape = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
     loadState()
     initializeDisplay()
+  }
+
+  private fun initializePremiumStatusButton() {
+    premiumStatusResultLauncher =
+      registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        updatePremiumStatus()
+        populateClassifierSelector()
+      }
+
+    binding.premiumStatusImageView?.setOnClickListener { showPremiumStatus() }
+  }
+
+  private fun updatePremiumStatus() {
+    when {
+      Premium.premiumIsActive() -> binding.premiumStatusImageView?.setBackgroundResource(R.drawable.ic_premium)
+      Premium.premiumIsPending() -> binding.premiumStatusImageView?.setBackgroundResource(R.drawable.ic_premium_pending)
+      else -> binding.premiumStatusImageView?.setBackgroundResource(R.drawable.ic_free)
+    }
   }
 
   private fun initializeGestureDetection() {
@@ -248,7 +263,6 @@ class StillImageActivity : AppCompatActivity() {
 
   private fun initializeBillingAndPurchases() {
     BillingHandler.addPurchasesListener(purchasesListener)
-    BillingHandler.addSkusListener(skusListener)
   }
 
   private fun startLivePreviewActivity() {
@@ -361,13 +375,21 @@ class StillImageActivity : AppCompatActivity() {
     }
   }
 
+  private fun initializeClassifierSelector() {
+    populateClassifierSelector()
+    binding.featureSelector.onItemSelectedListener = StillImageActivityClassifierSelectedListener(this, this, firebaseAnalytics, { showPremiumStatus() })
+  }
+
   private fun populateClassifierSelector() {
     val featureSpinner = binding.featureSelector
-    val featureSpinnerDataAdapter = ArrayAdapter(this, R.layout.spinner_style, FaceClassifierProcessor.allClassificationDescriptions(this))
+    val featureSpinnerDataAdapter = ArrayAdapter(
+      this,
+      R.layout.spinner_style,
+      if (Premium.premiumIsActive()) FaceClassifierProcessor.allClassificationDescriptions(this) else FaceClassifierProcessor.allClassificationDescriptionsFree(this)
+    )
     featureSpinnerDataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
     featureSpinner.adapter = featureSpinnerDataAdapter
     featureSpinner.setSelection(FaceClassifierProcessor.Classifier.values().indexOf(Settings.selectedClassifier))
-    featureSpinner.onItemSelectedListener = StillImageActivityClassifierSelectedListener(this, this, firebaseAnalytics)
   }
 
   public override fun onSaveInstanceState(outState: Bundle) {
@@ -447,6 +469,15 @@ class StillImageActivity : AppCompatActivity() {
     }
     catch (e: Exception){
       ExceptionHandler.alert(this, getString(R.string.failed_to_launch_image_browser_exception), TAG, e)
+    }
+  }
+
+  private fun showPremiumStatus() {
+    try {
+      premiumStatusResultLauncher?.launch(Intent(applicationContext, PremiumStatusActivity::class.java))
+    } catch (e: Exception) {
+      ExceptionHandler.alert(this, getString(R.string.failed_to_show_premium_status_dialog_exception),
+        TAG, e)
     }
   }
 
