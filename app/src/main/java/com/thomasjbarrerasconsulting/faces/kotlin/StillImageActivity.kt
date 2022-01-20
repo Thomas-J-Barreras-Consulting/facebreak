@@ -141,10 +141,12 @@ class StillImageActivity : AppCompatActivity() {
   }
 
   private fun updatePremiumStatus() {
-    when {
-      Premium.premiumIsActive() -> binding.premiumStatusImageView.setBackgroundResource(R.drawable.ic_premium)
-      Premium.premiumIsPending() -> binding.premiumStatusImageView.setBackgroundResource(R.drawable.ic_premium_pending)
-      else -> binding.premiumStatusImageView?.setBackgroundResource(R.drawable.ic_free)
+    runOnUiThread {
+      when {
+        Premium.premiumIsActive() -> binding.premiumStatusImageView.setBackgroundResource(R.drawable.ic_premium)
+        Premium.premiumIsPending() -> binding.premiumStatusImageView.setBackgroundResource(R.drawable.ic_premium_pending)
+        else -> binding.premiumStatusImageView.setBackgroundResource(R.drawable.ic_free)
+      }
     }
   }
 
@@ -377,19 +379,21 @@ class StillImageActivity : AppCompatActivity() {
 
   private fun initializeClassifierSelector() {
     populateClassifierSelector()
-    binding.featureSelector.onItemSelectedListener = StillImageActivityClassifierSelectedListener(this, this, firebaseAnalytics, { showPremiumStatus() })
+    binding.featureSelector.onItemSelectedListener = StillImageActivityClassifierSelectedListener(this, this, firebaseAnalytics) { showPremiumStatus() }
   }
 
   private fun populateClassifierSelector() {
-    val featureSpinner = binding.featureSelector
-    val featureSpinnerDataAdapter = ArrayAdapter(
-      this,
-      R.layout.spinner_style,
-      if (Premium.premiumIsActive()) FaceClassifierProcessor.allClassificationDescriptions(this) else FaceClassifierProcessor.allClassificationDescriptionsFree(this)
-    )
-    featureSpinnerDataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-    featureSpinner.adapter = featureSpinnerDataAdapter
-    featureSpinner.setSelection(FaceClassifierProcessor.Classifier.values().indexOf(Settings.selectedClassifier))
+    runOnUiThread{
+      val featureSpinner = binding.featureSelector
+      val featureSpinnerDataAdapter = ArrayAdapter(
+        this,
+        R.layout.spinner_style,
+        if (Premium.premiumIsActive()) FaceClassifierProcessor.allClassificationDescriptions(this) else FaceClassifierProcessor.allClassificationDescriptionsFree(this)
+      )
+      featureSpinnerDataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+      featureSpinner.adapter = featureSpinnerDataAdapter
+      featureSpinner.setSelection(FaceClassifierProcessor.Classifier.values().indexOf(Settings.selectedClassifier))
+    }
   }
 
   public override fun onSaveInstanceState(outState: Bundle) {

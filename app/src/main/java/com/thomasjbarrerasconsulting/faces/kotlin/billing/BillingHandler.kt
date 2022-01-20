@@ -24,7 +24,7 @@ class BillingHandler() {
         private const val BILLING_TASK_REFRESH_IN_APP_SKUS = "refreshInAppSkus"
         private const val BILLING_TASK_START_PAYMENT = "startPayment"
 
-        private var billingClient: BillingClient
+        private lateinit var billingClient: BillingClient
         private val tasks = TaskLauncher()
 
         private var billingServiceIsConnecting: Boolean = false
@@ -33,7 +33,7 @@ class BillingHandler() {
         val skus = ObservableList<SkuDetails>()
         private val purchasesUpdatedListener = MyPurchaseUpdatedListener()
 
-        init {
+        fun initialize() {
             billingClient = BillingClient.newBuilder(FaceBreakApplication.instance)
                 .enablePendingPurchases()
                 .setListener(purchasesUpdatedListener)

@@ -52,6 +52,7 @@ import com.thomasjbarrerasconsulting.faces.kotlin.billing.Premium
 import com.thomasjbarrerasconsulting.faces.preference.PreferencesActivity
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import java.util.*
 
 
 @KeepName
@@ -87,31 +88,24 @@ class LivePreviewActivity :
       Log.d(TAG, "onCreate")
       super.onCreate(savedInstanceState)
 
-      initializeBillingAndPurchases()
       initializePermissions()
       inflateUI()
       obtainConsent()
       initializeAnalytics()
-      Ads.initialize(this, adView)
-      initializeFacingSwitchButton()
-      updatePremiumStatus()
-
       binding.launchStillImageAndUseCamera.setOnClickListener { startStillImageFromCameraActivity() }
       binding.launchStillImageAndSelectImage.setOnClickListener { startLocalStillImageActivity()  }
-
+      binding.featureSelector.onItemSelectedListener = ClassifierSelectedListener(this, firebaseAnalytics) { showPremiumStatus() }
+      initializeBillingAndPurchases()
+      Ads.initialize(this, adView)
+      initializeFacingSwitchButton()
       initializePremiumStatusButton()
-
       initializePreferencesButton()
-
       initializeShareButton()
 
-//      settingsButton.setOnClickListener { BillingHandler.startPurchaseFlow(BillingHandler.skus.items().first(), this) }
-
-      initializeClassifierSelector()
       createAndInitializeCameraSource(selectedModel)
 
     } catch (e: Exception){
-      Log.e(TAG, e.message.toString())
+      ExceptionHandler.alert(this, e.message.toString(), TAG, e)
     }
   }
 
@@ -126,10 +120,12 @@ class LivePreviewActivity :
   }
 
   private fun updatePremiumStatus() {
-    when {
-      Premium.premiumIsActive() -> binding.premiumStatusImageView.setBackgroundResource(R.drawable.ic_premium)
-      Premium.premiumIsPending() -> binding.premiumStatusImageView.setBackgroundResource(R.drawable.ic_premium_pending)
-      else -> binding.premiumStatusImageView.setBackgroundResource(R.drawable.ic_free)
+    runOnUiThread {
+      when {
+        Premium.premiumIsActive() -> binding.premiumStatusImageView.setBackgroundResource(R.drawable.ic_premium)
+        Premium.premiumIsPending() -> binding.premiumStatusImageView.setBackgroundResource(R.drawable.ic_premium_pending)
+        else -> binding.premiumStatusImageView.setBackgroundResource(R.drawable.ic_free)
+      }
     }
   }
 
@@ -190,29 +186,32 @@ class LivePreviewActivity :
 
   private fun initializeBillingAndPurchases() {
     BillingHandler.addPurchasesListener(purchasesListener)
+    BillingHandler.initialize()
   }
 
   private fun populateClassifierSelector(){
-    val spinner = binding.featureSelector
 
-    // Creating adapter for spinner
-    val dataAdapter = ArrayAdapter(
-      this,
-      R.layout.spinner_style,
-      if (Premium.premiumIsActive()) FaceClassifierProcessor.allClassificationDescriptions(this) else FaceClassifierProcessor.allClassificationDescriptionsFree(this)
-    )
-    // Drop down layout style - list view with radio button
-    dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-    // attaching data adapter to spinner
-    spinner.adapter = dataAdapter
+    try {
+      runOnUiThread{
+        val spinner = binding.featureSelector
 
-    spinner.setSelection(FaceClassifierProcessor.Classifier.values().indexOf(Settings.selectedClassifier))
-  }
+        // Creating adapter for spinner
+        val dataAdapter = ArrayAdapter(
+          this,
+          R.layout.spinner_style,
+          if (Premium.premiumIsActive()) FaceClassifierProcessor.allClassificationDescriptions(this) else FaceClassifierProcessor.allClassificationDescriptionsFree(this)
+        )
+        // Drop down layout style - list view with radio button
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        // attaching data adapter to spinner
+        spinner.adapter = dataAdapter
 
-  private fun initializeClassifierSelector() {
-    populateClassifierSelector()
+        spinner.setSelection(FaceClassifierProcessor.Classifier.values().indexOf(Settings.selectedClassifier))
+      }
 
-    binding.featureSelector.onItemSelectedListener = ClassifierSelectedListener(this, firebaseAnalytics) { showPremiumStatus() }
+    } catch (e: Exception){
+      ExceptionHandler.alert(this, e.message.toString(), TAG, e)
+    }
   }
 
   private fun obtainConsent() {
