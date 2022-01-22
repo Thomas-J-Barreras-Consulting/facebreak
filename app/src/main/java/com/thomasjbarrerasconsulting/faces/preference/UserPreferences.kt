@@ -40,8 +40,9 @@ class UserPreferences {
         private const val DEFAULT_PERFORMANCE_MODE = FaceDetectorOptions.PERFORMANCE_MODE_FAST
         const val PREFERENCE_KEY_FACE_BOX_LINE_WIDTH = "pref_key_face_box_line_width"
         const val PREFERENCE_KEY_PREDICTION_AVERAGING_SECONDS = "pref_key_live_preview_prediction_averaging_seconds"
-        private const val PREFERENCE_KEY_ENABLE_ANALYTICS = "pref_key_google_analytics"
-        private const val PREFERENCE_KEY_ENABLE_PERSONALIZED_ADS = "pref_key_personalized_ads"
+        const val PREFERENCE_KEY_ENABLE_ANALYTICS = "pref_key_google_analytics"
+        const val PREFERENCE_KEY_ENABLE_PERSONALIZED_ADS = "pref_key_personalized_ads"
+        const val PREFERENCE_KEY_GDPR = "pref_key_gdpr"
         private const val PREFERENCE_KEY_PERFORMANCE_MODE = "lpfdpm"
 
         private fun readBoolean(prefKey: String, default:Boolean, context:Context):Boolean {
@@ -132,6 +133,13 @@ class UserPreferences {
             preferences.enablePersonalizedAds = readBoolean(PREFERENCE_KEY_ENABLE_PERSONALIZED_ADS, DEFAULT_ENABLE_PERSONALIZED_ADS, context)
 
             return preferences
+        }
+
+        fun setUserPreferenceBoolean(context: Context, prefKey: String, value:Boolean){
+            val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+            val editor = sharedPreferences.edit()
+            editor.putBoolean(prefKey, value)
+            editor.commit()
         }
     }
 }

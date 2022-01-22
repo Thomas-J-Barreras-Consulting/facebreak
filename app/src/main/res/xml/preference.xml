@@ -68,7 +68,11 @@
             android:summary="@string/preference_premium_status_summary" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/pref_category_privacy">
-
+        <com.thomasjbarrerasconsulting.faces.preference.GdprPrivacyDialogPreference
+            android:key="pref_key_gdpr"
+            android:title="@string/pref_gdpr_title"
+            android:summary="@string/pref_gdpr_summary"
+            android:negativeButtonText="@string/pref_gdpr_close" />
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="pref_key_google_analytics"

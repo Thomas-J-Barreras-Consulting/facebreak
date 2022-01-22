@@ -418,4 +418,12 @@
     <string name="bob_pixie">Bob Pixie</string>
     <string name="thin_short_hair">Thin, Short Hair</string>
     <string name="no_physical_features_detected">No physical features detected</string>
+    <string name="pref_gdpr_title">GDPR Privacy Settings</string>
+    <string name="pref_gdpr_summary">Edit Privacy Settings as required by European Union GDPR regulations.</string>
+    <string name="pref_gdpr_close">Close</string>
+    <string name="message_usage_data_collection_enabled">Usage data collection enabled</string>
+    <string name="message_usage_data_collection_disabled">Usage Data Collection disabled</string>
+    <string name="message_personalized_ads_enabled">Personalized ads enabled</string>
+    <string name="message_personalized_ads_disabled">Personalized ads disabled</string>
+    <string name="message_current_settings">Current settings:</string>
 </resources>

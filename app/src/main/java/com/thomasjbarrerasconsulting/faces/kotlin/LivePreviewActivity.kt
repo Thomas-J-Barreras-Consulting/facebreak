@@ -32,6 +32,7 @@ import android.widget.*
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
+import androidx.preference.PreferenceManager
 import com.android.billingclient.api.Purchase
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.common.annotation.KeepName
@@ -47,13 +48,15 @@ import com.thomasjbarrerasconsulting.faces.kotlin.facedetector.FaceClassifierPro
 import com.thomasjbarrerasconsulting.faces.kotlin.facedetector.FaceDetectorProcessor
 import com.thomasjbarrerasconsulting.faces.*
 import com.thomasjbarrerasconsulting.faces.databinding.ActivityVisionLivePreviewBinding
-import com.thomasjbarrerasconsulting.faces.kotlin.FaceBreakApplication.Companion.instance
 import com.thomasjbarrerasconsulting.faces.kotlin.billing.BillingHandler
 import com.thomasjbarrerasconsulting.faces.kotlin.billing.Premium
 import com.thomasjbarrerasconsulting.faces.preference.PreferencesActivity
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import java.util.*
+import com.google.android.ump.ConsentDebugSettings
+import com.thomasjbarrerasconsulting.faces.preference.UserPreferences
+import com.thomasjbarrerasconsulting.faces.preference.UserPreferences.Companion.PREFERENCE_KEY_ENABLE_ANALYTICS
+import com.thomasjbarrerasconsulting.faces.preference.UserPreferences.Companion.PREFERENCE_KEY_ENABLE_PERSONALIZED_ADS
 
 
 @KeepName
@@ -70,8 +73,6 @@ class LivePreviewActivity :
   private var graphicOverlay: GraphicOverlay? = null
   private var messageText: TextView? = null
   lateinit var adView : AdView
-  private lateinit var consentInformation: ConsentInformation
-  private lateinit var consentForm: ConsentForm
   private var selectedModel = FACE_DETECTION
   private lateinit var binding: ActivityVisionLivePreviewBinding
   private lateinit var permissionsHandler: PermissionsHandler
@@ -91,7 +92,10 @@ class LivePreviewActivity :
 
       initializePermissions()
       inflateUI()
-      obtainConsent()
+      Privacy.obtainConsent(this) {
+        Ads.loadAds(this, adView)
+        initializeAnalytics()
+      }
       initializeAnalytics()
       Ads.initialize(this, adView)
       binding.launchStillImageAndUseCamera.setOnClickListener { startStillImageFromCameraActivity() }
@@ -214,47 +218,6 @@ class LivePreviewActivity :
 
     } catch (e: Exception){
       ExceptionHandler.alert(this, e.message.toString(), TAG, e)
-    }
-  }
-
-  private fun obtainConsent() {
-    // Set tag for underage of consent. false means users are not underage.
-    val params = ConsentRequestParameters.Builder()
-      .setTagForUnderAgeOfConsent(false)
-      .build()
-
-    consentInformation = UserMessagingPlatform.getConsentInformation(this)
-    consentInformation.requestConsentInfoUpdate(
-      this,
-      params,
-      {
-        // The consent information state was updated.
-        // You are now ready to check if a form is available.
-        if (consentInformation.isConsentFormAvailable) {
-          loadConsentForm()
-        }
-      },
-      {
-        ExceptionHandler.alert(this, getString(R.string.failed_to_obtain_consent) + " ${it.errorCode}", TAG, java.lang.Exception(it.message))
-      })
-  }
-
-  private fun loadConsentForm() {
-    UserMessagingPlatform.loadConsentForm(
-      this,
-      { consentForm ->
-        this.consentForm = consentForm
-        if (consentInformation.consentStatus == ConsentInformation.ConsentStatus.REQUIRED) {
-          consentForm.show(
-            this
-          ) { // Handle dismissal by reloading form.
-            loadConsentForm()
-          }
-        }
-      }
-    ) {
-      /// Handle Error.
-      ExceptionHandler.alert(this, getString(R.string.failed_to_load_consent_form) + " ${it.errorCode}", TAG, java.lang.Exception(it.message))
     }
   }
 

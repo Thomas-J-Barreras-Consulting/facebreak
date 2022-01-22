@@ -23,7 +23,7 @@ class PreferencesActivity: AppCompatActivity() {
         val view = binding!!.root
         setContentView(view)
 
-        preferencesFragment = PreferencesFragment()
+        preferencesFragment = PreferencesFragment(this)
         supportFragmentManager
             .beginTransaction()
             .replace(R.id.settings_container, preferencesFragment!!)
