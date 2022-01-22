@@ -139,6 +139,7 @@ class ClassifierText {
                 "Red"	->	context.getString(R.string.red)
                 "White"	->	context.getString(R.string.white)
                 "Yellow"	->	context.getString(R.string.yellow)
+                "Hairless" -> context.getString(R.string.hairless)
                 "Afro"	->	context.getString(R.string.afro)
                 "Bob"	->	context.getString(R.string.bob)
                 "Braided Pig Tails"	->	context.getString(R.string.braided_pig_tails)
