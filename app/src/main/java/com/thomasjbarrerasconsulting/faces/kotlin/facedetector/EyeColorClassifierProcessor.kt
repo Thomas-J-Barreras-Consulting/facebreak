@@ -15,34 +15,33 @@ class EyeColorClassifierProcessor {
             if (outputs[0]?.label == "Closed Eyes" && outputs[0]?.score!! > 0.5){
                 classifications.add(ClassifierText.get("Closed Eyes"))
             } else {
-                val eyesOpenProbability = outputs.filterNot { o -> o?.label == "Closed Eyes" }.map { it?.score!! }.sum()
-                val allColorsProbability = getAllColorsProbability(outputs, eyesOpenProbability)
-                if ((outputs.filterNot{ o -> o?.label == "Closed Eyes"}[0]?.score)?.div(eyesOpenProbability)!! > 0.85){
-                    val eyeColor = outputs.filterNot{ o -> o?.label == "Closed Eyes"}[0]?.label
-                    val colorProbability = percentFormat.format((outputs.filterNot{ o -> o?.label == "Closed Eyes"}[0]?.score)?.div(allColorsProbability)!!)
+                val allColorsProbability = getEyeColorProbabilities(outputs)
+                val eyesOpenOutputs = outputs.filterNot { it?.label == "Closed Eyes" }
+                if (allColorsProbability.count() == 1){
+                    val eyeColor =eyesOpenOutputs.first()?.label
+                    val colorProbability = percentFormat.format(1.0)
                     val pureEyeColor = ClassifierText.get("Pure $eyeColor")
                     classifications.add("$pureEyeColor ($colorProbability)")
                 } else {
-                    val eyeColorOutputs = outputs.filterNot{ o -> o?.label == "Closed Eyes"}
-                    val eyeColorLabel1 = ClassifierText.get(eyeColorOutputs[0]?.label!!)
-                    val eyeColorLabel2 = ClassifierText.get(eyeColorOutputs[1]?.label!!)
-                    val eyeColorScore1 = eyeColorOutputs[0]?.score?.div(allColorsProbability)
-                    val eyeColorScore2 = eyeColorOutputs[1]?.score?.div(allColorsProbability)
-                    if ((eyeColorOutputs[0]?.label!! == "Brown Eyes" && eyeColorOutputs[1]?.label!! == "Blue Eyes") || (eyeColorOutputs[0]?.label!! == "Blue Eyes" && eyeColorOutputs[1]?.label!! == "Brown Eyes")){
+                    val eyeColorLabel1 = ClassifierText.get(eyesOpenOutputs[0]?.label!!)
+                    val eyeColorLabel2 = ClassifierText.get(eyesOpenOutputs[1]?.label!!)
+                    val eyeColorScore1 = allColorsProbability[0]
+                    val eyeColorScore2 = allColorsProbability[1]
+                    if ((eyesOpenOutputs[0]?.label!! == "Brown Eyes" && eyesOpenOutputs[1]?.label!! == "Blue Eyes") || (eyesOpenOutputs[0]?.label!! == "Blue Eyes" && eyesOpenOutputs[1]?.label!! == "Brown Eyes")){
                         classifications.add("$eyeColorLabel1 (${percentFormat.format(eyeColorScore1)})")
-                        val traceColor = ClassifierText.get("Trace ${eyeColorOutputs[1]?.label!!}")
+                        val traceColor = ClassifierText.get("Trace ${eyesOpenOutputs[1]?.label!!}")
                         classifications.add("$traceColor (${percentFormat.format(eyeColorScore2)})")
                     } else {
                         classifications.add("$eyeColorLabel1-$eyeColorLabel2 (${percentFormat.format(eyeColorScore1)}/${percentFormat.format(eyeColorScore2)})")
                     }
-                    if (eyeColorScore1?.plus(eyeColorScore2!!)!! < 0.85){
-                        val eyeColorLabel3 = ClassifierText.get("Trace ${eyeColorOutputs[2]?.label!!}")
-                        val eyeColorScore3 = eyeColorOutputs[2]?.score?.div(allColorsProbability)
+                    if (allColorsProbability.count() > 2){
+                        val eyeColorLabel3 = ClassifierText.get("Trace ${eyesOpenOutputs[2]?.label!!}")
+                        val eyeColorScore3 = allColorsProbability[2]
                         classifications.add("$eyeColorLabel3 (${percentFormat.format(eyeColorScore3)})")
 
-                        if (eyeColorScore1.plus(eyeColorScore2!!).plus(eyeColorScore3!!) < 0.85){
-                            val eyeColorLabel4 = ClassifierText.get("Trace ${eyeColorOutputs[3]?.label!!}")
-                            val eyeColorScore4 = eyeColorOutputs[3]?.score?.div(allColorsProbability)
+                        if (allColorsProbability.count() > 3){
+                            val eyeColorLabel4 = ClassifierText.get("Trace ${eyesOpenOutputs[3]?.label!!}")
+                            val eyeColorScore4 = allColorsProbability[3]
                             classifications.add("$eyeColorLabel4 (${percentFormat.format(eyeColorScore4)})")
                         }
                     }
@@ -51,21 +50,27 @@ class EyeColorClassifierProcessor {
             return classifications
         }
 
-        private fun getAllColorsProbability(outputs: List<Category?>, eyesOpenProbability: Float): Double {
-            var probability = 0.0
+        private fun getEyeColorProbabilities(outputs: List<Category?>): List<Float> {
+            val probabilities = mutableListOf<Float>()
             var colorCount = 0
+            var totalProbabilities = 0.0
+            val eyesOpenProbability = outputs.filterNot { o -> o?.label == "Closed Eyes" }.map { it?.score!! }.sum()
 
             for (category in outputs){
                 if (category?.label != "Closed Eyes"){
-                    probability += category?.score!!
+                    if (category?.score != null){
+                        probabilities.add(category.score)
+                        totalProbabilities += category.score
+                    }
+
                     colorCount += 1
 
-                    if (probability / eyesOpenProbability >= 0.85 || colorCount >= 4){
+                    if (totalProbabilities / eyesOpenProbability >= 0.85 || colorCount >= 4){
                         break
                     }
                 }
             }
-            return probability
+            return probabilities.map { (it / totalProbabilities).toFloat() }
         }
     }
 }
