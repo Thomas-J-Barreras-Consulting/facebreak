@@ -120,7 +120,7 @@
 
     <ToggleButton
         android:id="@+id/facing_switch"
-        android:layout_width="44dp"
+        android:layout_width="48dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical|end"
         android:background="@drawable/ic_baseline_flip_camera_ios_48dp"

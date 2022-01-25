@@ -218,7 +218,7 @@ class StillImageActivity : AppCompatActivity() {
           resetImage(cameraImageUri)
         } else if (result.resultCode == RESULT_CANCELED) {
           if (!imageExists) {
-            onBackPressed()
+            finish()
           }
         }
       }
@@ -242,7 +242,7 @@ class StillImageActivity : AppCompatActivity() {
           resetImage(data!!.data)
         } else if (result.resultCode == RESULT_CANCELED) {
           if (!imageExists) {
-            onBackPressed()
+            finish()
           }
         }
       }
