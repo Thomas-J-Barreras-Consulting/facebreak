@@ -72,8 +72,8 @@ class LivePreviewActivity :
   private var preview: CameraSourcePreview? = null
   private var graphicOverlay: GraphicOverlay? = null
   private var messageText: TextView? = null
-  lateinit var adView : AdView
   private var selectedModel = FACE_DETECTION
+  private lateinit var adView : AdView
   private lateinit var binding: ActivityVisionLivePreviewBinding
   private lateinit var permissionsHandler: PermissionsHandler
   private lateinit var firebaseAnalytics: FirebaseAnalytics
@@ -90,7 +90,6 @@ class LivePreviewActivity :
       Log.d(TAG, "onCreate")
       super.onCreate(savedInstanceState)
 
-      initializePermissions()
       inflateUI()
       Privacy.obtainConsent(this) {
         Ads.loadAds(this, adView)
@@ -98,6 +97,8 @@ class LivePreviewActivity :
       }
       initializeAnalytics()
       Ads.initialize(this, adView)
+
+
       binding.launchStillImageAndUseCamera.setOnClickListener { startStillImageFromCameraActivity() }
       binding.launchStillImageAndSelectImage.setOnClickListener { startLocalStillImageActivity()  }
       binding.featureSelector.onItemSelectedListener = ClassifierSelectedListener(this, firebaseAnalytics) { showPremiumStatus() }
@@ -109,6 +110,7 @@ class LivePreviewActivity :
       initializeShareButton()
       populateClassifierSelector()
 
+      initializePermissions()
       createAndInitializeCameraSource(selectedModel)
 
     } catch (e: Exception){
@@ -178,10 +180,10 @@ class LivePreviewActivity :
 
   private fun inflateUI() {
     binding = ActivityVisionLivePreviewBinding.inflate(layoutInflater)
+    adView = binding.adView
     graphicOverlay = binding.graphicOverlay
     preview = binding.previewLiveView
     messageText = binding.messageTextView
-    adView = binding.adView
     setContentView(binding.root)
   }
 

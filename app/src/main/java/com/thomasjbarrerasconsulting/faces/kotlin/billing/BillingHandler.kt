@@ -23,19 +23,21 @@ class BillingHandler() {
         private const val BILLING_TASK_REFRESH_IN_APP_PURCHASES = "refreshInAppPurchases"
         private const val BILLING_TASK_REFRESH_IN_APP_SKUS = "refreshInAppSkus"
         private const val BILLING_TASK_START_PAYMENT = "startPayment"
-
-        private lateinit var billingClient: BillingClient
         private val tasks = TaskLauncher()
-
         val purchases = ObservableList<Purchase>()
         val skus = ObservableList<SkuDetails>()
         private val purchasesUpdatedListener = MyPurchaseUpdatedListener()
+        private lateinit var billingClient: BillingClient
 
-        fun initialize() {
+        private fun createBillingClient(){
             billingClient = BillingClient.newBuilder(FaceBreakApplication.instance)
                 .enablePendingPurchases()
                 .setListener(purchasesUpdatedListener)
                 .build()
+        }
+
+        fun initialize() {
+            createBillingClient()
 
             refreshInAppPurchases()
             refreshInAppSkuDetails(listOf(SKU_PREMIUM))
@@ -45,7 +47,10 @@ class BillingHandler() {
 
         private fun runBillingTask(taskType: String, task: () -> Unit){
             try {
+
                 tasks.update(taskType, task)
+
+                createBillingClientIfNecessary()
 
                 if (billingClient.isReady) {
                     tasks.launchAll()
@@ -105,6 +110,7 @@ class BillingHandler() {
 
         fun startPurchaseFlow(sku: SkuDetails, activity: Activity) {
             log( "Purchasing SKU $skus")
+
             runBillingTask (BILLING_TASK_START_PAYMENT + sku.description) {
                 val flowParams = BillingFlowParams.newBuilder().setSkuDetails(sku).build()
                 val billingResult = billingClient.launchBillingFlow(activity, flowParams)
@@ -189,6 +195,13 @@ class BillingHandler() {
             }
             catch (e: Exception){
                 Log.e(TAG, e.message.toString())
+            }
+        }
+
+        @Synchronized
+        private fun createBillingClientIfNecessary(){
+            if (! this::billingClient.isInitialized){
+                createBillingClient()
             }
         }
 

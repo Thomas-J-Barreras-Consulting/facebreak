@@ -66,25 +66,25 @@ import kotlinx.coroutines.runBlocking
 class StillImageActivity : AppCompatActivity() {
   private var preview: ImageView? = null
   private var graphicOverlay: GraphicOverlay? = null
-  lateinit var adView : AdView
   private var isLandScape = false
   // Max width (portrait mode)
   private var imageMaxWidth = 0
   // Max height (portrait mode)
   private var imageMaxHeight = 0
   private var imageProcessor: FaceDetectorProcessor? = null
-  private lateinit var binding: ActivityStillImageBinding
   private var localImageResultLauncher: ActivityResultLauncher<Intent>? = null
   private var imageFromPhotoResultLauncher: ActivityResultLauncher<Intent>? = null
   private var preferencesResultLauncher: ActivityResultLauncher<Intent>? = null
   private var shareResultLauncher: ActivityResultLauncher<Intent>? = null
   private var premiumStatusResultLauncher: ActivityResultLauncher<Intent>? = null
-  private lateinit var scaleGestureDetector: ScaleGestureDetector
-  private lateinit var panGestureDetector: GestureDetector
   private var scrolling: Boolean = false
   private var imageExists: Boolean = false
   private var cameraImageUri: Uri? = null
   private var localImage: Boolean = false
+  private lateinit var scaleGestureDetector: ScaleGestureDetector
+  private lateinit var panGestureDetector: GestureDetector
+  private lateinit var binding: ActivityStillImageBinding
+  private lateinit var adView : AdView
   private lateinit var firebaseAnalytics: FirebaseAnalytics
 
   private val purchasesListener = object: ObservableList.ListUpdatedListener<Purchase> {
