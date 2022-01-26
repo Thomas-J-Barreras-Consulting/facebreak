@@ -21,7 +21,7 @@ class AgeClassifierProcessor {
             val (minAge33, maxAge33) = ageRange(outputs, 0.33f)
 
             if (minAge33 == maxAge33){
-                classifications.add(context.getString(R.string.apparent_age) + likelyAge)
+                classifications.add(context.getString(R.string.apparent_age) + " " + likelyAge)
             } else {
                 classifications.add(context.getString(R.string.apparent_age) + " " + likelyAge + " " + context.getString(R.string.years) +
                         " (" + minAge33 + " " + context.getString(R.string.to) + " " + maxAge33 + ")")

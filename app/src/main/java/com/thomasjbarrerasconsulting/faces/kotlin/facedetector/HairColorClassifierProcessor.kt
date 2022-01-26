@@ -37,7 +37,7 @@ class HairColorClassifierProcessor {
                 "Black" -> context.getString(R.string.pure_black) + " (${oneHundredPercent})"
                 "Blond" -> context.getString(R.string.true_blond) + " (${oneHundredPercent})"
                 "Brown" -> context.getString(R.string.pure_brown) + " (${oneHundredPercent})"
-                "Red" -> context.getString(R.string.true_red) + "(${oneHundredPercent})"
+                "Red" -> context.getString(R.string.true_red) + " (${oneHundredPercent})"
                 else -> "${ClassifierText.get(color.label)} (${oneHundredPercent})"
             }
         }
