@@ -20,13 +20,13 @@ android {
         multiDexEnabled true
         targetSdkVersion 31
 
-        versionCode 23
-        versionName "1.23"
+        versionCode 24
+        versionName "1.24"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         setProperty("archivesBaseName", "facebreak")
         buildConfigField("String", "BASE64_ENCODED_PUBLIC_KEY", "\"" + localProperties['base64EncodedPublicKey'] + "\"")
-        resConfigs "en"
+        resConfigs 'en'
     }
     buildTypes {
         proguard {
