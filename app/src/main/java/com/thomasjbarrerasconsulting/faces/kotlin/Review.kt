@@ -6,23 +6,18 @@ package com.thomasjbarrerasconsulting.faces.kotlin
 import android.app.Activity
 import android.content.Context
 import android.util.Log
-import android.widget.Toast
-import androidx.work.impl.Schedulers.schedule
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.google.android.play.core.review.ReviewManager
 import java.util.*
-import kotlin.math.min
 
 class Review {
 
     companion object {
         private const val TAG = "Review"
-//        private const val TWELVE_HOURS_IN_MS = 43200000
-//        private const val FIVE_MINUTES_IN_MS = 300000
-//        private const val SIXTY_MINUTES_IN_MS = 3600000
-        private const val TWELVE_HOURS_IN_MS = 10
-        private const val FIVE_MINUTES_IN_MS = 10
-        private const val SIXTY_MINUTES_IN_MS = 10
+        private const val FIVE_MINUTES_IN_MS = 300000
+        private const val SIXTY_MINUTES_IN_MS = 3600000
+//        private const val FIVE_MINUTES_IN_MS = 10
+//        private const val SIXTY_MINUTES_IN_MS = 10
         private const val MIN_LAUNCH_CHECK_COUNT = 5
         private lateinit var reviewManager: ReviewManager
         private var firstInstallTime: Long = 0
@@ -40,8 +35,8 @@ class Review {
             } else {
                 currentTime + SIXTY_MINUTES_IN_MS
             }
-            if (triggerTime < firstInstallTime + TWELVE_HOURS_IN_MS){
-                triggerTime = firstInstallTime + TWELVE_HOURS_IN_MS
+            if (triggerTime < firstInstallTime + SIXTY_MINUTES_IN_MS){
+                triggerTime = firstInstallTime + SIXTY_MINUTES_IN_MS
             }
         }
 
