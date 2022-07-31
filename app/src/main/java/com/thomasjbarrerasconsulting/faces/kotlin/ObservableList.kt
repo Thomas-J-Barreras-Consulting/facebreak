@@ -20,15 +20,13 @@ class ObservableList<T> () {
     }
 
     fun updateIfDifferent(updatedList: List<T>){
-        if (updatedList.isEmpty()){
-            return
-        }
         var differencesDetected = false
         synchronized(this){
             differencesDetected = (list.count() != updatedList.count()) || list.map{ it.toString() } != updatedList.map { it.toString() }
-
-            list.clear()
-            list.addAll(updatedList)
+            if (differencesDetected) {
+                list.clear()
+                list.addAll(updatedList)
+            }
         }
         Log.d(TAG, "List: $list")
 

@@ -25,13 +25,15 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import com.android.billingclient.api.BillingClient
+import com.android.billingclient.api.ConsumeResponseListener
 import com.android.billingclient.api.Purchase
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.common.annotation.KeepName
@@ -39,12 +41,12 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.analytics.ktx.logEvent
 import com.google.firebase.ktx.Firebase
-import com.thomasjbarrerasconsulting.faces.kotlin.facedetector.FaceClassifierProcessor
-import com.thomasjbarrerasconsulting.faces.kotlin.facedetector.FaceDetectorProcessor
 import com.thomasjbarrerasconsulting.faces.*
 import com.thomasjbarrerasconsulting.faces.databinding.ActivityVisionLivePreviewBinding
 import com.thomasjbarrerasconsulting.faces.kotlin.billing.BillingHandler
 import com.thomasjbarrerasconsulting.faces.kotlin.billing.Premium
+import com.thomasjbarrerasconsulting.faces.kotlin.facedetector.FaceClassifierProcessor
+import com.thomasjbarrerasconsulting.faces.kotlin.facedetector.FaceDetectorProcessor
 import com.thomasjbarrerasconsulting.faces.preference.PreferencesActivity
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -80,6 +82,7 @@ class LivePreviewActivity :
     try {
       Log.d(TAG, "onCreate")
       super.onCreate(savedInstanceState)
+      initializeBillingAndPurchases()
 
       inflateUI()
       Privacy.obtainConsent(this) {
@@ -93,9 +96,7 @@ class LivePreviewActivity :
       binding.launchStillImageAndSelectImage.setOnClickListener { startLocalStillImageActivity()  }
       binding.featureSelector.onItemSelectedListener = ClassifierSelectedListener(this, firebaseAnalytics, { showPremiumStatus() }, { Review.checkLaunchInAppReview(this) })
 
-      initializeBillingAndPurchases()
       initializeFacingSwitchButton()
-      initializePremiumStatusButton()
       initializePreferencesButton()
       initializeShareButton()
       populateClassifierSelector()
@@ -103,6 +104,7 @@ class LivePreviewActivity :
       initializePermissions()
       createAndInitializeCameraSource(selectedModel)
       initializeReview()
+      initializePremiumStatusButton()
 
     } catch (e: Exception){
       ExceptionHandler.alert(this, e.message.toString(), TAG, e)
@@ -131,6 +133,7 @@ class LivePreviewActivity :
         Premium.premiumIsPending() -> binding.premiumStatusImageView.setBackgroundResource(R.drawable.ic_premium_pending)
         else -> binding.premiumStatusImageView.setBackgroundResource(R.drawable.ic_free)
       }
+      binding.premiumStatusImageView.invalidate()
     }
   }
 

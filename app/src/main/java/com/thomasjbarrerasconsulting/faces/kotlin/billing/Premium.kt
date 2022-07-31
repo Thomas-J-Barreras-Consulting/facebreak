@@ -4,10 +4,7 @@
 */
 package com.thomasjbarrerasconsulting.faces.kotlin.billing
 
-import android.content.Context
 import com.android.billingclient.api.Purchase
-import com.thomasjbarrerasconsulting.faces.R
-import com.thomasjbarrerasconsulting.faces.kotlin.Toaster
 
 class Premium {
     enum class Status {
@@ -21,8 +18,7 @@ class Premium {
 
         fun status(): Status{
             // TODO - Handle more than one product
-            val purchase = BillingHandler.purchases.items().firstOrNull()
-            if (purchase == null) return Status.PREMIUM_STATUS_NONE
+            val purchase = BillingHandler.purchases.items().firstOrNull() ?: return Status.PREMIUM_STATUS_NONE
 
             return when (purchase.purchaseState) {
                 Purchase.PurchaseState.PENDING -> Status.PREMIUM_STATUS_PENDING

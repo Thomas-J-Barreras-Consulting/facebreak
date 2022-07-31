@@ -15,6 +15,7 @@ class Review {
     companion object {
         private const val TAG = "Review"
         private const val SIXTY_MINUTES_IN_MS = 3600000
+        private const val FIVE_MINUTES_IN_MS =  300000
         private const val MIN_LAUNCH_CHECK_COUNT = 6
         private lateinit var reviewManager: ReviewManager
         private var firstInstallTime: Long = 0
@@ -26,7 +27,15 @@ class Review {
         }
 
         private fun updateTriggerTime(){
-            triggerTime = System.currentTimeMillis() + SIXTY_MINUTES_IN_MS
+            triggerTime = if (triggerTime == 0L){
+                System.currentTimeMillis() + FIVE_MINUTES_IN_MS
+            } else {
+                System.currentTimeMillis() + SIXTY_MINUTES_IN_MS
+            }
+
+            if (triggerTime < firstInstallTime + SIXTY_MINUTES_IN_MS){
+                triggerTime = firstInstallTime + SIXTY_MINUTES_IN_MS
+            }
         }
 
         fun initialize(context: Context) {
@@ -69,7 +78,7 @@ class Review {
                             }
                         }
                     }
-                }, 2000)
+                }, 1000)
             }
         }
     }

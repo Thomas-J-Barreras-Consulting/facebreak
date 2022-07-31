@@ -15,24 +15,26 @@ import com.thomasjbarrerasconsulting.faces.kotlin.Toaster.Companion.toast
 import com.thomasjbarrerasconsulting.faces.kotlin.tasks.TaskLauncher
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import java.util.*
+
 
 class BillingHandler() {
     companion object {
         private const val TAG = "BillingHandler"
-        private const val SKU_PREMIUM = "premium"
+        private const val PREMIUM_PRODUCT_ID = "premium"
         private const val BILLING_TASK_REFRESH_IN_APP_PURCHASES = "refreshInAppPurchases"
-        private const val BILLING_TASK_REFRESH_IN_APP_SKUS = "refreshInAppSkus"
+        private const val BILLING_TASK_REFRESH_IN_APP_PURCHASE_PRODUCT_DETAILS = "refreshInAppPurchaseProductDetails"
         private const val BILLING_TASK_START_PAYMENT = "startPayment"
         private val tasks = TaskLauncher()
         val purchases = ObservableList<Purchase>()
-        val skus = ObservableList<SkuDetails>()
+        val productDetails = ObservableList<ProductDetails>()
         private val purchasesUpdatedListener = MyPurchaseUpdatedListener()
         private lateinit var billingClient: BillingClient
 
         private fun createBillingClient(){
             billingClient = BillingClient.newBuilder(FaceBreakApplication.instance)
-                .enablePendingPurchases()
                 .setListener(purchasesUpdatedListener)
+                .enablePendingPurchases()
                 .build()
         }
 
@@ -40,7 +42,7 @@ class BillingHandler() {
             createBillingClient()
 
             refreshInAppPurchases()
-            refreshInAppSkuDetails(listOf(SKU_PREMIUM))
+            refreshInAppProductDetails()
 
             log("Billing client initialized")
         }
@@ -87,33 +89,105 @@ class BillingHandler() {
             runBillingTask(BILLING_TASK_REFRESH_IN_APP_PURCHASES) {
                 runBlocking {
                     launch {
-                        purchases.updateIfDifferent(billingClient.queryPurchasesAsync(BillingClient.SkuType.INAPP).purchasesList.filter { Security.verifyPurchase(it.originalJson, it.signature) })
+                        billingClient.queryPurchasesAsync(
+                            QueryPurchasesParams.newBuilder()
+                                .setProductType(BillingClient.ProductType.INAPP)
+                                .build()
+                        ) { billingResult, purchaseList ->
+                            // Process the result
+                            if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
+                                val filteredList = purchaseList.filter {
+                                    Security.verifyPurchase(
+                                        it.originalJson,
+                                        it.signature
+                                    )
+                                }
+                                handlePendingPurchases(filteredList)
+                                purchases.updateIfDifferent(filteredList)
+                            }
+
+                            retryRefreshInAppPurchasesIfNecessary(billingResult)
+                        }
                     }
                 }
             }
         }
 
-        private fun refreshInAppSkuDetails(skus: List<String>) {
-            log( "Refreshing in-app SKU Details")
+        private fun handlePendingPurchases(filteredList: List<Purchase>) {
+            if (filteredList.isEmpty() && purchases.list.any { it.purchaseState == Purchase.PurchaseState.PENDING }){
+                toast(FaceBreakApplication.instance.getString(R.string.message_payment_declined) + purchases.list.first { it.purchaseState == Purchase.PurchaseState.PENDING }.orderId)
+            }
+        }
 
-            runBillingTask (BILLING_TASK_REFRESH_IN_APP_SKUS) {
-                val params = SkuDetailsParams.newBuilder().setSkusList(skus).setType(BillingClient.SkuType.INAPP)
-                billingClient.querySkuDetailsAsync(params.build()) { billingResult, skuDetailsList ->
-                    if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && skuDetailsList != null) {
-                        this.skus.updateIfDifferent(skuDetailsList)
-                    } else {
-                        log("Failed to get SKU details: ${billingResult.responseCode}. ${billingResult.debugMessage}")
+        private fun retryRefreshInAppPurchasesIfNecessary(billingResult: BillingResult) {
+            var retry = false
+            if (billingResult.responseCode != BillingClient.BillingResponseCode.OK){
+                log("Failed to refresh InApp purchases: ${billingResult.responseCode}. ${billingResult.debugMessage}. Retrying in 60 seconds")
+                retry = true
+            }
+
+            if (purchases.list.any { it.purchaseState == Purchase.PurchaseState.PENDING }){
+                log("Pending purchases. Retrying in 60 seconds")
+                retry = true
+            }
+
+            if (retry){
+                Timer().schedule(object : TimerTask() {
+                    override fun run() {
+                        refreshInAppPurchases()
                     }
+                }, 60000)
+            }
+        }
+
+        fun refreshInAppProductDetails() {
+            log( "Refreshing in-app Product Details")
+
+            runBillingTask (BILLING_TASK_REFRESH_IN_APP_PURCHASE_PRODUCT_DETAILS) {
+                val productList =
+                    listOf(
+                        QueryProductDetailsParams.Product.newBuilder()
+                            .setProductId(PREMIUM_PRODUCT_ID)
+                            .setProductType(BillingClient.ProductType.INAPP)
+                            .build()
+                    )
+
+                val params = QueryProductDetailsParams.newBuilder().setProductList(productList)
+
+                billingClient.queryProductDetailsAsync(params.build()) {
+                        billingResult,
+                        productDetailsList ->
+                            if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
+                                this.productDetails.updateIfDifferent(productDetailsList)
+                            } else {
+                                log("Failed to get product details: ${billingResult.responseCode}. ${billingResult.debugMessage}. Retrying in 60 seconds")
+                                Timer().schedule(object : TimerTask() {
+                                    override fun run() {
+                                        refreshInAppProductDetails()
+                                    }
+                                }, 60000)
+                            }
                 }
             }
         }
 
-        fun startPurchaseFlow(sku: SkuDetails, activity: Activity) {
-            log( "Purchasing SKU $skus")
+        fun startPurchaseFlow(details:ProductDetails, activity: Activity) {
+            log( "Purchasing product $details")
 
-            runBillingTask (BILLING_TASK_START_PAYMENT + sku.description) {
-                val flowParams = BillingFlowParams.newBuilder().setSkuDetails(sku).build()
-                val billingResult = billingClient.launchBillingFlow(activity, flowParams)
+            // Launch the billing flow
+            runBillingTask(BILLING_TASK_START_PAYMENT + details.description){
+                val productDetailsParamsList =
+                    listOf(
+                        BillingFlowParams.ProductDetailsParams.newBuilder()
+                            .setProductDetails(details)
+                            .build()
+                    )
+                val billingFlowParams =
+                    BillingFlowParams.newBuilder()
+                        .setProductDetailsParamsList(productDetailsParamsList)
+                        .build()
+
+                val billingResult = billingClient.launchBillingFlow(activity, billingFlowParams)
                 log("Purchase result: $billingResult")
             }
         }
@@ -123,7 +197,9 @@ class BillingHandler() {
                 when (billingResult.responseCode) {
                     BillingClient.BillingResponseCode.OK -> processPurchases(purchases)
                     BillingClient.BillingResponseCode.USER_CANCELED -> log("Purchase canceled for: $purchases")
-                    else -> log("Purchases updated with response code ${billingResult.responseCode}")
+                    else -> {
+                        log("Purchases updated with response code ${billingResult.responseCode}")
+                    }
                 }
             }
 
@@ -149,7 +225,6 @@ class BillingHandler() {
             private fun processPurchase(purchase: Purchase){
                 ensurePurchaseAcknowledged(purchase)
                 toast(FaceBreakApplication.instance.getString(R.string.message_premium_purchased) + purchase.orderId)
-
             }
 
             private fun processCanceledPurchase(purchase: Purchase){
@@ -181,12 +256,12 @@ class BillingHandler() {
             purchases.removeListener(listener)
         }
 
-        fun addSkusListener(listener: ObservableList.ListUpdatedListener<SkuDetails>){
-            skus.addListener(listener)
+        fun addProductDetailsListener(listener: ObservableList.ListUpdatedListener<ProductDetails>){
+            productDetails.addListener(listener)
         }
 
-        fun removeSkusListener(listener: ObservableList.ListUpdatedListener<SkuDetails>){
-            skus.removeListener(listener)
+        fun removeProductDetailsListener(listener: ObservableList.ListUpdatedListener<ProductDetails>){
+            productDetails.removeListener(listener)
         }
 
         private fun log(message: String){
