@@ -30,7 +30,6 @@ import android.provider.MediaStore
 import androidx.appcompat.app.AppCompatActivity
 import android.util.Log
 import android.view.*
-import android.widget.ArrayAdapter
 import android.widget.ImageView
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -143,13 +142,8 @@ class StillImageActivity : AppCompatActivity() {
   }
 
   private fun updatePremiumStatus() {
-    runOnUiThread {
-      when {
-        Premium.premiumIsActive() -> binding.premiumStatusImageView.setBackgroundResource(R.drawable.ic_premium)
-        Premium.premiumIsPending() -> binding.premiumStatusImageView.setBackgroundResource(R.drawable.ic_premium_pending)
-        else -> binding.premiumStatusImageView.setBackgroundResource(R.drawable.ic_free)
-      }
-    }
+    PremiumStatus.updatePremiumStatusImage(this, binding.premiumStatusImageView)
+    PremiumStatus.updateAds(this, binding.adView)
   }
 
   private fun initializeGestureDetection() {
@@ -405,17 +399,7 @@ class StillImageActivity : AppCompatActivity() {
   }
 
   private fun populateClassifierSelector() {
-    runOnUiThread{
-      val featureSpinner = binding.featureSelector
-      val featureSpinnerDataAdapter = ArrayAdapter(
-        this,
-        R.layout.spinner_style,
-        if (Premium.premiumIsActive()) FaceClassifierProcessor.allClassificationDescriptions(this) else FaceClassifierProcessor.allClassificationDescriptionsFree(this)
-      )
-      featureSpinnerDataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-      featureSpinner.adapter = featureSpinnerDataAdapter
-      featureSpinner.setSelection(FaceClassifierProcessor.Classifier.values().indexOf(Settings.selectedClassifier))
-    }
+    PremiumStatus.populateClassifierSelector(this, binding.featureSelector)
   }
 
   public override fun onSaveInstanceState(outState: Bundle) {

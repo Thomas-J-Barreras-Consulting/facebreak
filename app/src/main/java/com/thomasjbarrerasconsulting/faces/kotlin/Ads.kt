@@ -1,7 +1,9 @@
 package com.thomasjbarrerasconsulting.faces.kotlin
 
+import android.app.Activity
 import android.content.Context
 import android.os.Bundle
+import android.view.View
 import com.google.ads.mediation.admob.AdMobAdapter
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
@@ -24,6 +26,11 @@ class Ads {
                 .addNetworkExtrasBundle(AdMobAdapter::class.java, extras)
                 .build()
             adView.loadAd(adRequest)
+        }
+
+        fun removeAds(adView: AdView){
+            adView.isEnabled = false
+            adView.visibility = View.GONE
         }
     }
 }

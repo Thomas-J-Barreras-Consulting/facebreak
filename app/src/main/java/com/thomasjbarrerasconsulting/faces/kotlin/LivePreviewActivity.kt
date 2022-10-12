@@ -32,8 +32,6 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import com.android.billingclient.api.BillingClient
-import com.android.billingclient.api.ConsumeResponseListener
 import com.android.billingclient.api.Purchase
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.common.annotation.KeepName
@@ -74,8 +72,13 @@ class LivePreviewActivity :
   private val purchasesListener = object: ObservableList.ListUpdatedListener<Purchase> {
     override fun listUpdated(list: List<Purchase>) {
       updatePremiumStatus()
+
       populateClassifierSelector()
     }
+  }
+
+  fun populateClassifierSelector(){
+    PremiumStatus.populateClassifierSelector(this, binding.featureSelector)
   }
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -127,14 +130,8 @@ class LivePreviewActivity :
   }
 
   private fun updatePremiumStatus() {
-    runOnUiThread {
-      when {
-        Premium.premiumIsActive() -> binding.premiumStatusImageView.setBackgroundResource(R.drawable.ic_premium)
-        Premium.premiumIsPending() -> binding.premiumStatusImageView.setBackgroundResource(R.drawable.ic_premium_pending)
-        else -> binding.premiumStatusImageView.setBackgroundResource(R.drawable.ic_free)
-      }
-      binding.premiumStatusImageView.invalidate()
-    }
+    PremiumStatus.updatePremiumStatusImage(this, binding.premiumStatusImageView)
+    PremiumStatus.updateAds(this, binding.adView)
   }
 
   private fun initializePreferencesButton() {
@@ -195,31 +192,6 @@ class LivePreviewActivity :
   private fun initializeBillingAndPurchases() {
     BillingHandler.addPurchasesListener(purchasesListener)
     BillingHandler.initialize()
-  }
-
-  private fun populateClassifierSelector(){
-
-    try {
-      runOnUiThread{
-        val spinner = binding.featureSelector
-
-        // Creating adapter for spinner
-        val dataAdapter = ArrayAdapter(
-          this,
-          R.layout.spinner_style,
-          if (Premium.premiumIsActive()) FaceClassifierProcessor.allClassificationDescriptions(this) else FaceClassifierProcessor.allClassificationDescriptionsFree(this)
-        )
-        // Drop down layout style - list view with radio button
-        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        // attaching data adapter to spinner
-        spinner.adapter = dataAdapter
-
-        spinner.setSelection(FaceClassifierProcessor.Classifier.values().indexOf(Settings.selectedClassifier))
-      }
-
-    } catch (e: Exception){
-      ExceptionHandler.alert(this, e.message.toString(), TAG, e)
-    }
   }
 
   private fun showPremiumStatus() {
