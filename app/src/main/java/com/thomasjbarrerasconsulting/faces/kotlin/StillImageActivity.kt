@@ -407,11 +407,11 @@ class StillImageActivity : AppCompatActivity() {
     saveState()
   }
 
-  override fun onTouchEvent(event: MotionEvent?): Boolean {
+  override fun onTouchEvent(event: MotionEvent): Boolean {
     scaleGestureDetector.onTouchEvent(event)
     panGestureDetector.onTouchEvent(event)
 
-    if (scrolling && (event!!.action == MotionEvent.ACTION_UP)) {
+    if (scrolling && (event.action == MotionEvent.ACTION_UP)) {
       scrolling = false
       classifyDisplayedImage()
     }
@@ -581,7 +581,7 @@ class StillImageActivity : AppCompatActivity() {
 
   private inner class PanListener: GestureDetector.SimpleOnGestureListener(){
 
-    override fun onScroll(e1: MotionEvent?, e2: MotionEvent?, distanceX: Float, distanceY: Float): Boolean {
+    override fun onScroll(e1: MotionEvent, e2: MotionEvent, distanceX: Float, distanceY: Float): Boolean {
       preview!!.x -= distanceX
       preview!!.y -= distanceY
 
@@ -593,7 +593,7 @@ class StillImageActivity : AppCompatActivity() {
 
   private inner class ScaleListener: ScaleGestureDetector.SimpleOnScaleGestureListener() {
 
-    override fun onScale(detector: ScaleGestureDetector?): Boolean {
+    override fun onScale(detector: ScaleGestureDetector): Boolean {
       val newScaleFactor = if (scaleGestureDetector.scaleFactor < 1){
         scaleFactor * (1.0f - 0.1f * (1.0f - scaleGestureDetector.scaleFactor))
       } else {

@@ -36,10 +36,9 @@ class AgeClassifierProcessor {
 
             var totalProbability = 0.0f
             for (output in outputs) {
-                var age = 0
                 val probability = output?.score ?: 0.0f
                 totalProbability += probability
-                age = if (output?.label == "Infant") {
+                val age = if (output?.label == "Infant") {
                     0
                 } else {
                     output?.label?.toInt() ?: 0
