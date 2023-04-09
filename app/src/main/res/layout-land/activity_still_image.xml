@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/still_parent_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -9,14 +10,21 @@
 
   <ImageView
       android:id="@+id/preview"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
+      android:layout_width="match_parent"
+      android:layout_height="0dp"
       android:adjustViewBounds="true"
       android:contentDescription="@string/image_preview"
       app:layout_constraintBottom_toTopOf="@+id/toolbar"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toTopOf="parent" />
+      app:layout_constraintTop_toBottomOf="@id/adView" />
+
+  <com.thomasjbarrerasconsulting.faces.GraphicOverlay
+      android:id="@+id/graphic_overlay"
+      android:layout_width="0dp"
+      android:layout_height="0dp"
+      app:layout_constraintBottom_toBottomOf="@id/preview"
+      app:layout_constraintLeft_toLeftOf="@id/preview"
+      app:layout_constraintRight_toRightOf="@id/preview"
+      app:layout_constraintTop_toTopOf="@id/preview" />
 
   <ImageView
       android:id="@+id/premium_status_image_view"
@@ -37,20 +45,10 @@
       android:layout_height="wrap_content"
       android:foreground="?attr/selectableItemBackground"
       app:layout_constraintRight_toRightOf="@id/still_parent_layout"
-      app:layout_constraintTop_toTopOf="@id/still_parent_layout" />
-
+      tools:layout_editor_absoluteY="0dp" />
 
   <!-- TODO: Replace the test adUnitId with the real one: ca-app-pub-5555304935446174/8806775376 -->
   <!-- TODO: For general testing replace the real adUnitId with the test one: ca-app-pub-3940256099942544/6300978111 -->
-  <com.thomasjbarrerasconsulting.faces.GraphicOverlay
-      android:id="@+id/graphic_overlay"
-      android:layout_width="0dp"
-      android:layout_height="0dp"
-      app:layout_constraintBottom_toBottomOf="@id/preview"
-      app:layout_constraintLeft_toLeftOf="@id/preview"
-      app:layout_constraintRight_toRightOf="@id/preview"
-      app:layout_constraintTop_toTopOf="@id/preview" />
-
   <com.google.android.gms.ads.AdView
       android:id="@+id/adView"
       android:layout_width="wrap_content"

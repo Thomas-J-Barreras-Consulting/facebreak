@@ -6,20 +6,33 @@
     android:layout_height="match_parent"
     android:keepScreenOn="true">
 
+  <!-- TODO: Replace the test adUnitId with the real one: ca-app-pub-5555304935446174/8806775376 -->
+  <!-- TODO: For general testing replace the real adUnitId with the test one: ca-app-pub-3940256099942544/6300978111 -->
+  <com.google.android.gms.ads.AdView
+      android:id="@+id/adView"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      app:adSize="BANNER"
+      app:adUnitId="ca-app-pub-5555304935446174/8806775376"
+      app:layout_constraintLeft_toLeftOf="parent"
+      app:layout_constraintRight_toRightOf="parent"
+      app:layout_constraintTop_toTopOf="parent" />
+
   <com.thomasjbarrerasconsulting.faces.CameraSourcePreview
       android:id="@+id/preview_live_view"
       android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      app:layout_constraintBottom_toTopOf="@id/bottomLinearLayout">
+      android:layout_height="0dp"
+      app:layout_constraintBottom_toTopOf="@id/bottomLinearLayout"
+      app:layout_constraintTop_toBottomOf="@id/adView">
 
   </com.thomasjbarrerasconsulting.faces.CameraSourcePreview>
 
   <com.thomasjbarrerasconsulting.faces.GraphicOverlay
       android:id="@+id/graphic_overlay"
       android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      app:layout_constraintBottom_toTopOf="@id/bottomLinearLayout"
-      app:layout_constraintStart_toStartOf="@id/preview_live_view" />
+      android:layout_height="0dp"
+      app:layout_constraintBottom_toBottomOf="@id/preview_live_view"
+      app:layout_constraintTop_toTopOf="@id/preview_live_view" />
 
   <ImageView
       android:id="@+id/premium_status_image_view"
@@ -56,17 +69,6 @@
       app:layout_constraintRight_toRightOf="parent"
       app:layout_constraintTop_toTopOf="parent" />
 
-  <!-- TODO: Replace the test adUnitId with the real one: ca-app-pub-5555304935446174/8806775376 -->
-  <!-- TODO: For general testing replace the real adUnitId with the test one: ca-app-pub-3940256099942544/6300978111 -->
-  <com.google.android.gms.ads.AdView
-      android:id="@+id/adView"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      app:adSize="BANNER"
-      app:adUnitId="ca-app-pub-5555304935446174/8806775376"
-      app:layout_constraintLeft_toLeftOf="parent"
-      app:layout_constraintRight_toRightOf="parent"
-      app:layout_constraintTop_toTopOf="parent" />
 
   <LinearLayout
       android:id="@+id/bottomLinearLayout"

@@ -10,23 +10,22 @@
 
   <ImageView
       android:id="@+id/preview"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
+      android:layout_width="match_parent"
+      android:layout_height="0dp"
       android:adjustViewBounds="true"
       android:contentDescription="@string/image_preview"
       app:layout_constraintBottom_toTopOf="@+id/toolbar"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toTopOf="parent" />
+      app:layout_constraintLeft_toLeftOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/adView" />
 
   <com.thomasjbarrerasconsulting.faces.GraphicOverlay
       android:id="@+id/graphic_overlay"
       android:layout_width="0dp"
       android:layout_height="0dp"
       app:layout_constraintBottom_toBottomOf="@id/preview"
-      app:layout_constraintLeft_toLeftOf="@id/preview"
-      app:layout_constraintRight_toRightOf="@id/preview"
-      app:layout_constraintTop_toTopOf="@id/preview" />
+      app:layout_constraintStart_toStartOf="@id/preview"
+      app:layout_constraintTop_toTopOf="@id/preview"
+      app:layout_constraintWidth="match_parent" />
 
   <ImageView
       android:id="@+id/premium_status_image_view"
@@ -40,8 +39,6 @@
       app:layout_constraintBottom_toBottomOf="@id/settings_image_view"
       app:layout_constraintStart_toStartOf="parent" />
 
-  <!-- TODO: Replace the test adUnitId with the real one: ca-app-pub-5555304935446174/8806775376 -->
-  <!-- TODO: For general testing replace the real adUnitId with the test one: ca-app-pub-3940256099942544/6300978111 -->
   <include
       android:id="@+id/settings_image_view"
       layout="@layout/settings_style"
@@ -51,6 +48,8 @@
       app:layout_constraintRight_toRightOf="@id/still_parent_layout"
       tools:layout_editor_absoluteY="0dp" />
 
+  <!-- TODO: Replace the test adUnitId with the real one: ca-app-pub-5555304935446174/8806775376 -->
+  <!-- TODO: For general testing replace the real adUnitId with the test one: ca-app-pub-3940256099942544/6300978111 -->
   <com.google.android.gms.ads.AdView
       android:id="@+id/adView"
       android:layout_width="wrap_content"
