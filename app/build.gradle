@@ -90,7 +90,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics-ktx'
 
     // https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-stdlib
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.8.10'
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.8.20'
 
     implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.10'
     implementation 'androidx.multidex:multidex:2.0.1'
