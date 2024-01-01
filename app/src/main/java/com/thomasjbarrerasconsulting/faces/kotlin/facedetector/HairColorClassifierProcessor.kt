@@ -250,31 +250,33 @@ class HairColorClassifierProcessor {
                 return
             }
 
+            val translatedPrefix = if (prefix == "Touch of ") context.getString(R.string.haircolor_touch_of) else prefix
+
             val percentFormat: NumberFormat = NumberFormat.getPercentInstance()
 
             when {
-                remainingColors.count() == 1 -> classifications.add("${prefix}${ClassifierText.get(remainingColors.first().label)} (${percentFormat.format(remainingColors.first().score)})")
+                remainingColors.count() == 1 -> classifications.add("${translatedPrefix}${ClassifierText.get(remainingColors.first().label)} (${percentFormat.format(remainingColors.first().score)})")
                 isOneDominantColor(remainingColors) -> {
                     if (!secondColorIsProminent(remainingColors)){
-                        classifications.add("${prefix}${ClassifierText.get(remainingColors.first().label)} (${NumberFormat.getPercentInstance().format(remainingColors.first().score)})")
+                        classifications.add("${translatedPrefix}${ClassifierText.get(remainingColors.first().label)} (${NumberFormat.getPercentInstance().format(remainingColors.first().score)})")
                         addClassificationForRemainingColors(remainingColors.takeLast(remainingColors.count() - 1), classifications, context.getString(R.string.haircolor_trace_of) + " ")
                     } else {
-                        classifications.add("${prefix}${descriptionOfAPrimaryColorAndProminentSecondaryColor(remainingColors.first(), remainingColors.take(2).last())}")
+                        classifications.add("${translatedPrefix}${descriptionOfAPrimaryColorAndProminentSecondaryColor(remainingColors.first(), remainingColors.take(2).last())}")
                         addClassificationForRemainingColors(remainingColors.takeLast(remainingColors.count() - 2), classifications, context.getString(R.string.haircolor_trace_of) + " ")
                     }
                 }
                 areTwoDominantColors(remainingColors) -> {
-                    classifications.add("${prefix}${descriptionOfTwoDominantColors(remainingColors.first(), remainingColors.take(2).last())}")
+                    classifications.add("${translatedPrefix}${descriptionOfTwoDominantColors(remainingColors.first(), remainingColors.take(2).last())}")
                     addClassificationForRemainingColors(remainingColors.takeLast(remainingColors.count() - 2), classifications, context.getString(R.string.haircolor_trace_of) + " ")
                 }
                 areThreeDominantColors(remainingColors) -> {
-                    classifications.add("${prefix}${ClassifierText.get(remainingColors.first().label)} (${percentFormat.format(remainingColors.first().score)})")
-                    classifications.add("${prefix}${ClassifierText.get(remainingColors.take(2).last().label)} (${percentFormat.format(remainingColors.take(2).last().score)})")
-                    classifications.add("${prefix}${ClassifierText.get(remainingColors.take(3).last().label)} (${percentFormat.format(remainingColors.take(3).last().score)})")
+                    classifications.add("${translatedPrefix}${ClassifierText.get(remainingColors.first().label)} (${percentFormat.format(remainingColors.first().score)})")
+                    classifications.add("${translatedPrefix}${ClassifierText.get(remainingColors.take(2).last().label)} (${percentFormat.format(remainingColors.take(2).last().score)})")
+                    classifications.add("${translatedPrefix}${ClassifierText.get(remainingColors.take(3).last().label)} (${percentFormat.format(remainingColors.take(3).last().score)})")
 
                     addClassificationForRemainingColors(remainingColors.takeLast(remainingColors.count() - 3), classifications, context.getString(R.string.haircolor_trace_of) + " ")
                 }
-                else -> addClassificationsForMixedHairColors(remainingColors, classifications, prefix)
+                else -> addClassificationsForMixedHairColors(remainingColors, classifications, translatedPrefix)
             }
         }
     }

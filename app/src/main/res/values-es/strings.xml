@@ -111,7 +111,7 @@
     <string name="premium_status_you_are_using_the_premium_version">Estás usando la versión Premium</string>
     <string name="premium_status_your_premium_payment_is_pending">Tu compra Premium está pendiente</string>
     <string name="premium_status_description_upgrade_to_unlock_capabilities">¡Actualízate para desbloquear capacidades adicionales fenomenales!</string>
-    <string name="premium_status_description_premium_customer">Eres un patrocinador de élite, ¡lo mejor de lo mejor de lo mejor! ¡De lo mejor!</string>
+    <string name="premium_status_description_premium_customer">Eres un patrocinador de élite, ¡Lo mejor de lo mejor de lo mejor! ¡De lo mejor!</string>
     <string name="premium_status_description_premium_pending">¡Te esperan grandes cosas tan pronto como se procese tu pago! Visita pay.google.com para resolver cualquier problema de pago.</string>
     <string name="preference_premium_status_title">Estado Premium</string>
     <string name="preference_premium_status_summary">Ya sea que esté utilizando la versión gratuita o premium</string>
@@ -456,4 +456,5 @@
     <string name="haircolor_plum_brown">Castaño Ciruela</string>
     <string name="haircolor_dark_honey_brown">Castaño Miel Oscuro</string>
     <string name="haircolor_dark_golden_brown">Castaño Dorado Oscuro</string>
+    <string name="haircolor_touch_of">"Toque de "</string>
 </resources>

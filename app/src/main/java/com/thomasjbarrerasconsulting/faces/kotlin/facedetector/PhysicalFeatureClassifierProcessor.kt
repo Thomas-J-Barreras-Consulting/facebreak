@@ -42,7 +42,6 @@ class PhysicalFeatureClassifierProcessor {
             val significantFaceFeaturesOutputs = faceFeaturesOutputs.apply{sortByDescending { it.score }}.filter { it.label != "Clear" }.filter{ it.score >= 0.25}
             faceFeaturesFaceModel.close()
 
-
             val categories = mutableListOf<Category>()
             categories.addAll(significantHeadwearOutputs)
             categories.addAll(significantEyebrowsOutputs)
@@ -50,7 +49,7 @@ class PhysicalFeatureClassifierProcessor {
             categories.addAll(significantFaceFeaturesOutputs)
 
             for (output in categories.apply { sortByDescending { it.score } }){
-                val label = output.label
+                val label = ClassifierText.get(output.label)
                 classifications.add("$label (${percentFormat.format(output.score)})")
             }
 

@@ -479,4 +479,5 @@
     <string name="haircolor_plum_brown">Plum Brown</string>
     <string name="haircolor_dark_honey_brown">Dark Honey Brown</string>
     <string name="haircolor_dark_golden_brown">Dark Golden Brown</string>
+    <string name="haircolor_touch_of">"Touch of "</string>
 </resources>
