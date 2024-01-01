@@ -216,8 +216,8 @@
     <string name="emotion_stern_masculine">Stern</string>
     <string name="emotion_surprised_masculine">Surprised</string>
     <string name="emotion_suspicious_masculine">Suspicious</string>
-    <string name="gender_male">Male</string>
-    <string name="gender_female">Female</string>
+    <string name="gender_male_masculine">Male</string>
+    <string name="gender_female_masculine">Female</string>
     <string name="faceshape_diamond">Diamond</string>
     <string name="faceshape_heart">Heart</string>
     <string name="faceshape_oblong">Oblong</string>
@@ -480,4 +480,7 @@
     <string name="haircolor_dark_honey_brown">Dark Honey Brown</string>
     <string name="haircolor_dark_golden_brown">Dark Golden Brown</string>
     <string name="haircolor_touch_of">"Touch of "</string>
+    <string name="gender_male_feminine">Male</string>
+    <string name="gender_female_feminine">Female</string>
+    <string name="character_naturally_beautiful_feminine">Naturally Beautiful</string>
 </resources>

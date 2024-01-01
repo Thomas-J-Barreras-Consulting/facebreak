@@ -235,8 +235,8 @@
     <string name="emotion_surprised_masculine">Sorprendido</string>
     <string name="emotion_surprised_feminine">Sorprendida</string>
     <string name="emotion_suspicious_masculine">Sospechoso</string>
-    <string name="gender_male">Masculino</string>
-    <string name="gender_female">Femenina</string>
+    <string name="gender_male_masculine">Masculino</string>
+    <string name="gender_female_masculine">Femenino</string>
     <string name="faceshape_diamond">Diamante</string>
     <string name="faceshape_heart">Corazón</string>
     <string name="faceshape_oblong">Oblonga</string>
@@ -457,4 +457,7 @@
     <string name="haircolor_dark_honey_brown">Castaño Miel Oscuro</string>
     <string name="haircolor_dark_golden_brown">Castaño Dorado Oscuro</string>
     <string name="haircolor_touch_of">"Toque de "</string>
+    <string name="gender_male_feminine">Masculina</string>
+    <string name="gender_female_feminine">Femenina</string>
+    <string name="character_naturally_beautiful_feminine">Naturalmente Hermosa</string>
 </resources>

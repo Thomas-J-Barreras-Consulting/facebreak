@@ -1,6 +1,7 @@
 package com.thomasjbarrerasconsulting.faces.kotlin.facedetector
 
 import android.content.Context
+import androidx.core.os.ConfigurationCompat
 import com.thomasjbarrerasconsulting.faces.ml.GenderModel2
 import kotlinx.coroutines.sync.Mutex
 import org.tensorflow.lite.support.image.TensorImage
@@ -11,14 +12,19 @@ class GenderClassifier (val context: Context, private val tensorImage: TensorIma
     fun isMaleOrGenderNeutral(): Boolean {
 
         if (isMaleOrGenderNeutral == null){
-            synchronized(this){
-                isMaleOrGenderNeutral = true
+            synchronized(tensorImage){
+                val currentLocale = ConfigurationCompat.getLocales(context.resources.configuration)[0]
+                isMaleOrGenderNeutral = if (currentLocale?.language == "es") {
+                    val genderModel = GenderModel2.newInstance(context)
+                    val isMale = genderModel.process(tensorImage).probabilityAsCategoryList.apply { sortByDescending { it.score } }.first().label == "Male"
+                    genderModel.close()
+                    isMale
+                } else {
+                    true
+                }
             }
         }
 
-//        val genderModel = GenderModel2.newInstance(context)
-//        val isMale = genderModel.process(tensorImage).probabilityAsCategoryList.apply { sortByDescending { it.score } }.first().label == "Male"
-//        genderModel.close()
         return isMaleOrGenderNeutral!!
     }
 }
