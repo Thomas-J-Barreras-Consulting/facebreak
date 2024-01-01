@@ -1,11 +1,13 @@
 package com.thomasjbarrerasconsulting.faces.kotlin.facedetector
 
+import android.content.Context
 import com.thomasjbarrerasconsulting.faces.R
 import com.thomasjbarrerasconsulting.faces.kotlin.FaceBreakApplication
+import org.tensorflow.lite.support.image.TensorImage
 
 class ClassifierText {
     companion object{
-        fun get(label:String): String {
+        fun get(label:String, genderClassifier: GenderClassifier? = null): String {
             val context = FaceBreakApplication.instance
 
             return when (label){
@@ -72,16 +74,16 @@ class ClassifierText {
                 "Trace Brown Eyes"	->	context.getString(R.string.eyecolor_trace_brown)
                 "Trace Green Eyes"	->	context.getString(R.string.eyecolor_trace_green)
                 "Trace Grey Eyes"	->	context.getString(R.string.eyecolor_trace_grey)
-                "Angry"	->	context.getString(R.string.emotion_angry_masculine)
-                "Disgusted"	->	context.getString(R.string.emotion_disgusted_masculine)
-                "Happy"	->	context.getString(R.string.emotion_happy_masculine)
-                "Sad"	->	context.getString(R.string.emotion_sad_masculine)
-                "Scared"	->	context.getString(R.string.emotion_scared_masculine)
-                "Serious"	->	context.getString(R.string.emotion_serious_masculine)
-                "Silly"	->	context.getString(R.string.emotion_silly_masculine)
-                "Stern"	->	context.getString(R.string.emotion_stern_masculine)
-                "Surprised"	->	context.getString(R.string.emotion_surprised_masculine)
-                "Suspicious"	->	context.getString(R.string.emotion_suspicious_masculine)
+                "Angry"	->	if (genderClassifier!!.isMaleOrGenderNeutral()) context.getString(R.string.emotion_angry_masculine) else context.getString(R.string.emotion_angry_feminine)
+                "Disgusted"	->	if (genderClassifier!!.isMaleOrGenderNeutral()) context.getString(R.string.emotion_disgusted_masculine) else context.getString(R.string.emotion_disgusted_feminine)
+                "Happy"	->	if (genderClassifier!!.isMaleOrGenderNeutral()) context.getString(R.string.emotion_happy_masculine) else context.getString(R.string.emotion_happy_feminine)
+                "Sad"	->	if (genderClassifier!!.isMaleOrGenderNeutral()) context.getString(R.string.emotion_sad_masculine) else context.getString(R.string.emotion_sad_feminine)
+                "Scared"	->	if (genderClassifier!!.isMaleOrGenderNeutral()) context.getString(R.string.emotion_scared_masculine) else context.getString(R.string.emotion_scared_feminine)
+                "Serious"	->	if (genderClassifier!!.isMaleOrGenderNeutral()) context.getString(R.string.emotion_serious_masculine) else context.getString(R.string.emotion_serious_feminine)
+                "Silly"	->	if (genderClassifier!!.isMaleOrGenderNeutral()) context.getString(R.string.emotion_silly_masculine) else context.getString(R.string.emotion_silly_feminine)
+                "Stern"	->	if (genderClassifier!!.isMaleOrGenderNeutral()) context.getString(R.string.emotion_stern_masculine) else context.getString(R.string.emotion_stern_feminine)
+                "Surprised"	->	if (genderClassifier!!.isMaleOrGenderNeutral()) context.getString(R.string.emotion_surprised_masculine) else context.getString(R.string.emotion_surprised_feminine)
+                "Suspicious"	->	if (genderClassifier!!.isMaleOrGenderNeutral()) context.getString(R.string.emotion_suspicious_masculine) else context.getString(R.string.emotion_suspicious_feminine)
                 "Male"	->	context.getString(R.string.gender_male)
                 "Female"	->	context.getString(R.string.gender_female)
                 "Diamond"	->	context.getString(R.string.faceshape_diamond)

@@ -19,39 +19,39 @@ class FaceShapeClassifierProcessor {
         VeryWeak
     }
     companion object {
-        fun extractFaceShapeClassifications(outputs: List<Category?>): MutableList<String>{
+        fun extractFaceShapeClassifications(outputs: List<Category?>, genderClassifier: GenderClassifier): MutableList<String>{
             val outputsByStrength: Map<FaceShapeStrength, List<Category?>> = splitOutputsByScoreStrength(adjustModelOutput(outputs))
             val context = FaceBreakApplication.instance
             val classifications: MutableList<String> = mutableListOf()
             val percentFormat: NumberFormat = NumberFormat.getPercentInstance()
 
             for (shape in outputsByStrength[FaceShapeStrength.VeryStrong]!!){
-                classifications.add(ClassifierText.get("Very Strong ${shape?.label}") + " (${percentFormat.format(shape?.score)})")
+                classifications.add(ClassifierText.get("Very Strong ${shape?.label}", genderClassifier) + " (${percentFormat.format(shape?.score)})")
             }
             for (shape in outputsByStrength[FaceShapeStrength.Strong]!!){
-                classifications.add(ClassifierText.get("Strong ${shape?.label}") + " (${percentFormat.format(shape?.score)})")
+                classifications.add(ClassifierText.get("Strong ${shape?.label}", genderClassifier) + " (${percentFormat.format(shape?.score)})")
             }
             for (shape in outputsByStrength[FaceShapeStrength.Regular]!!){
-                classifications.add("${ClassifierText.get(shape?.label!!)} (${percentFormat.format(shape.score)})")
+                classifications.add("${ClassifierText.get(shape?.label!!, genderClassifier)} (${percentFormat.format(shape.score)})")
             }
             val allClassificationsAreWeak = !classifications.any()
             if (allClassificationsAreWeak){
                 for (shape in outputsByStrength[FaceShapeStrength.Slight]!!) {
-                    classifications.add(ClassifierText.get("${shape?.label}") + " (${percentFormat.format(shape?.score)})")
+                    classifications.add(ClassifierText.get("${shape?.label}", genderClassifier) + " (${percentFormat.format(shape?.score)})")
                 }
             }
             if (!allClassificationsAreWeak and outputsByStrength[FaceShapeStrength.Slight]!!.any()){
-                classifications.add(context.getString(R.string.faceshape_slightly) + ": " + outputsByStrength[FaceShapeStrength.Slight]!!.joinToString(separator = ", ") { ClassifierText.get(it?.label!!) } +
+                classifications.add(context.getString(R.string.faceshape_slightly) + ": " + outputsByStrength[FaceShapeStrength.Slight]!!.joinToString(separator = ", ") { ClassifierText.get(it?.label!!, genderClassifier) } +
                         "(${outputsByStrength[FaceShapeStrength.Slight]!!.joinToString(separator = "/") {percentFormat.format(it?.score)}})")
             }
             if (outputsByStrength[FaceShapeStrength.Weak]!!.any() or outputsByStrength[FaceShapeStrength.VeryWeak]!!.any())
                 classifications.add("")
             if (outputsByStrength[FaceShapeStrength.Weak]!!.any()){
-                classifications.add(context.getString(R.string.faceshape_unlike) + ": " + outputsByStrength[FaceShapeStrength.Weak]!!.joinToString(separator = ", ") { ClassifierText.get(it?.label!!) } +
+                classifications.add(context.getString(R.string.faceshape_unlike) + ": " + outputsByStrength[FaceShapeStrength.Weak]!!.joinToString(separator = ", ") { ClassifierText.get(it?.label!!, genderClassifier) } +
                         " (${outputsByStrength[FaceShapeStrength.Weak]!!.joinToString(separator = "/") {percentFormat.format(it?.score)}})")
             }
             if (outputsByStrength[FaceShapeStrength.VeryWeak]!!.any()){
-                classifications.add(context.getString(R.string.faceshape_very_unlike) + ": " + outputsByStrength[FaceShapeStrength.VeryWeak]!!.joinToString(separator = ", ") { ClassifierText.get(it?.label!!) } +
+                classifications.add(context.getString(R.string.faceshape_very_unlike) + ": " + outputsByStrength[FaceShapeStrength.VeryWeak]!!.joinToString(separator = ", ") { ClassifierText.get(it?.label!!, genderClassifier) } +
                         " (${outputsByStrength[FaceShapeStrength.VeryWeak]!!.joinToString(separator = "/") {percentFormat.format(it?.score)}})")
             }
             return classifications

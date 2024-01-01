@@ -432,7 +432,7 @@
     <string name="classification_unknown">Unknown</string>
     <string name="character_adorable_feminine">Adorable</string>
     <string name="character_angelic_feminine">Angelic</string>
-    <string name="character_classically_beautiful_feminite">Classically Beautiful</string>
+    <string name="character_classically_beautiful_feminine">Classically Beautiful</string>
     <string name="character_compassionate_feminine">Compassionate</string>
     <string name="character_creative_feminine">Creative</string>
     <string name="character_free_spirited_feminine">Free Spirited</string>
@@ -470,7 +470,13 @@
     <string name="emotion_scared_feminine">Scared</string>
     <string name="emotion_serious_feminine">Serious</string>
     <string name="emotion_silly_feminine">Silly</string>
-    <string name="emotion_stern_woman">Stern</string>
+    <string name="emotion_stern_feminine">Stern</string>
     <string name="emotion_surprised_feminine">Surprised</string>
     <string name="emotion_suspicious_feminine">Suspicious</string>
+    <string name="haircolor_dark_brown">Dark Brown</string>
+    <string name="haircolor_red_brown">Red Brown</string>
+    <string name="haircolor_light_brown">Light Brown</string>
+    <string name="haircolor_plum_brown">Plum Brown</string>
+    <string name="haircolor_dark_honey_brown">Dark Honey Brown</string>
+    <string name="haircolor_dark_golden_brown">Dark Golden Brown</string>
 </resources>

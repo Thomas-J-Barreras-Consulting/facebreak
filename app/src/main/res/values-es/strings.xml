@@ -168,7 +168,7 @@
     <string name="flaw_grumpy_masculine">Gruñón</string>
     <string name="character_adorable_feminine">Adorable</string>
     <string name="character_angelic_feminine">Angelical</string>
-    <string name="character_classically_beautiful_feminite">Clásicamente Hermosa</string>
+    <string name="character_classically_beautiful_feminine">Clásicamente Hermosa</string>
     <string name="character_compassionate_feminine">Compasiva</string>
     <string name="character_creative_feminine">Creativa</string>
     <string name="character_free_spirited_feminine">Libre de Espíritu</string>
@@ -231,7 +231,7 @@
     <string name="emotion_silly_masculine">Tonto</string>
     <string name="emotion_silly_feminine">Tonta</string>
     <string name="emotion_stern_masculine">Severo</string>
-    <string name="emotion_stern_woman">Severa</string>
+    <string name="emotion_stern_feminine">Severa</string>
     <string name="emotion_surprised_masculine">Sorprendido</string>
     <string name="emotion_surprised_feminine">Sorprendida</string>
     <string name="emotion_suspicious_masculine">Sospechoso</string>
@@ -450,4 +450,10 @@
     <string name="message_current_settings">Configuraciones actuales:</string>
     <string name="classification_unknown">Desconocido</string>
     <string name="emotion_suspicious_feminine">Sospechosa</string>
+    <string name="haircolor_dark_brown">Castaño Oscuro</string>
+    <string name="haircolor_red_brown">Castaño Rojizo</string>
+    <string name="haircolor_light_brown">Castaño Claro</string>
+    <string name="haircolor_plum_brown">Castaño Ciruela</string>
+    <string name="haircolor_dark_honey_brown">Castaño Miel Oscuro</string>
+    <string name="haircolor_dark_golden_brown">Castaño Dorado Oscuro</string>
 </resources>

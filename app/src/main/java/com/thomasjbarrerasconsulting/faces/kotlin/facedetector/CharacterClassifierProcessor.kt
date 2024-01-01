@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Thomas J. Barreras. All rights reserved.
+ * Copyright 2024 Thomas J. Barreras. All rights reserved.
  * https://www.linkedin.com/in/tombarreras/
 */
 package com.thomasjbarrerasconsulting.faces.kotlin.facedetector
@@ -9,7 +9,7 @@ import java.text.NumberFormat
 
 class CharacterClassifierProcessor {
     companion object {
-        fun extractCharacterClassification(outputs: List<Category?>): MutableList<String> {
+        fun extractCharacterClassification(outputs: List<Category?>, genderClassifier: GenderClassifier): MutableList<String> {
             val percentFormat: NumberFormat = NumberFormat.getPercentInstance()
             val classifications: MutableList<String> = mutableListOf()
 
@@ -17,7 +17,7 @@ class CharacterClassifierProcessor {
             val totalScore = significantOutputs.map { it!!.score }.sum()
 
             for (output in significantOutputs){
-                classifications.add("${ClassifierText.get(output!!.label)} (${percentFormat.format(output.score / totalScore)})")
+                classifications.add("${ClassifierText.get(output!!.label, genderClassifier)} (${percentFormat.format(output.score / totalScore)})")
             }
 
             return classifications

@@ -74,12 +74,12 @@ class HairColorClassifierProcessor {
                 }
                 "Brown" -> {
                     return when (secondaryColor.label){
-                        "Black" -> "Dark Brown (${percentages})"
-                        "Red" -> "Red Brown (${percentages})"
-                        "Blond" -> "Light Brown (${percentages})"
-                        "Purple" -> "Plum Brown (${percentages})"
-                        "Yellow" -> "Dark Honey Brown (${percentages})"
-                        "Orange" -> "Dark Golden Brown (${percentages})"
+                        "Black" -> context.getString(R.string.haircolor_dark_brown) + " (${percentages})"
+                        "Red" -> context.getString(R.string.haircolor_red_brown) + " (${percentages})"
+                        "Blond" -> context.getString(R.string.haircolor_light_brown) + " (${percentages})"
+                        "Purple" -> context.getString(R.string.haircolor_plum_brown) + " (${percentages})"
+                        "Yellow" -> context.getString(R.string.haircolor_dark_honey_brown) + " (${percentages})"
+                        "Orange" -> context.getString(R.string.haircolor_dark_golden_brown) + " (${percentages})"
                         else -> descriptionOfPrimaryWithAHintOfSecondary(percentFormat, primaryColor, secondaryColor)
                     }
                 }

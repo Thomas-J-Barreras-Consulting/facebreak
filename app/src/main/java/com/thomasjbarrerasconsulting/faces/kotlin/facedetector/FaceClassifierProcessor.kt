@@ -8,6 +8,8 @@ import android.content.Context
 import android.graphics.Bitmap
 import com.google.mlkit.vision.face.Face
 import com.thomasjbarrerasconsulting.faces.R
+import com.thomasjbarrerasconsulting.faces.kotlin.FaceBreakApplication
+import com.thomasjbarrerasconsulting.faces.kotlin.facedetector.ClassifierText.Companion.get
 import com.thomasjbarrerasconsulting.faces.ml.*
 import com.thomasjbarrerasconsulting.faces.preference.UserPreferences
 import org.tensorflow.lite.support.image.TensorImage
@@ -32,6 +34,7 @@ class FaceClassifierProcessor(private val context: Context, private val processi
         try {
             val classifications: MutableList<String> = mutableListOf()
             val tensorImage = TensorImage.fromBitmap(croppedBitmap)
+            val genderClassifier = GenderClassifier(context, tensorImage)
 
             if (currentClassifier != classificationTracker.classifier){
                 resetClassificationTracker(currentClassifier)
@@ -45,22 +48,22 @@ class FaceClassifierProcessor(private val context: Context, private val processi
                 }
                 Classifier.DETECT_EMOTIONS -> {
                     val emotionsModel = EmotionsModel1600.newInstance(context)
-                    classifications.addAll(extractClassifications(classificationTracker.merge(emotionsModel.process(tensorImage).probabilityAsCategoryList.apply { sortByDescending { it.score } }.take(2))))
+                    classifications.addAll(extractClassifications(classificationTracker.merge(emotionsModel.process(tensorImage).probabilityAsCategoryList.apply { sortByDescending { it.score } }.take(2)), genderClassifier))
                     emotionsModel.close()
                 }
                 Classifier.DETECT_GENDER -> {
                     val genderModel = GenderModel2.newInstance(context)
-                    classifications.addAll(extractClassifications(classificationTracker.merge(genderModel.process(tensorImage).probabilityAsCategoryList.apply { sortByDescending { it.score } })))
+                    classifications.addAll(extractClassifications(classificationTracker.merge(genderModel.process(tensorImage).probabilityAsCategoryList.apply { sortByDescending { it.score } }), genderClassifier))
                     genderModel.close()
                 }
                 Classifier.DETECT_FACE_SHAPE -> {
                     val faceShapeModel = FaceShapeModel1000d.newInstance(context)
-                    classifications.addAll(FaceShapeClassifierProcessor.extractFaceShapeClassifications(classificationTracker.merge(faceShapeModel.process(tensorImage).probabilityAsCategoryList).apply { sortByDescending { it.score } }))
+                    classifications.addAll(FaceShapeClassifierProcessor.extractFaceShapeClassifications(classificationTracker.merge(faceShapeModel.process(tensorImage).probabilityAsCategoryList).apply { sortByDescending { it.score } }, genderClassifier))
                     faceShapeModel.close()
                 }
                 Classifier.DETECT_EYE_COLOR -> {
                     val model = EyeColorModel3.newInstance(context)
-                    classifications.addAll(EyeColorClassifierProcessor.extractEyeColorClassification(classificationTracker.merge(model.process(tensorImage).probabilityAsCategoryList).apply { sortByDescending { it.score } }))
+                    classifications.addAll(EyeColorClassifierProcessor.extractEyeColorClassification(classificationTracker.merge(model.process(tensorImage).probabilityAsCategoryList).apply { sortByDescending { it.score } }, genderClassifier))
                     model.close()
                 }
                 Classifier.DETECT_HAIR_COLOR -> {
@@ -78,12 +81,12 @@ class FaceClassifierProcessor(private val context: Context, private val processi
                 }
                 Classifier.DETECT_CHARACTER -> {
                     val characterModel = CharacterModel4.newInstance(context)
-                    classifications.addAll(CharacterClassifierProcessor.extractCharacterClassification(classificationTracker.merge(characterModel.process(tensorImage).probabilityAsCategoryList).apply { sortByDescending { it.score } }.filter { it.score >= 0.01 }))
+                    classifications.addAll(CharacterClassifierProcessor.extractCharacterClassification(classificationTracker.merge(characterModel.process(tensorImage).probabilityAsCategoryList).apply { sortByDescending { it.score } }.filter { it.score >= 0.01 }, genderClassifier))
                     characterModel.close()
                 }
                 Classifier.DETECT_CHARACTER_FLAWS -> {
                     val characterModel = CharacterFlawsModel3.newInstance(context)
-                    classifications.addAll(CharacterFlawsClassifierProcessor.extractCharacterFlawsClassification(classificationTracker.merge(characterModel.process(tensorImage).probabilityAsCategoryList).apply { sortByDescending { it.score } }.filter { it.score >= 0.01 }))
+                    classifications.addAll(CharacterFlawsClassifierProcessor.extractCharacterFlawsClassification(classificationTracker.merge(characterModel.process(tensorImage).probabilityAsCategoryList).apply { sortByDescending { it.score } }.filter { it.score >= 0.01 }, genderClassifier))
                     characterModel.close()
                 }
                 Classifier.DETECT_ANCESTRY -> {
@@ -102,25 +105,25 @@ class FaceClassifierProcessor(private val context: Context, private val processi
         }
     }
 
-    private fun extractClassifications(outputs: List<Category?>): MutableList<String> {
-        val classifications: MutableList<String> = mutableListOf()
-        val percentFormat: NumberFormat = NumberFormat.getPercentInstance()
-        val totalScore = outputs.map { it?.score!! }.sum()
-
-        for (output in outputs) {
-            val score: String = percentFormat.format(output?.score!!.div(totalScore))
-            val label: String = ClassifierText.get(output.label ?: context.getString(R.string.classification_unknown))
-            classifications.add("$label ($score)")
-        }
-        return classifications
-    }
-
     fun resetClassificationTracker() {
         classificationTracker = ClassificationTracker(UserPreferences.getUserPreferences(context).averagingSeconds, classifier)
     }
 
     fun resetClassificationTracker(classifier: Classifier) {
         classificationTracker = ClassificationTracker(UserPreferences.getUserPreferences(context).averagingSeconds, classifier)
+    }
+
+    private fun extractClassifications(outputs: List<Category?>, genderClassifier: GenderClassifier? = null): MutableList<String> {
+        val classifications: MutableList<String> = mutableListOf()
+        val percentFormat: NumberFormat = NumberFormat.getPercentInstance()
+        val totalScore = outputs.map { it?.score!! }.sum()
+
+        for (output in outputs) {
+            val score: String = percentFormat.format(output?.score!!.div(totalScore))
+            val label: String = get(output.label ?: context.getString(R.string.classification_unknown), genderClassifier)
+            classifications.add("$label ($score)")
+        }
+        return classifications
     }
 
     enum class Classifier {
