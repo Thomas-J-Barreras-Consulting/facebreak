@@ -20,13 +20,13 @@ android {
         multiDexEnabled true
         targetSdkVersion 33
 
-        versionCode 41
-        versionName "1.41"
+        versionCode 42
+        versionName "1.42"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         setProperty("archivesBaseName", "facebreak")
         buildConfigField("String", "BASE64_ENCODED_PUBLIC_KEY", "\"" + localProperties['base64EncodedPublicKey'] + "\"")
-        resourceConfigurations += ['en']
+//        resourceConfigurations += ['en', 'es']
     }
     buildTypes {
         proguard {
@@ -62,6 +62,7 @@ android {
     }
     androidResources {
         noCompress 'tflite'
+        generateLocaleConfig true
     }
     namespace 'com.thomasjbarrerasconsulting.faces'
 
