@@ -43,6 +43,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.util.Objects;
 
 /** Utils functions for bitmap conversions. */
 public class BitmapUtils {
@@ -66,7 +67,7 @@ public class BitmapUtils {
       stream.close();
       return rotateBitmap(bmp, metadata.getRotation(), false, false);
     } catch (Exception e) {
-      Log.e("VisionProcessorBase", "Error: " + e.getMessage());
+      Log.e("VisionProcessorBase", "Error: ".concat(Objects.requireNonNull(e.getMessage())));
     }
     return null;
   }
@@ -164,7 +165,7 @@ public class BitmapUtils {
 
       exif = new ExifInterface(inputStream);
     } catch (IOException e) {
-      Log.e(TAG, "failed to open file to read rotation meta data: " + imageUri, e);
+      Log.e(TAG, "failed to open file to read rotation meta data: ".concat(imageUri.toString()), e);
       return 0;
     }
 

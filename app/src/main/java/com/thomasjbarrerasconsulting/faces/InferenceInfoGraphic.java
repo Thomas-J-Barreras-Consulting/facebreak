@@ -71,7 +71,7 @@ public class InferenceInfoGraphic extends GraphicOverlay.Graphic {
       return;
     }
     canvas.drawText(
-        "InputImage size: " + overlay.getImageHeight() + "x" + overlay.getImageWidth(),
+        "InputImage size: ".concat(Integer.toString(overlay.getImageHeight()).concat("x".concat(Integer.toString(overlay.getImageWidth())))),
         x,
         y,
         textPaint);
@@ -79,14 +79,14 @@ public class InferenceInfoGraphic extends GraphicOverlay.Graphic {
     // Draw FPS (if valid) and inference latency
     if (framesPerSecond != null) {
       canvas.drawText(
-          "FPS: " + framesPerSecond + ", Frame latency: " + frameLatency + " ms",
+          "FPS: ".concat(Integer.toString(framesPerSecond).concat(", Frame latency: ".concat(Long.toString(frameLatency).concat(" ms")))),
           x,
           y + TEXT_SIZE,
           textPaint);
     } else {
-      canvas.drawText("Frame latency: " + frameLatency + " ms", x, y + TEXT_SIZE, textPaint);
+      canvas.drawText("Frame latency: ".concat(Long.toString(frameLatency).concat(" ms")), x, y + TEXT_SIZE, textPaint);
     }
     canvas.drawText(
-        "Detector latency: " + detectorLatency + " ms", x, y + TEXT_SIZE * 2, textPaint);
+        "Detector latency: ".concat(Long.toString(detectorLatency)).concat(" ms"), x, y + TEXT_SIZE * 2, textPaint);
   }
 }

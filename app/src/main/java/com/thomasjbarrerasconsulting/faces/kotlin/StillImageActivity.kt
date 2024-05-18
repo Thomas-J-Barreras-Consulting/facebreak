@@ -583,7 +583,7 @@ class StillImageActivity : AppCompatActivity() {
 
   private inner class PanListener: GestureDetector.SimpleOnGestureListener(){
 
-    override fun onScroll(e1: MotionEvent, e2: MotionEvent, distanceX: Float, distanceY: Float): Boolean {
+    override fun onScroll(e1: MotionEvent?, e2: MotionEvent, distanceX: Float, distanceY: Float): Boolean {
       preview!!.x -= distanceX
       preview!!.y -= distanceY
 

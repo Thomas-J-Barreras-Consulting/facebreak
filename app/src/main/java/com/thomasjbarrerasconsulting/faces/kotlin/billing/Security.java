@@ -41,6 +41,7 @@ import java.security.Signature;
 import java.security.SignatureException;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.Objects;
 
 /**
  * Security-related methods. For a secure implementation, all of this code should be implemented on
@@ -77,7 +78,7 @@ class Security {
             PublicKey key = generatePublicKey(BASE_64_ENCODED_PUBLIC_KEY);
             return verify(key, signedData, signature);
         } catch (IOException e) {
-            Log.e(TAG, "Error generating PublicKey from encoded key: " + e.getMessage());
+            Log.e(TAG, "Error generating PublicKey from encoded key: ".concat(Objects.requireNonNull(e.getMessage())));
             return false;
         }
     }
@@ -98,7 +99,7 @@ class Security {
             // "RSA" is guaranteed to be available.
             throw new RuntimeException(e);
         } catch (InvalidKeySpecException e) {
-            String msg = "Invalid key specification: " + e;
+            String msg = "Invalid key specification: ".concat(e.toString());
             Log.w(TAG, msg);
             throw new IOException(msg);
         }

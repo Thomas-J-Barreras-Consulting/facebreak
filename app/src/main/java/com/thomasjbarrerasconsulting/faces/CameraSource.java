@@ -219,7 +219,7 @@ public class CameraSource {
         dummySurfaceTexture = null;
         camera.setPreviewDisplay(null);
       } catch (Exception e) {
-        Log.e(TAG, "Failed to clear camera preview: " + e);
+        Log.e(TAG, "Failed to clear camera preview: ".concat(e.toString()));
       }
       camera.release();
       camera = null;
@@ -232,7 +232,7 @@ public class CameraSource {
   /** Changes the facing of the camera. */
   public synchronized void setFacing(int facing) {
     if ((facing != CAMERA_FACING_BACK) && (facing != CAMERA_FACING_FRONT)) {
-      throw new IllegalArgumentException("Invalid camera: " + facing);
+      throw new IllegalArgumentException("Invalid camera: ".concat(Integer.toString(facing)));
     }
     this.facing = facing;
   }
@@ -274,7 +274,7 @@ public class CameraSource {
     }
 
     previewSize = sizePair.preview;
-    Log.v(TAG, "Camera preview size: " + previewSize);
+    Log.v(TAG, "Camera preview size: ".concat(previewSize.toString()));
 
     int[] previewFpsRange = selectPreviewFpsRange(camera, REQUESTED_FPS);
     if (previewFpsRange == null) {
@@ -285,7 +285,7 @@ public class CameraSource {
 
     Size pictureSize = sizePair.picture;
     if (pictureSize != null) {
-      Log.v(TAG, "Camera picture size: " + pictureSize);
+      Log.v(TAG, "Camera picture size: ".concat(pictureSize.toString()));
       parameters.setPictureSize(pictureSize.getWidth(), pictureSize.getHeight());
     }
     parameters.setPreviewSize(previewSize.getWidth(), previewSize.getHeight());
@@ -508,7 +508,7 @@ public class CameraSource {
         degrees = 270;
         break;
       default:
-        Log.e(TAG, "Bad rotation value: " + rotation);
+        Log.e(TAG, "Bad rotation value: ".concat(Integer.toString(rotation)));
     }
 
     CameraInfo cameraInfo = new CameraInfo();
@@ -522,11 +522,11 @@ public class CameraSource {
       this.rotationDegrees = (cameraInfo.orientation - degrees + 360) % 360;
       displayAngle = this.rotationDegrees;
     }
-    Log.d(TAG, "Display rotation is: " + rotation);
-    Log.d(TAG, "Camera face is: " + cameraInfo.facing);
-    Log.d(TAG, "Camera rotation is: " + cameraInfo.orientation);
+    Log.d(TAG, "Display rotation is: ".concat(Integer.toString(rotation)));
+    Log.d(TAG, "Camera face is: ".concat(Integer.toString(cameraInfo.facing)));
+    Log.d(TAG, "Camera rotation is: ".concat(Integer.toString(cameraInfo.orientation)));
     // This value should be one of the degrees that ImageMetadata accepts: 0, 90, 180 or 270.
-    Log.d(TAG, "RotationDegrees is: " + this.rotationDegrees);
+    Log.d(TAG, "RotationDegrees is: ".concat(Integer.toString(this.rotationDegrees)));
 
     camera.setDisplayOrientation(displayAngle);
     parameters.setRotation(this.rotationDegrees);
