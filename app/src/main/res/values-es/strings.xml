@@ -119,12 +119,12 @@
     <string name="purchase_premium_button_text">¡Compra Premium!</string>
     <string name="back_button_text">Regresa</string>
     <string name="free_or_premium_image_view_description">Imagen Gratuita o Premium</string>
-    <string name="message_purchase_pending">"Compra pendiente. Solicitar ID: "</string>
+    <string name="message_purchase_pending">"Compra pendiente."</string>
     <string name="message_premium_purchased">"¡Versión premium comprada! Solicitar ID: "</string>
     <string name="failed_to_show_premium_status_dialog_exception">No se pudo mostrar el cuadro de diálogo de estado Premium</string>
-    <string name="message_purchase_canceled">"Compra cancelada. Solicitar ID: "</string>
-    <string name="message_payment_declined">"Pago rechazado. Solicitar ID: "</string>
-    <string name="message_purchase_invalid">"La compra no es válida. Solicitar ID: "</string>
+    <string name="message_purchase_canceled">"Compra cancelada."</string>
+    <string name="message_payment_declined">"Pago rechazado."</string>
+    <string name="message_purchase_invalid">"La compra no es válida."</string>
     <string name="brought_to_you_by">predicción presentada por</string>
     <string name="apparent_age">Edad aparente:</string>
     <string name="to">a</string>

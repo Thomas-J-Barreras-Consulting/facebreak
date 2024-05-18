@@ -118,7 +118,7 @@ class BillingHandler() {
 
         private fun handlePendingPurchases(filteredList: List<Purchase>) {
             if (filteredList.isEmpty() && purchases.list.any { it.purchaseState == Purchase.PurchaseState.PENDING }){
-                toast(FaceBreakApplication.instance.getString(R.string.message_payment_declined) + purchases.list.first { it.purchaseState == Purchase.PurchaseState.PENDING }.orderId)
+                toast(FaceBreakApplication.instance.getString(R.string.message_payment_declined))
             }
         }
 
@@ -210,7 +210,7 @@ class BillingHandler() {
                 for (purchase in purchases!!) {
 
                     if (!Security.verifyPurchase(purchase.originalJson, purchase.signature)) {
-                        toast(FaceBreakApplication.instance.getString(R.string.message_purchase_invalid) + purchase.orderId)
+                        toast(FaceBreakApplication.instance.getString(R.string.message_purchase_invalid))
                     }
                     else
                     {
@@ -231,11 +231,11 @@ class BillingHandler() {
             }
 
             private fun processCanceledPurchase(purchase: Purchase){
-                toast(FaceBreakApplication.instance.getString(R.string.message_purchase_canceled) + purchase.orderId)
+                toast(FaceBreakApplication.instance.getString(R.string.message_purchase_canceled))
             }
 
             private fun processPendingPurchase(purchase: Purchase){
-                toast(FaceBreakApplication.instance.getString(R.string.message_purchase_pending) + purchase.orderId)
+                toast(FaceBreakApplication.instance.getString(R.string.message_purchase_pending))
             }
 
             private fun ensurePurchaseAcknowledged(purchase: Purchase) {

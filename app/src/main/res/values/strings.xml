@@ -140,12 +140,12 @@
     <string name="purchase_premium_button_text">Purchase Premium!</string>
     <string name="back_button_text">Back</string>
     <string name="free_or_premium_image_view_description">Free or Premium image</string>
-    <string name="message_purchase_pending">Purchase pending. Order ID: </string>
+    <string name="message_purchase_pending">Purchase pending.</string>
     <string name="message_premium_purchased">Premium version purchased! Order ID: </string>
     <string name="failed_to_show_premium_status_dialog_exception">Failed to show Premium status dialog</string>
-    <string name="message_purchase_canceled">Purchase canceled. Order ID: </string>
-    <string name="message_payment_declined">Payment declined. Order ID: </string>
-    <string name="message_purchase_invalid">Purchase is invalid. Order ID: </string>
+    <string name="message_purchase_canceled">Purchase canceled.</string>
+    <string name="message_payment_declined">Payment declined.</string>
+    <string name="message_purchase_invalid">Purchase is invalid.</string>
     <string name="brought_to_you_by">prediction brought to you by</string>
     <string name="apparent_age">Apparent age:</string>
     <string name="to">to</string>
