@@ -77,8 +77,8 @@ preBuild {
     doFirst {
         // TODO: Migrate to task avoidance to eliminate the deprecation error on this line
         // https://docs.gradle.org/current/userguide/task_configuration_avoidance.html#sec:task_configuration_avoidance_migration_guidelines
-        JavaCompile jc = android.applicationVariants.find { it.name == 'debug' }.javaCompile
-//        JavaCompile jc = android.applicationVariants.find { it.name == 'debug' }.javaCompileProvider
+//        JavaCompile jc = android.applicationVariants.find { it.name == 'debug' }.javaCompile
+        JavaCompile jc = android.applicationVariants.find { it.name == 'debug' }.javaCompileProvider.get()
         jc.options.compilerArgs = ["-Xlint:deprecation"]
     }
 }
