@@ -20,8 +20,8 @@ android {
         multiDexEnabled true
         targetSdkVersion 34
 
-        versionCode 47
-        versionName "1.47"
+        versionCode 48
+        versionName "1.48"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         setProperty("archivesBaseName", "facebreak")
@@ -135,8 +135,8 @@ dependencies {
 
     // -------------------------------------------------------
 
-    implementation 'com.google.code.gson:gson:2.10.1'
-    implementation 'com.google.guava:guava:31.0.1-jre'
+    implementation 'com.google.code.gson:gson:2.11.0'
+    implementation 'com.google.guava:guava:33.1.0-jre'
     implementation 'org.tensorflow:tensorflow-lite-support:0.3.1'
     implementation 'org.tensorflow:tensorflow-lite-metadata:0.3.1'
     implementation 'org.tensorflow:tensorflow-lite-gpu:2.7.0'
@@ -157,17 +157,17 @@ dependencies {
 
     // ViewModel and LiveData
 //    implementation "andrfoidx.lifecycle:lifecycle-livedata:2.3.1"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.3"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.4"
 
-    implementation 'androidx.activity:activity-ktx:1.9.0'
-    implementation 'androidx.fragment:fragment-ktx:1.8.1'
+    implementation 'androidx.activity:activity-ktx:1.9.1'
+    implementation 'androidx.fragment:fragment-ktx:1.8.2'
     implementation 'androidx.appcompat:appcompat:1.7.0'
-    implementation 'androidx.annotation:annotation:1.8.0'
+    implementation 'androidx.annotation:annotation:1.8.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'androidx.preference:preference-ktx:1.2.1'
     implementation 'com.google.android.gms:play-services-oss-licenses:17.1.0'
 //    implementation 'com.google.android.gms:play-services-ads:21.5.0'
-    implementation 'com.google.android.ump:user-messaging-platform:2.2.0'
+    implementation 'com.google.android.ump:user-messaging-platform:3.0.0'
 
 //    implementation 'com.google.android.ads.consent:consent-library:1.0.8'
     implementation("com.google.android.play:review:2.0.1")
