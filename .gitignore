@@ -6,6 +6,7 @@ app/debug/
 
 # IDE
 .idea/
+.claude/
 
 # Local configuration
 local.properties
