@@ -3,3 +3,16 @@ app/build/
 app/proguard/
 app/release/
 app/debug/
+
+# IDE
+.idea/
+
+# Local configuration
+local.properties
+
+# Firebase credentials
+app/google-services.json
+
+# Signing
+*.jks
+*.keystore

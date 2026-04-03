@@ -20,8 +20,8 @@ android {
         multiDexEnabled true
         targetSdkVersion 34
 
-        versionCode 48
-        versionName "1.48"
+        versionCode 50
+        versionName "1.50"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         setProperty("archivesBaseName", "facebreak")
