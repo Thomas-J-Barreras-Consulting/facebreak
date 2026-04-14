@@ -5,12 +5,13 @@
 package com.thomasjbarrerasconsulting.faces.kotlin
 import android.app.Activity
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.google.android.play.core.review.ReviewManager
 import com.thomasjbarrerasconsulting.faces.kotlin.PackageManagerExtensions.Companion.getPackageInfoCompat
 import com.thomasjbarrerasconsulting.faces.preference.UserPreferences
-import java.util.*
 
 class Review {
 
@@ -63,14 +64,12 @@ class Review {
 
         fun checkLaunchInAppReview(activity:Activity){
             if (reviewTriggered(activity)) {
-                Timer().schedule(object : TimerTask() {
-                    override fun run() {
+                Handler(Looper.getMainLooper()).postDelayed({
+                    try {
                         val request = reviewManager.requestReviewFlow()
                         request.addOnCompleteListener { task ->
                             if (task.isSuccessful) {
-                                // We got the ReviewInfo object
                                 val reviewInfo = task.result
-
                                 val flow = reviewManager.launchReviewFlow(activity, reviewInfo)
                                 flow.addOnCompleteListener { _ ->
                                     // The flow has finished. The API does not indicate whether the user
@@ -81,6 +80,8 @@ class Review {
                                 Log.e(TAG, "${task.exception}")
                             }
                         }
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Failed to launch review flow: $e")
                     }
                 }, 1000)
             }

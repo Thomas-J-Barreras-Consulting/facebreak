@@ -274,22 +274,35 @@ class StillImageActivity : AppCompatActivity() {
 
   private fun resetImage(imageUri: Uri?) {
     try {
-      val imageBitmap = if (imageUri == null) null else BitmapUtils.getBitmapFromContentUri(contentResolver, imageUri)
+      val contentResolver = contentResolver
+      val activity = this
+      Thread {
+        try {
+          val imageBitmap = if (imageUri == null) null else BitmapUtils.getBitmapFromContentUri(contentResolver, imageUri)
 
-      if (imageBitmap == null) {
-        ImageUtils.deleteImageFromCache(this, CLASSIFIED_IMAGE_NAME, Bitmap.CompressFormat.PNG)
-      } else {
-        ImageUtils.saveImageToCache(this, imageBitmap, CLASSIFIED_IMAGE_NAME, Bitmap.CompressFormat.PNG)
-      }
+          if (imageBitmap == null) {
+            ImageUtils.deleteImageFromCache(activity, CLASSIFIED_IMAGE_NAME, Bitmap.CompressFormat.PNG)
+          } else {
+            ImageUtils.saveImageToCache(activity, imageBitmap, CLASSIFIED_IMAGE_NAME, Bitmap.CompressFormat.PNG)
+          }
 
-      loadImage(null)
+          Handler(Looper.getMainLooper()).post {
+            loadImage(null)
 
-      imageExists = imageBitmap != null
-      scaleFactor = 1.0f
-      preview!!.x = preview!!.left.toFloat()
-      preview!!.y = preview!!.top.toFloat()
+            imageExists = imageBitmap != null
+            scaleFactor = 1.0f
+            preview!!.x = preview!!.left.toFloat()
+            preview!!.y = preview!!.top.toFloat()
 
-      saveState()
+            saveState()
+            tryLoadAndClassifyImage()
+          }
+        } catch (e: Exception) {
+          Handler(Looper.getMainLooper()).post {
+            ExceptionHandler.alert(activity, getString(R.string.failed_to_reset_image_exception), TAG, e)
+          }
+        }
+      }.start()
     }
     catch (e: Exception){
       ExceptionHandler.alert(this, getString(R.string.failed_to_reset_image_exception), TAG, e)
@@ -547,7 +560,52 @@ class StillImageActivity : AppCompatActivity() {
 
   internal fun classifyDisplayedImage(){
     try {
-      classifyImage(getBitmapOfDisplayedImage())
+      // Read UI state on main thread
+      if (preview!!.drawable == null) return
+      val drawable = preview!!.drawable as BitmapDrawable
+      val sourceBitmap = drawable.bitmap
+      val scaledWidth = (scaleFactor * drawable.intrinsicWidth).toInt()
+      val scaledHeight = (scaleFactor * drawable.intrinsicHeight).toInt()
+      if (scaledHeight == -1 || scaledWidth == -1) return
+      val intrinsicWidth = drawable.intrinsicWidth
+      val intrinsicHeight = drawable.intrinsicHeight
+      val previewLeft = preview!!.left
+      val previewTop = preview!!.top
+      val previewX = preview!!.x
+      val previewY = preview!!.y
+
+      val activity = this
+      Thread {
+        try {
+          // Heavy bitmap work on background thread
+          val bitmap = Bitmap.createScaledBitmap(sourceBitmap, scaledWidth, scaledHeight, true)
+          val scaledAndPositioned = Bitmap.createBitmap(
+            intrinsicWidth + 2 * previewLeft,
+            intrinsicHeight + 2 * previewTop,
+            bitmap.config ?: Bitmap.Config.ARGB_8888
+          )
+          val canvas = Canvas(scaledAndPositioned)
+          canvas.drawColor(Color.DKGRAY)
+          canvas.drawBitmap(
+            bitmap,
+            previewX + (intrinsicWidth - scaledWidth) / 2,
+            previewY + (intrinsicHeight - scaledHeight) / 2,
+            null
+          )
+
+          Handler(Looper.getMainLooper()).post {
+            try {
+              classifyImage(scaledAndPositioned)
+            } catch (e: Exception) {
+              ExceptionHandler.alert(activity, getString(R.string.failed_to_classify_displayed_image_exception), TAG, e)
+            }
+          }
+        } catch (e: Exception) {
+          Handler(Looper.getMainLooper()).post {
+            ExceptionHandler.alert(activity, getString(R.string.failed_to_classify_displayed_image_exception), TAG, e)
+          }
+        }
+      }.start()
     }
     catch (e: Exception) {
       ExceptionHandler.alert(this, getString(R.string.failed_to_classify_displayed_image_exception), TAG, e)
