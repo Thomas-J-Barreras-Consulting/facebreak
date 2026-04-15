@@ -439,26 +439,33 @@ class StillImageActivity : AppCompatActivity() {
       return null
     }
     val drawable = preview!!.drawable as BitmapDrawable
-    val scaledWidth = (scaleFactor * drawable.intrinsicWidth).toInt()
-    val scaledHeight = (scaleFactor * drawable.intrinsicHeight).toInt()
+
+    val viewWidth = preview!!.width
+    val viewHeight = preview!!.height
+    if (viewWidth <= 0 || viewHeight <= 0) return null
+
+    // Match the ImageView's FIT_CENTER scaling
+    val fitScale = min(viewWidth.toFloat() / drawable.intrinsicWidth, viewHeight.toFloat() / drawable.intrinsicHeight)
+    val displayWidth = (scaleFactor * fitScale * drawable.intrinsicWidth).toInt()
+    val displayHeight = (scaleFactor * fitScale * drawable.intrinsicHeight).toInt()
 
     // Still loading the view
-    if (scaledHeight == -1 || scaledWidth == -1){
+    if (displayHeight <= 0 || displayWidth <= 0){
       return null
     }
 
-    val bitmap = Bitmap.createScaledBitmap(drawable.bitmap, scaledWidth, scaledHeight, true)
+    val bitmap = Bitmap.createScaledBitmap(drawable.bitmap, displayWidth, displayHeight, true)
     val scaledAndPositioned = Bitmap.createBitmap(
-      drawable.intrinsicWidth + 2 * preview!!.left,
-      drawable.intrinsicHeight + 2 * preview!!.top,
+      viewWidth,
+      viewHeight,
       bitmap.config ?: Bitmap.Config.ARGB_8888
     )
     val canvas = Canvas(scaledAndPositioned)
     canvas.drawColor(Color.DKGRAY)
     canvas.drawBitmap(
       bitmap,
-      preview!!.x + (drawable.intrinsicWidth - scaledWidth) / 2,
-      preview!!.y + (drawable.intrinsicHeight - scaledHeight) / 2,
+      (viewWidth - displayWidth) / 2f + preview!!.translationX,
+      (viewHeight - displayHeight) / 2f + preview!!.translationY,
       null
     )
     return scaledAndPositioned
@@ -564,32 +571,33 @@ class StillImageActivity : AppCompatActivity() {
       if (preview!!.drawable == null) return
       val drawable = preview!!.drawable as BitmapDrawable
       val sourceBitmap = drawable.bitmap
-      val scaledWidth = (scaleFactor * drawable.intrinsicWidth).toInt()
-      val scaledHeight = (scaleFactor * drawable.intrinsicHeight).toInt()
-      if (scaledHeight == -1 || scaledWidth == -1) return
-      val intrinsicWidth = drawable.intrinsicWidth
-      val intrinsicHeight = drawable.intrinsicHeight
-      val previewLeft = preview!!.left
-      val previewTop = preview!!.top
-      val previewX = preview!!.x
-      val previewY = preview!!.y
+      val viewWidth = preview!!.width
+      val viewHeight = preview!!.height
+      if (viewWidth <= 0 || viewHeight <= 0) return
+      // Match the ImageView's FIT_CENTER scaling
+      val fitScale = min(viewWidth.toFloat() / drawable.intrinsicWidth, viewHeight.toFloat() / drawable.intrinsicHeight)
+      val displayWidth = (scaleFactor * fitScale * drawable.intrinsicWidth).toInt()
+      val displayHeight = (scaleFactor * fitScale * drawable.intrinsicHeight).toInt()
+      if (displayHeight <= 0 || displayWidth <= 0) return
+      val panX = preview!!.translationX
+      val panY = preview!!.translationY
 
       val activity = this
       Thread {
         try {
           // Heavy bitmap work on background thread
-          val bitmap = Bitmap.createScaledBitmap(sourceBitmap, scaledWidth, scaledHeight, true)
+          val bitmap = Bitmap.createScaledBitmap(sourceBitmap, displayWidth, displayHeight, true)
           val scaledAndPositioned = Bitmap.createBitmap(
-            intrinsicWidth + 2 * previewLeft,
-            intrinsicHeight + 2 * previewTop,
+            viewWidth,
+            viewHeight,
             bitmap.config ?: Bitmap.Config.ARGB_8888
           )
           val canvas = Canvas(scaledAndPositioned)
           canvas.drawColor(Color.DKGRAY)
           canvas.drawBitmap(
             bitmap,
-            previewX + (intrinsicWidth - scaledWidth) / 2,
-            previewY + (intrinsicHeight - scaledHeight) / 2,
+            (viewWidth - displayWidth) / 2f + panX,
+            (viewHeight - displayHeight) / 2f + panY,
             null
           )
 
